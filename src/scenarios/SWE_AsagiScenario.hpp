@@ -47,7 +47,7 @@ private:
 public:
 	SWE_AsagiGrid()
 	{
-		_grid = asagi::Grid::create();
+		_grid = asagi::Grid::create(asagi::Grid::FLOAT);
 		_refCount = 0;
 	}
 
@@ -239,6 +239,9 @@ class SWE_AsagiScenario: public SWE_Scenario {
       //assert that the 2D wrapper is not used for 3D displacements
       //assert(dynamicDisplacement == false);
       // no assertation for compability
+
+      if (dynamicDisplacement)
+    	  return 0;
 
       return getBathymetryAndDynamicDisplacement(i_positionX, i_positionY, 0);
     }

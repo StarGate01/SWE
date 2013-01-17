@@ -94,6 +94,8 @@ vars.AddVariables(
                 allowed_values=('rusanov', 'fwave', 'augrie', 'hybrid', 'fwavevec')
               ),
                   
+  BoolVariable( 'dynamicDispl', 'support dynamic displacement files with ASAGI', False ),
+                  
   BoolVariable( 'vectorize', 'add pragmas to help vectorization (release only)', True ),
                   
   BoolVariable( 'showVectorization', 'show loop vectorization (Intel compiler only)', False ),
@@ -218,6 +220,10 @@ elif env['solver'] == 'hybrid':
   env.Append(CPPDEFINES=['WAVE_PROPAGATION_SOLVER=0'])
 elif env['solver'] == 'fwavevec':
   env.Append(CPPDEFINES=['WAVE_PROPAGATION_SOLVER=4'])
+  
+# Dynamic displacement?
+if env['dynamicDispl']:
+    env.Append(CPPDEFINES=['DYNAMIC_DISPLACEMENTS'])
 
 # set the precompiler flags for CUDA
 if env['parallelization'] in ['cuda', 'mpi_with_cuda']:

@@ -256,7 +256,7 @@ void SWE_WavePropagationBlock::updateUnknowns(float dt) {
  * @param i_asagiScenario the corresponding ASAGI-scenario
  */
 #ifdef DYNAMIC_DISPLACEMENTS
-bool SWE_WavePropagationBlock::updateBathymetryWithDynamicDisplacement(scenarios::Asagi &i_asagiScenario, const float i_time) {
+bool SWE_WavePropagationBlock::updateBathymetryWithDynamicDisplacement(SWE_AsagiScenario &i_asagiScenario, const float i_time) {
   if (!i_asagiScenario.dynamicDisplacementAvailable(i_time))
     return false;
 

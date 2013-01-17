@@ -33,7 +33,7 @@
 #include "tools/help.hh"
 #include "SWE_Block.hh"
 #ifdef DYNAMIC_DISPLACEMENTS
-#include "scenarios/Asagi.hpp"
+#include "scenarios/SWE_AsagiScenario.hpp"
 #endif
 
 //which wave propagation solver should be used
@@ -136,7 +136,7 @@ class SWE_WavePropagationBlock: public SWE_Block {
 
     //updates the bathymetry with the current displacment values
 #ifdef DYNAMIC_DISPLACEMENTS
-    bool updateBathymetryWithDynamicDisplacement(scenarios::Asagi &i_asagiScenario, float time);
+    bool updateBathymetryWithDynamicDisplacement(SWE_AsagiScenario &i_asagiScenario, float time);
 #endif
 
     //get hybrid statistics

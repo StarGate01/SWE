@@ -206,8 +206,8 @@ int main( int argc, char** argv ) {
   simulationArea[3] = 1450000;
 
   SWE_AsagiScenario l_scenario( ASAGI_INPUT_DIR "tohoku_gebco_ucsb3_500m_hawaii_bath.nc",
-		  	  	  	  	  	  	ASAGI_INPUT_DIR "tohoku_gebco_ucsb3_500m_hawaii_displ.nc",
-                                (float) 14400., simulationArea);
+		  	  	  	  	  	  	ASAGI_INPUT_DIR "tohoku_percy_500m_displ.nc",
+                                (float) 14400., simulationArea, true);
   #else
   // create a simple artificial scenario
   SWE_BathymetryDamBreakScenario l_scenario;
@@ -415,6 +415,8 @@ int main( int argc, char** argv ) {
 
   unsigned int l_iterations = 0;
 
+  bool displAvail = true;
+
   // loop over checkpoints
   for(int c=1; c<=l_numberOfCheckPoints; c++) {
 
@@ -453,6 +455,10 @@ int main( int argc, char** argv ) {
       // determine smallest time step of all blocks
       MPI_Allreduce(&l_maxTimeStepWidth, &l_maxTimeStepWidthGlobal, 1, MPI_FLOAT, MPI_MIN, MPI_COMM_WORLD);
 
+      if (displAvail)
+    	  // Minimum available time step in dynamic displacements = 1.65
+    	  l_maxTimeStepWidthGlobal = std::min(l_maxTimeStepWidthGlobal, 1.65f);
+
       // reset the cpu time
       tools::Logger::logger.resetCpuClockToCurrentTime();
 
@@ -466,6 +472,9 @@ int main( int argc, char** argv ) {
       // update simulation time with time step width.
       l_t += l_maxTimeStepWidthGlobal;
       l_iterations++;
+
+      // Update displacement
+       displAvail = l_wavePropgationBlock.updateBathymetryWithDynamicDisplacement(l_scenario, l_t);
 
       // print the current simulation time
       progressBar.clear();
