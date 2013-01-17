@@ -35,6 +35,8 @@
 #include <omp.h>
 #endif
 
+#include "tools/Logger.hpp"
+
 /**
  * Constructor of a SWE_WavePropagationBlock.
  *
@@ -106,6 +108,8 @@ SWE_WavePropagationBlock::SWE_WavePropagationBlock():
  * maximum allowed time step size
  */
 void SWE_WavePropagationBlock::computeNumericalFluxes() {
+//	tools::Logger::logger.resetCpuClockToCurrentTime();
+
   //maximum (linearized) wave speed within one iteration
   float maxWaveSpeed = (float) 0.;
 
@@ -188,7 +192,7 @@ void SWE_WavePropagationBlock::computeNumericalFluxes() {
   } // end of parallel for block
   #endif
 
-  if(maxWaveSpeed > 0.00001) { //TODO zeroTol
+//  if(maxWaveSpeed > 0.00001) { //TODO zeroTol
     //compute the time step width
     //CFL-Codition
     //(max. wave speed) * dt / dx < .5
@@ -200,10 +204,11 @@ void SWE_WavePropagationBlock::computeNumericalFluxes() {
 //    #else
 //    dt *= (float) .8; //CFL-number = 1. (wave limiters)
 //    #endif
-  }
-  else
-    maxTimestep = std::numeric_limits<float>::max(); //might happen in dry cells
+//  }
+//  else
+//    maxTimestep = std::numeric_limits<float>::max(); //might happen in dry cells
 
+//  tools::Logger::logger.updateCpuTime();
 }
 
 /**
@@ -212,6 +217,8 @@ void SWE_WavePropagationBlock::computeNumericalFluxes() {
  * @param dt time step width used in the update.
  */
 void SWE_WavePropagationBlock::updateUnknowns(float dt) {
+	tools::Logger::logger.resetCpuClockToCurrentTime();
+
   //update cell averages with the net-updates
   #ifdef LOOP_OPENMP
   #pragma omp parallel for
@@ -248,6 +255,8 @@ void SWE_WavePropagationBlock::updateUnknowns(float dt) {
           hu[i][j] = hv[i][j] = 0.; //no water, no speed!
       }
   }
+
+  tools::Logger::logger.updateCpuTime();
 }
 
 /**

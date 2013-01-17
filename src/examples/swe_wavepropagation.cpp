@@ -63,6 +63,7 @@
  * Main program for the simulation on a single SWE_WavePropagationBlock.
  */
 int main( int argc, char** argv ) {
+
   /**
    * Initialization.
    */
@@ -231,7 +232,7 @@ int main( int argc, char** argv ) {
       l_wavePropgationBlock.setGhostLayer();
       
       // reset the cpu clock
-      tools::Logger::logger.resetCpuClockToCurrentTime();
+      //tools::Logger::logger.resetCpuClockToCurrentTime();
 
       // approximate the maximum time step
       // TODO: This calculation should be replaced by the usage of the wave speeds occuring during the flux computation
@@ -248,7 +249,7 @@ int main( int argc, char** argv ) {
       l_wavePropgationBlock.updateUnknowns(l_maxTimeStepWidth);
 
       // update the cpu time in the logger
-      tools::Logger::logger.updateCpuTime();
+      //tools::Logger::logger.updateCpuTime();
 
       // update simulation time with time step width.
       l_t += l_maxTimeStepWidth;

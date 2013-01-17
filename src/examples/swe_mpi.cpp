@@ -433,7 +433,7 @@ int main( int argc, char** argv ) {
                       l_mpiRow );
 
       // reset the cpu clock
-      tools::Logger::logger.resetCpuClockToCurrentTime();
+//      tools::Logger::logger.resetCpuClockToCurrentTime();
 
       // set values in ghost cells
       l_wavePropgationBlock.setGhostLayer();
@@ -445,7 +445,7 @@ int main( int argc, char** argv ) {
       float l_maxTimeStepWidth = l_wavePropgationBlock.getMaxTimestep();
 
       // update the cpu time in the logger
-      tools::Logger::logger.updateCpuTime();
+//      tools::Logger::logger.updateCpuTime();
 
       //! maximum allowed time steps of all blocks
       float l_maxTimeStepWidthGlobal;
@@ -454,13 +454,13 @@ int main( int argc, char** argv ) {
       MPI_Allreduce(&l_maxTimeStepWidth, &l_maxTimeStepWidthGlobal, 1, MPI_FLOAT, MPI_MIN, MPI_COMM_WORLD);
 
       // reset the cpu time
-      tools::Logger::logger.resetCpuClockToCurrentTime();
+//      tools::Logger::logger.resetCpuClockToCurrentTime();
 
       // update the cell values
       l_wavePropgationBlock.updateUnknowns(l_maxTimeStepWidthGlobal);
 
       // update the cpu and CPU-communication time in the logger
-      tools::Logger::logger.updateCpuTime();
+//      tools::Logger::logger.updateCpuTime();
       tools::Logger::logger.updateCpuCommunicationTime();
 
       // update simulation time with time step width.
