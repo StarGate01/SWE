@@ -32,6 +32,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <string>
+#include <vector>
 
 #include "../tools/help.hh"
 
@@ -201,20 +202,20 @@ int main( int argc, char** argv ) {
   //simulation area
   float simulationArea[4];
   simulationArea[0] = -450000;
-  simulationArea[1] = 6450000;
+  simulationArea[1] = 1100000;
   simulationArea[2] = -2450000;
-  simulationArea[3] = 1450000;
+  simulationArea[3] = 475000;
 
   SWE_AsagiScenario l_scenario( ASAGI_INPUT_DIR "tohoku_gebco_ucsb3_500m_hawaii_bath.nc",
 		  	  	  	  	  	  	ASAGI_INPUT_DIR "tohoku_percy_500m_displ.nc",
-                                (float) 14400., simulationArea, true);
+                                (float) 4000., simulationArea, true);
   #else
   // create a simple artificial scenario
   SWE_BathymetryDamBreakScenario l_scenario;
   #endif
 
   //! number of checkpoints for visualization (at each checkpoint in time, an output file is written).
-  int l_numberOfCheckPoints = 40;
+  //int l_numberOfCheckPoints = 40;
 
 
   //! number of grid cells in x- and y-direction per process.
@@ -265,12 +266,16 @@ int main( int argc, char** argv ) {
   float l_endSimulation = l_scenario.endSimulation();
 
   //! checkpoints when output files are written.
-  float* l_checkPoints = new float[l_numberOfCheckPoints+1];
+  std::vector<float> l_checkPoints;
 
   // compute the checkpoints in time
-  for(int cp = 0; cp <= l_numberOfCheckPoints; cp++) {
-     l_checkPoints[cp] = cp*(l_endSimulation/l_numberOfCheckPoints);
-  }
+  for (float cp = 0; cp < 267; cp += 1.65)
+	l_checkPoints.push_back(cp);
+  for (float cp = 267; cp < 600; cp += 15)
+	l_checkPoints.push_back(cp);
+  for (float cp = 600; cp < 6000; cp += 60)
+	l_checkPoints.push_back(cp);
+  int l_numberOfCheckPoints = l_checkPoints.size();
 
   /*
    * Connect SWE blocks at boundaries
@@ -386,7 +391,8 @@ int main( int argc, char** argv ) {
 		  l_boundarySize,
 		  l_nXLocal, l_nYLocal,
 		  l_dX, l_dY,
-          l_originX, l_originY );
+          l_originX, l_originY,
+		  10 );
 #else
   // Construct a VtkWriter
   io::VtkWriter l_writer( l_fileName,
@@ -418,7 +424,7 @@ int main( int argc, char** argv ) {
   bool displAvail = true;
 
   // loop over checkpoints
-  for(int c=1; c<=l_numberOfCheckPoints; c++) {
+  for(int c=1; c<l_numberOfCheckPoints; c++) {
 
     // do time steps until next checkpoint is reached
     while( l_t < l_checkPoints[c] ) {

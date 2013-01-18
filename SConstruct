@@ -120,7 +120,7 @@ vars.AddVariables(
 )
 
 # set environment
-env = Environment(ENV = {'PATH': os.environ['PATH']},
+env = Environment(ENV = {'PATH': os.environ['PATH'], 'INTEL_LICENSE_FILE': os.environ['INTEL_LICENSE_FILE']},
         variables=vars)
 
 # generate help text
@@ -157,10 +157,10 @@ if env['parallelization'] != 'cuda' and env['openGL'] == True:
 # If compiler is set to gnu, we use the default compiler
 if env['parallelization'] in ['mpi', 'mpi_with_cuda']:
   # TODO when compilerPath/linkerPath is set, this is overwritten 
-  env['CXX'] = 'mpiCC'
+  env['CXX'] = 'mpicxx'
   if env['compiler'] == 'intel':
     # Environment variables to switch compiler for different MPI libraries
-    envVars = ['OMPI_CXX', 'MPICH_CXX']
+    envVars = ['OMPI_CXX', 'MPICH_CXX', 'MPICXX_CXX']
     for var in envVars:
       env['ENV'][var] = 'icpc'
 else:
@@ -252,16 +252,15 @@ if env['parallelization'] in ['cuda', 'mpi_with_cuda']:
 if env['parallelization'] in ['mpi_with_cuda']:
   env.Append(NVCCFLAGS=' -DUSEMPI')
 
-# set the precompiler flags for MPI (C++)
 if env['parallelization'] in ['mpi_with_cuda', 'mpi']:
   env.Append(CPPDEFINES=['USEMPI'])
   if 'compilerPath' in env:
     env['CXX'] = env['compilerPath']
   else:
-    env['CXX'] = 'mpiCC'
+    env['CXX'] = 'mpicxx'
   if 'linkerPath' in env:
     env['LINKERFORPROGRAMS'] = env['linkerPath']
-  env['LINKERFORPROGRAMS'] = 'mpiCC'
+  env['LINKERFORPROGRAMS'] = 'mpicxx'
 
 if env['openGL'] == True:
   env.Append(LIBS=['SDL', 'GL', 'GLU'])
@@ -269,6 +268,9 @@ if env['openGL'] == True:
     # We assume that SDL_ttf is in the same directory as SDL
     env.Append(LIBS=['SDL_ttf'])
     env.Append(CPPDEFINES=['USESDLTTF'])
+
+env.Append(CPPPATH=['/opt/sgi/mpt/mpt-2.04/include'])
+env.Append(LIBPATH=['/opt/sgi/mpt/mpt-2.04/lib'])
 
 # set the compiler flags for libSDL
 if 'libSDLDir' in env:

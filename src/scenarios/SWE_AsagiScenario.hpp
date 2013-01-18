@@ -240,9 +240,6 @@ class SWE_AsagiScenario: public SWE_Scenario {
       //assert(dynamicDisplacement == false);
       // no assertation for compability
 
-      if (dynamicDisplacement)
-    	  return 0;
-
       return getBathymetryAndDynamicDisplacement(i_positionX, i_positionY, 0);
     }
 
@@ -274,8 +271,10 @@ class SWE_AsagiScenario: public SWE_Scenario {
            i_positionY < displacementRange[3] ) {
         if(dynamicDisplacement == false)
           displacementValue = displacementGrid.grid().getFloat2D(i_positionX, i_positionY);
-        else
-          displacementValue = displacementGrid.grid().getFloat3D(i_positionX, i_positionY, i_time);
+        else {
+	  if (dynamicDisplacementAvailable(i_time))
+            displacementValue = displacementGrid.grid().getFloat3D(i_positionX, i_positionY, i_time);
+	}
       }
 
       return bathymetryValue + displacementValue;
