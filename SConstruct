@@ -124,7 +124,6 @@ env = Environment(ENV = {'PATH': os.environ['PATH']},
         variables=vars)
 if 'INTEL_LICENSE_FILE' in os.environ:
 	env.Append(ENV={'INTEL_LICENSE_FILE': os.environ['INTEL_LICENSE_FILE']})
-print env.Dump()
 
 # generate help text
 Help(vars.GenerateHelpText(env))
