@@ -269,6 +269,9 @@ bool SWE_WavePropagationBlock::updateBathymetryWithDynamicDisplacement(SWE_Asagi
                                                                    );
     }
   }
+
+  setBoundaryBathymetry();
+
   return true;
 }
 #endif
