@@ -190,7 +190,6 @@ float SWE_WavePropagationBlockCuda::simulate(float tStart, float tEnd) {
      updateUnknowns(maxTimestep);
 	 
 	 t += maxTimestep;
-//     cout << "Simulation at time " << t << endl << flush;
   } while(t < tEnd);
 
   return t;
@@ -203,67 +202,15 @@ float SWE_WavePropagationBlockCuda::simulate(float tStart, float tEnd) {
  * The maximum wave speed is computed within the net-updates kernel for each CUDA-block.
  * To finalize the method the Thrust-library is called, which does the reduction over all blockwise maxima.
  *   In the wave speed reduction step the actual cell width in x- and y-direction is not taken into account.
- *
- *   TODO: A splitting or direct computation of the time step width might increase the total time step size.
- *     Example:
- *       dx = 11, dy = 6;
- *       max wave speed in x-direction: 10
- *       max wave speed in y-direction: 5.5
- *       max wave speed in both direction: 10
- *
- *       => maximum time step (current implementation): min(11/10, 6/10) = 0.6
- *       => maximum time step (splitting the dimensions): min(11/10, 6/5.5) = 1.09..
  */
 void SWE_WavePropagationBlockCuda::computeNumericalFluxes() {
   /*
    * Initialization.
    */
-  //! definition of one CUDA-block. Typical size are 8*8 or 16*16
-  dim3 dimBlock(TILE_SIZE,TILE_SIZE);
 
-  /**
-   * Definition of the "main" CUDA-grid.
-   * This grid covers only edges 0..#(edges in x-direction)-2 and 0..#(edges in y-direction)-2.
-   *
-   * An example with a computational domain of size
-   *  nx = 24, ny = 16
-   * with a 1 cell ghost layer would result in a grid with
-   *  (nx+2)*(ny+2) = (26*18)
-   * cells and
-   *  (nx+1)*(ny+1) = (25*17)
-   * edges.
-   *
-   * The CUDA-blocks (here 8*8) mentioned above would cover all edges except
-   * the ones lying between the computational domain and the right/top ghost layer:
-   * <pre>
-   *                                                          *
-   *                                                         **        top ghost layer,
-   *                                                        ********   cell ids
-   *                        *******************************  **        = (*, ny+1)
-   *                        *         *         *         *   *
-   *                        *   8*8   *   8*8   *   8*8   *
-   *                        *  block  *  block  *  block  *
-   *                        *         *         *         *
-   *                        *******************************
-   *                        *         *         *         *
-   *                        *   8*8   *   8*8   *   8*8   *
-   *                    *   *  block  *  block  *  block  *
-   *     bottom         **  *         *         *         *
-   *     ghost     ******** *******************************
-   *     layer,         **
-   *     cell ids       *   *                              *
-   *     =(*,0)            ***                            ***
-   *                        *                              *
-   *                        *                              *
-   *                  left ghost layer,             right ghost layer,
-   *                  cell ids = (0,*)             cell ids = (nx+1, *)
-   * </pre>
+  /*
+   * TODO: This part needs to be implemented.
    */
-  dim3 dimGrid(nx/TILE_SIZE,ny/TILE_SIZE);
-
-  // assert a valid tile size
-  assert(nx%TILE_SIZE==0);
-  assert(ny%TILE_SIZE==0);
 
   // "2D array" which holds the blockwise maximum wave speeds
   float* l_maximumWaveSpeedsD;
@@ -276,42 +223,10 @@ void SWE_WavePropagationBlockCuda::computeNumericalFluxes() {
   /*
    * Compute the net updates for the 'main part and the two 'boundary' parts.
    */
-  // compute the net-updates for the "main" part.
-  computeNetUpdatesKernel<<<dimGrid,dimBlock>>>( hd, hud, hvd, bd,
-                                                 hNetUpdatesLeftD,  hNetUpdatesRightD,
-                                                 huNetUpdatesLeftD, huNetUpdatesRightD,
-                                                 hNetUpdatesBelowD, hNetUpdatesAboveD,
-                                                 hvNetUpdatesBelowD, hvNetUpdatesAboveD,
-                                                 l_maximumWaveSpeedsD,
-                                                 nx,ny
-                                               );
 
-  // compute the "remaining" net updates (edges "simulation domain"/"top ghost layer" and "simulation domain"/"right ghost layer")
-  // edges between cell nx and ghost layer nx+1
-  dim3 dimRightBlock(1, TILE_SIZE);
-  dim3 dimRightGrid(1, ny/TILE_SIZE);
-  computeNetUpdatesKernel<<<dimRightGrid, dimRightBlock>>>( hd, hud, hvd, bd,
-                                                            hNetUpdatesLeftD,  hNetUpdatesRightD,
-                                                            huNetUpdatesLeftD, huNetUpdatesRightD,
-                                                            hNetUpdatesBelowD, hNetUpdatesAboveD,
-                                                            hvNetUpdatesBelowD, hvNetUpdatesAboveD,
-                                                            l_maximumWaveSpeedsD,
-                                                            nx, ny,
-                                                            nx, 0,
-                                                            dimGrid.x, 0);
-
-  // edges between cell ny and ghost layer ny+1
-  dim3 dimTopBlock(TILE_SIZE, 1);
-  dim3 dimTopGrid(nx/TILE_SIZE, 1);
-  computeNetUpdatesKernel<<<dimTopGrid, dimTopBlock>>>( hd, hud, hvd, bd,
-                                                        hNetUpdatesLeftD,  hNetUpdatesRightD,
-                                                        huNetUpdatesLeftD, huNetUpdatesRightD,
-                                                        hNetUpdatesBelowD, hNetUpdatesAboveD,
-                                                        hvNetUpdatesBelowD, hvNetUpdatesAboveD,
-                                                        l_maximumWaveSpeedsD,
-                                                        nx, ny,
-                                                        0, ny,
-                                                        0, dimGrid.y);
+  /*
+   * TODO: This part needs to be implemented.
+   */
 
   /*
    * Finalize (max reduction of the maximumWaveSpeeds-array.)
@@ -344,28 +259,9 @@ void SWE_WavePropagationBlockCuda::computeNumericalFluxes() {
  * @param i_deltaT time step size.
  */
 void SWE_WavePropagationBlockCuda::updateUnknowns(const float i_deltaT) {
-  //! definition of one CUDA-block. Typical size are 8*8 or 16*16
-  dim3 dimBlock(TILE_SIZE,TILE_SIZE);
-
-  //! definition of the CUDA-grid.
-  dim3 dimGrid(nx/TILE_SIZE,ny/TILE_SIZE);
-
-  // assert a valid tile size
-  assert(nx%TILE_SIZE==0);
-  assert(ny%TILE_SIZE==0);
-
-  // compute the update width.
-  float l_updateWidthX = i_deltaT / dx;
-  float l_updateWidthY = i_deltaT / dy;
-
-  // update the unknowns (global time step)
-  updateUnknownsKernel<<<dimGrid,dimBlock>>>( hNetUpdatesLeftD, hNetUpdatesRightD,
-                                              huNetUpdatesLeftD, huNetUpdatesRightD,
-                                              hNetUpdatesBelowD, hNetUpdatesAboveD,
-                                              hvNetUpdatesBelowD, hvNetUpdatesAboveD,
-                                              hd, hud, hvd,
-                                              l_updateWidthX, l_updateWidthY,
-                                              nx, ny);
+  /*
+   * TODO: This part needs to be implemented.
+   */
 
   // synchronize the copy layer for MPI communication
   #ifdef USEMPI
