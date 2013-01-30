@@ -8,13 +8,13 @@ This directory holds the CUDA skeleton for the *Gene Golub SIAM Summer School 20
 
 There are two CUDA kernels in the file SWE_WavePropagationBlockCuda_kenels.cu, which need to be implemented:
 
-1. [void computeNetUpdatesKernel([...])](https://github.com/TUM-I5/SWE/blob/master/src_skeleton/SWE_WavePropagationBlockCuda_kernels.cu#L72)
-2. [void updateUnknownsKernel([...])](https://github.com/TUM-I5/SWE/blob/master/src_skeleton/SWE_WavePropagationBlockCuda_kernels.cu#L108)
+1. [void computeNetUpdatesKernel([...])](https://github.com/TUM-I5/SWE/blob/Gene_Golub_SIAM_Summer_School_2012_skeleton/src/SWE_WavePropagationBlockCuda_kernels.cu#L72)
+2. [void updateUnknownsKernel([...])](https://github.com/TUM-I5/SWE/blob/Gene_Golub_SIAM_Summer_School_2012_skeleton/src/SWE_WavePropagationBlockCuda_kernels.cu#L108)
 
-These kernels have to be called within the following two functions of the class [SWE_WavePropagationBlockCuda](https://github.com/TUM-I5/SWE/blob/master/src_skeleton/SWE_WavePropagationBlockCuda.cu):
+These kernels have to be called within the following two functions of the class [SWE_WavePropagationBlockCuda](https://github.com/TUM-I5/SWE/blob/Gene_Golub_SIAM_Summer_School_2012_skeleton/src/SWE_WavePropagationBlockCuda.cu):
 
-1. [void SWE_WavePropagationBlockCuda::computeNumericalFluxes()](https://github.com/TUM-I5/SWE/blob/master/src_skeleton/SWE_WavePropagationBlockCuda.cu#L206)
-2. [void SWE_WavePropagationBlockCuda::updateUnknowns(const float i_deltaT)](https://github.com/TUM-I5/SWE/blob/master/src_skeleton/SWE_WavePropagationBlockCuda.cu#L261)
+1. [void SWE_WavePropagationBlockCuda::computeNumericalFluxes()](https://github.com/TUM-I5/SWE/blob/Gene_Golub_SIAM_Summer_School_2012_skeleton/src/SWE_WavePropagationBlockCuda.cu#L206)
+2. [void SWE_WavePropagationBlockCuda::updateUnknowns(const float i_deltaT)](https://github.com/TUM-I5/SWE/blob/Gene_Golub_SIAM_Summer_School_2012_skeleton/src/SWE_WavePropagationBlockCuda.cu#L261)
 
 
 ## Reference solutions
