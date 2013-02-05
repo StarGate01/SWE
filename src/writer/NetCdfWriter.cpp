@@ -95,9 +95,9 @@ io::NetCdfWriter::NetCdfWriter( const std::string &i_baseName,
 	//variables, fastest changing index is on the right (C syntax), will be mirrored by the library
 	int dims[] = {l_timeDim, l_yDim, l_xDim};
 	nc_def_var(dataFile, "h",  NC_FLOAT, 3, dims, &hVar);
-	nc_def_var(dataFile, "hu", NC_FLOAT, 3, dims, &huVar);
-	nc_def_var(dataFile, "hv", NC_FLOAT, 3, dims, &hvVar);
-	nc_def_var(dataFile, "b",  NC_FLOAT, 2, &dims[1], &bVar);
+	//nc_def_var(dataFile, "hu", NC_FLOAT, 3, dims, &huVar);
+	//nc_def_var(dataFile, "hv", NC_FLOAT, 3, dims, &hvVar);
+	nc_def_var(dataFile, "b",  NC_FLOAT, 3, dims, &bVar);
 
 	//set attributes to match CF-1.5 convention
 	ncPutAttText(NC_GLOBAL, "Conventions", "CF-1.5");
@@ -201,9 +201,9 @@ void io::NetCdfWriter::writeTimeStep( const Float2D &i_h,
                                       const Float2D &i_hu,
                                       const Float2D &i_hv,
                                       float i_time) {
-	if (timeStep == 0)
-		// Write bathymetry
-		writeVarTimeIndependent(b, bVar);
+	//if (timeStep == 0)
+	//	// Write bathymetry
+	//	writeVarTimeIndependent(b, bVar);
 
 	//write i_time
 	nc_put_var1_float(dataFile, timeVar, &timeStep, &i_time);
@@ -211,11 +211,14 @@ void io::NetCdfWriter::writeTimeStep( const Float2D &i_h,
 	//write water height
 	writeVarTimeDependent(i_h, hVar);
 
+	//write bathymetry
+	writeVarTimeDependent(b, bVar);
+
 	//write momentum in x-direction
-	writeVarTimeDependent(i_hu, huVar);
+	//writeVarTimeDependent(i_hu, huVar);
 
 	//write momentum in y-direction
-	writeVarTimeDependent(i_hv, hvVar);
+	//writeVarTimeDependent(i_hv, hvVar);
 
 	// Increment timeStep for next call
 	timeStep++;
