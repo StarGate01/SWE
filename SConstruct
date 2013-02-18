@@ -208,6 +208,7 @@ if env['compiler'] == 'intel' and env['showVectorization']:
 if env['compiler'] == 'intel' and env['platform'] == 'mic':
   env.Append(CCFLAGS=['-mmic'])
   env.Append(LINKFLAGS=['-mmic'])
+if env['compiler'] == 'intel':
   # Add Intel specific libraries
   env.Append(LIBS=['svml', 'imf', 'intlc'])
   
