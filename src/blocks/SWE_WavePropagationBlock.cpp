@@ -111,7 +111,7 @@ SWE_WavePropagationBlock::SWE_WavePropagationBlock(
  * maximum allowed time step size
  */
 void SWE_WavePropagationBlock::computeNumericalFluxes() {
-	//	tools::Logger::logger.resetCpuClockToCurrentTime();
+	tools::Logger::logger.resetCpuClockToCurrentTime();
 
 	//maximum (linearized) wave speed within one iteration
 	float maxWaveSpeed = (float) 0.;
@@ -177,7 +177,7 @@ void SWE_WavePropagationBlock::computeNumericalFluxes() {
 		#pragma simd
 #endif // VECTORIZE
 #endif // WAVE_PROPAGATION_SOLVER==4
-		for(int j = 1; j < ny+2; j++) {
+		for(int j = 1; j < ny+1; j++) {
 			float maxEdgeSpeed;
 
 			#if WAVE_PROPAGATION_SOLVER!=3
@@ -199,6 +199,27 @@ void SWE_WavePropagationBlock::computeNumericalFluxes() {
 				maxWaveSpeed = std::max(maxWaveSpeed, maxEdgeSpeed);
 			#endif // LOOP_OPENMP
 		}
+
+		float maxEdgeSpeed;
+
+		#if WAVE_PROPAGATION_SOLVER!=3
+			wavePropagationSolver.computeNetUpdates( h[i][ny], h[i][ny+1],
+                                              hv[i][ny], hv[i][ny+1],
+                                              b[i][ny], b[i][ny+1],
+                                              hNetUpdatesBelow[i-1][ny], hNetUpdatesAbove[i-1][ny],
+                                              hvNetUpdatesBelow[i-1][ny], hvNetUpdatesAbove[i-1][ny],
+                                              maxEdgeSpeed );
+		#else // WAVE_PROPAGATION_SOLVER!=3
+			#error "Solver not implemented in SWE_WavePropagationBlock"
+		#endif // WAVE_PROPAGATION_SOLVER!=3
+
+		#ifdef LOOP_OPENMP
+			//update the thread-local maximum wave speed
+			l_maxWaveSpeed = std::max(l_maxWaveSpeed, maxEdgeSpeed);
+		#else // LOOP_OPENMP
+			//update the maximum wave speed
+			maxWaveSpeed = std::max(maxWaveSpeed, maxEdgeSpeed);
+		#endif // LOOP_OPENMP
 	}
 
 #ifdef LOOP_OPENMP
@@ -210,7 +231,7 @@ void SWE_WavePropagationBlock::computeNumericalFluxes() {
 } // #pragma omp parallel
 #endif
 
-//  tools::Logger::logger.updateCpuTime();
+	tools::Logger::logger.updateCpuTime();
 
 	if(maxWaveSpeed > 0.00001) {
 		//TODO zeroTol
@@ -240,7 +261,7 @@ void SWE_WavePropagationBlock::computeNumericalFluxes() {
  * @param dt time step width used in the update.
  */
 void SWE_WavePropagationBlock::updateUnknowns(float dt) {
-	tools::Logger::logger.resetCpuClockToCurrentTime();
+	//tools::Logger::logger.resetCpuClockToCurrentTime();
 
   //update cell averages with the net-updates
 #ifdef LOOP_OPENMP
@@ -281,7 +302,7 @@ void SWE_WavePropagationBlock::updateUnknowns(float dt) {
 		}
 	}
 
-	tools::Logger::logger.updateCpuTime();
+	//tools::Logger::logger.updateCpuTime();
 }
 
 /**
