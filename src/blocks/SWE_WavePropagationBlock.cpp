@@ -26,6 +26,8 @@
  * SWE_Block, which uses solvers in the wave propagation formulation.
  */
 
+#include "tools/Logger.hh"
+
 #include "SWE_WavePropagationBlock.hh"
 
 #include <cassert>
@@ -35,8 +37,6 @@
 #ifdef LOOP_OPENMP
 #include <omp.h>
 #endif
-
-#include "tools/Logger.hh"
 
 /**
  * Constructor of a SWE_WavePropagationBlock.
@@ -114,7 +114,7 @@ void SWE_WavePropagationBlock::computeNumericalFluxes() {
 	tools::Logger::logger.resetCpuClockToCurrentTime();
 
 	//maximum (linearized) wave speed within one iteration
-	float maxWaveSpeed = (float) 0.;
+	float maxWaveSpeed = (float) .0;
 
 	// compute the net-updates for the vertical edges
 
@@ -138,7 +138,6 @@ void SWE_WavePropagationBlock::computeNumericalFluxes() {
 #endif // VECTORIZE
 #endif // WAVE_PROPAGATION_SOLVER==4
 		for(int j = 1; j < ny+1; j++) {
-
 			float maxEdgeSpeed;
 
 			#if WAVE_PROPAGATION_SOLVER!=3

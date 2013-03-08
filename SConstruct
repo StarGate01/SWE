@@ -197,9 +197,9 @@ env.Append(CCFLAGS=['-fstrict-aliasing', '-fargument-noalias'])
 if env['compileMode'] == 'release' and env['vectorize']:
   env.Append(CPPDEFINES=['VECTORIZE'])
   if env['compiler'] == 'intel':
-    env.Append(CCFLAGS=['-xHost'])
+    env.Append(CCFLAGS=['-xavx'])
 if env['compiler'] == 'intel' and env['showVectorization']:
-  env.Append(CCFLAGS=['-vec-report2'])
+  env.Append(CCFLAGS=['-vec-report3'])
   
 # Platform
 if env['compiler'] == 'intel' and env['platform'] == 'mic':
