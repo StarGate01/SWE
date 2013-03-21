@@ -28,22 +28,14 @@
 
 #include "SWE_Block.hh"
 #include "tools/help.hh"
+
 #include <cmath>
 #include <iostream>
 #include <cassert>
 #include <limits>
 
-
-// define static variables:
-  // block size: numer of cells in x and y direction:
-  int SWE_Block::nx = 10;
-  int SWE_Block::ny = 10;
-  // grid sizes dx and dy:
-  float SWE_Block::dx = 0.1f;
-  float SWE_Block::dy = 0.1f;
-
-  // gravitational acceleration
-  const float SWE_Block::g = 9.81f;
+// gravitational acceleration
+const float SWE_Block::g = 9.81f;
 
 /**
  * Constructor: allocate variables for simulation
@@ -57,15 +49,19 @@
  * generated.
  *
  */
-SWE_Block::SWE_Block()
-: h(nx+2,ny+2), hu(nx+2,ny+2), hv(nx+2,ny+2), b(nx+2,ny+2)
+SWE_Block::SWE_Block(int l_nx, int l_ny,
+		float l_dx, float l_dy)
+	: nx(l_nx), ny(l_ny),
+	  dx(l_dx), dy(l_dy),
+	  h(nx+2,ny+2), hu(nx+2,ny+2), hv(nx+2,ny+2), b(nx+2,ny+2),
+	  // This three are only set here, so eclipse does not complain
+	  maxTimestep(0), offsetX(0), offsetY(0)
 {
   // set WALL as default boundary condition
-  for(int i=0; i<4;i++) {
+  for (int i=0; i<4; i++) {
      boundary[i] = PASSIVE;
      neighbour[i] = NULL;
   };
-  
 }
 
 /**
@@ -131,20 +127,6 @@ void SWE_Block::initScenario( float _offsetX, float _offsetY,
 
 /**
  * set water height h in all interior grid cells (i.e. except ghost layer) 
- * to a uniform value
- */
-void SWE_Block::setWaterHeight(float _h) {
-
-  for(int i=1; i<=nx; i++)
-    for(int j=1; j<=ny; j++) {
-      h[i][j] = _h;
-    };
-
-  synchWaterHeightAfterWrite();
-}
-
-/**
- * set water height h in all interior grid cells (i.e. except ghost layer) 
  * to values specified by parameter function _h
  */
 void SWE_Block::setWaterHeight(float (*_h)(float, float)) {
@@ -155,23 +137,6 @@ void SWE_Block::setWaterHeight(float (*_h)(float, float)) {
     };
 
   synchWaterHeightAfterWrite();
-}
-
-/**
- * set discharge unknowns in all interior grid cells (i.e. except ghost layer) 
- * to a uniform value
- * Note: unknowns hu and hv represent momentum, while parameters u and v are velocities!
- *    (_u and _v are multiplied with the resp. cell-local value of h) 
- */
-void SWE_Block::setDischarge(float _u, float _v) {
-
-  for(int i=1; i<=nx; i++)
-    for(int j=1; j<=ny; j++) {
-      hu[i][j] = h[i][j] * _u;
-      hv[i][j] = h[i][j] * _v;
-    };
-
-  synchDischargeAfterWrite();
 }
 
 /**
@@ -219,31 +184,6 @@ void SWE_Block::setBathymetry(float (*_b)(float, float)) {
 
   synchBathymetryAfterWrite();
 }
-
-// /** 
-// 	Restores values for h, v, and u from file data
-// 	@param _h		array holding h-values in sequence
-// 	@param _v		array holding v-values in sequence
-// 	@param _u		array holding u-values in sequence
-// */
-// void SWE_Block::setInitValues(float* _h, float* _u, float* _v) {
-// 	/* Corresponding output code
-// 	for (int j=1; j<ny+1;j++)
-// 	for (int i=1;i<nx+1;i++)
-// 		Vtk_file <<(h[i][j]+b[i][j])<<endl;
-// 	*/
-// 	int i, j;	
-// 	for(int k=0; k<nx*ny; k++) {
-// 		i = (k % ny) + 1;
-// 		j = (k / ny) + 1;
-// 		h[i][j] = _h[k];
-// 		hu[i][j] = _h[k] * _u[k];
-// 		hv[i][j] = _h[k] * _v[k]; 
-// 	};
-// 
-// 	synchWaterHeightAfterWrite();
-// 	synchDischargeAfterWrite();
-// }
 
 // /** 
 // 	Restores values for h, v, and u from file data
@@ -312,28 +252,6 @@ const Float2D& SWE_Block::getBathymetry() {
 //==================================================================
 
 /**
- * set wall boundary tpye for the four block boundaries
- */
-void SWE_Block::setWallBoundaries() {
-  
-  boundary[BND_LEFT]   = WALL;
-  boundary[BND_RIGHT]  = WALL;
-  boundary[BND_BOTTOM] = WALL;
-  boundary[BND_TOP]    = WALL;
-}
-
-/**
- * set outflow boundary tpye for the four block boundaries
- */
-void SWE_Block::setOutflowBoundaries() {
-  
-  boundary[BND_LEFT]   = OUTFLOW;
-  boundary[BND_RIGHT]  = OUTFLOW;
-  boundary[BND_BOTTOM] = OUTFLOW;
-  boundary[BND_TOP]    = OUTFLOW;
-}
-
-/**
  * Set the boundary type for specific block boundary.
  *
  * @param i_edge location of the edge relative to the SWE_block.
@@ -381,20 +299,6 @@ void SWE_Block::setBoundaryBathymetry()
 	synchBathymetryAfterWrite();
 }
 
-// /**
-//  * define a CONNECT boundary:
-//  * the block boundary with index egde (see method setBoundaryType()) 
-//  * is connect to the boundary neighEdge of block neighBlock
-//  */
-// void SWE_Block::connectBoundaries(BoundaryEdge edge, SWE_Block &neighBlock, BoundaryEdge neighEdge) {
-// 
-//   boundary[edge] = CONNECT;
-//   neighBlock.boundary[neighEdge] = CONNECT;
-// 
-//   neighbour[edge] = &neighBlock;
-//   neighBlock.neighbour[neighEdge] = this;
-// }
-// 
 /**
  * register the row or column layer next to a boundary as a "copy layer",
  * from which values will be copied into the ghost layer or a neighbour;
@@ -764,116 +668,4 @@ void SWE_Block::synchBathymetryBeforeRead() {}
  * before an external access to the unknowns
  */
 void SWE_Block::synchCopyLayerBeforeRead() {}
-
-
-
-//==================================================================
-// methods for VTK output (i.e., for visualisation)
-//==================================================================
-
-/**
- * Write a VTK file for visualisation using ParaView
- * -> writes h, u, and v unknowns of a single SWE_Block
- *    as a STRUCTURED grid for ParaView
- *    (allows 3D effect for water surface)
- *
- * @deprecated this functionality should be implemented in io::VktWriter
- *  (or io::Vtk3DWriter)
- */
-void SWE_Block::writeVTKFile3D(string FileName) {
-
-	synchBeforeRead();
-	
-	// VTK HEADER
-	Vtk_file.open(FileName.c_str());
-	Vtk_file <<"# vtk DataFile Version 2.0"<<endl;
-	Vtk_file << "HPC Tutorials: Michael Bader, Kaveh Rahnema, Oliver Meister"<<endl;
-	Vtk_file << "ASCII"<<endl;
-	Vtk_file << "DATASET STRUCTURED_GRID"<<endl;
-	Vtk_file << "DIMENSIONS "<< nx+1<<" "<<ny+1<<" "<<"1"<<endl;
-	Vtk_file << "POINTS "<<(nx+1)*(ny+1)<<" double"<<endl;
-	//GITTER PUNKTE
-	for (int j=0; j<ny+1;j++)
-			for (int i=0;i<nx+1;i++)
-				Vtk_file << i*dx<<" "<<j*dy<<" "
-				         << 0.25*(h[i][j]+h[i+1][j]+h[i][j+1]+h[i+1][j+1]
-					         +b[i][j]+b[i+1][j]+b[i][j+1]+b[i+1][j+1]) 
-					 <<endl;
-	Vtk_file <<endl;
-	Vtk_file << "CELL_DATA "<<ny*nx<<endl;
-	Vtk_file << "SCALARS H double 1"<<endl;
-	Vtk_file << "LOOKUP_TABLE default"<<endl;
-	//DOFS
-	for (int j=1; j<ny+1;j++)
-		for (int i=1;i<nx+1;i++)
-			//Vtk_file <<(h[i][j])<<endl;
-			Vtk_file <<(h[i][j]+b[i][j])<<endl;
-	Vtk_file << "SCALARS U double 1"<<endl;
-	Vtk_file << "LOOKUP_TABLE default"<<endl;
-	for (int j=1; j<ny+1;j++)	
-		for (int i=1;i<nx+1;i++)
-			Vtk_file << ((h[i][j]>0) ? hu[i][j]/h[i][j] : 0.0 ) <<endl;
-	Vtk_file << "SCALARS V double 1"<<endl;
-	Vtk_file << "LOOKUP_TABLE default"<<endl;
-	for (int j=1; j<ny+1;j++)	
-		for (int i=1;i<nx+1;i++)
-			Vtk_file << ((h[i][j]>0) ? hv[i][j]/h[i][j] : 0.0 ) <<endl;
-	Vtk_file << "SCALARS B double 1"<<endl;
-	Vtk_file << "LOOKUP_TABLE default"<<endl;
-	for (int j=1; j<ny+1;j++)	
-		for (int i=1;i<nx+1;i++)
-			Vtk_file <<b[i][j]<<endl;
-	Vtk_file.close();
-
-}
-
-
-/*
- * end of single patch output function
- */
-
-//==================================================================
-// external class-related methods
-//==================================================================
-
-/**
- * overloads the operator << such that you can use statements as 
- * cout << swe to print the unknowns of the SWE_Block swe to 
- * the output stream cout.
- * @param os	output stream
- * @param swe	SWE_Block to print
- * @return	reference to the parameter os
- */
-ostream& operator<<(ostream& os, const SWE_Block& swe) {
-  
-  os << "Gitterzellen: " << swe.nx << "x" << swe.ny << endl;
-
-  cout << "Wellenhoehe:" << endl;
-  for(int i=0; i<=swe.nx+1; i++) {
-    for(int j=0; j<=swe.ny+1; j++) {
-      os << swe.h[i][j] << "  ";
-    };
-    os << endl;
-  };
-
-  cout << "Geschwindigkeit in x-Richtung:" << endl;
-  for(int i=0; i<=swe.nx+1; i++) {
-    for(int j=0; j<=swe.ny+1; j++) {
-      os << swe.hu[i][j] << "  ";
-    };
-    os << endl;
-  };
-
-  cout << "Geschwindigkeit in y-Richtung:" << endl;
-  for(int i=0; i<=swe.nx-1; i++) {
-    for(int j=0; j<=swe.ny-1; j++) {
-      os << swe.hv[i][j] << "  ";
-    };
-    os << endl;
-  };
-
-  os << flush;
-
-  return os;
-}
 
