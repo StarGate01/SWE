@@ -197,14 +197,14 @@ int main( int argc, char** argv ) {
 
   //simulation area
   float simulationArea[4];
-  simulationArea[0] = -450000;
-  simulationArea[1] = 1100000;
-  simulationArea[2] = -2450000;
-  simulationArea[3] = 475000;
+  simulationArea[0] = -100000;
+  simulationArea[1] = 100000;
+  simulationArea[2] = -100000;
+  simulationArea[3] = 100000;
 
-  SWE_AsagiScenario l_scenario( ASAGI_INPUT_DIR "tohoku_gebco_ucsb3_500m_hawaii_bath.nc",
-		  	  	  	  	  	  	ASAGI_INPUT_DIR "tohoku_percy_500m_displ.nc",
-                                (float) 4000., simulationArea, true);
+  SWE_AsagiScenario l_scenario( ASAGI_INPUT_DIR "const_bathymetry.nc",
+		  	  	  	  	  	  	ASAGI_INPUT_DIR "tpv10_displ.nc",
+                                (float) 3500., simulationArea, true);
   #else
   // create a simple artificial scenario
   SWE_BathymetryDamBreakScenario l_scenario;
@@ -264,11 +264,11 @@ int main( int argc, char** argv ) {
   std::vector<float> l_checkPoints;
 
   // compute the checkpoints in time
-  for (float cp = 0; cp < 267; cp += 1.65)
+  for (float cp = 0; cp < 15; cp += 1.65)
 	l_checkPoints.push_back(cp);
-  for (float cp = 267; cp < 600; cp += 15)
+  for (float cp = 15; cp < 150; cp += 15)
 	l_checkPoints.push_back(cp);
-  for (float cp = 600; cp < 6000; cp += 60)
+  for (float cp = 150; cp < l_scenario.endSimulation(); cp += 60)
 	l_checkPoints.push_back(cp);
   int l_numberOfCheckPoints = l_checkPoints.size();
 
@@ -475,7 +475,7 @@ int main( int argc, char** argv ) {
       l_iterations++;
 
       // Update displacement
-       displAvail = l_wavePropgationBlock.updateBathymetryWithDynamicDisplacement(l_scenario, l_t);
+      displAvail = l_wavePropgationBlock.updateBathymetryWithDynamicDisplacement(l_scenario, l_t);
 
       // print the current simulation time
       progressBar.clear();
