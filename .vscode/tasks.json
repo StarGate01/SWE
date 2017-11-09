@@ -50,12 +50,11 @@
         {
             "label": "Clean Binaries",
             "type": "shell",
-            "command": "scons",
-            "options": {
-                "cwd": "{workspaceRoot}/build"
-            },
+            "command": "rm",
             "args": [
-                "--clean"
+                "-rf",
+                "build/build_SWE_gnu_debug_none_fwave",
+                "build/SWE_gnu_debug_none_fwave"
             ],
             "problemMatcher": []
         },
@@ -63,12 +62,9 @@
             "label": "Regenerate Data",
             "type": "shell",
             "command": "bash",
-            "options": {
-                "cwd": "${workspaceRoot}/build"
-            },
             "args": [
                "-c",
-               "\"rm -f *.vtp *.vtr && ./SWE1D\""
+               "\"rm -f *.vtp *.vtr && build/SWE_gnu_debug_none_fwave\""
             ],
             "problemMatcher": []
         },

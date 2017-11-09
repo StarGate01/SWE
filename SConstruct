@@ -196,7 +196,6 @@ if env['compiler'] != 'cray':
 
 # set (pre-)compiler flags for the compile modes
 if env['compileMode'] == 'debug':
-  env.Append(CXXFLAGS = ['-g'])
   env.Append(CPPDEFINES=['DEBUG'])
 
   if env['compiler'] == 'gnu':
