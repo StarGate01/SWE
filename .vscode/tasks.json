@@ -2,7 +2,7 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "taskName": "Build Release Binaries",
+            "label": "Build Release Binaries",
             "type": "shell",
             "command": "scons",
             "args": [
@@ -23,7 +23,7 @@
             }
         },
         {
-            "taskName": "Build Debug Binaries",
+            "label": "Build Debug Binaries",
             "type": "shell",
             "command": "scons",
             "args": [
@@ -48,20 +48,19 @@
             }
         },
         {
-            "taskName": "Clean Binaries",
+            "label": "Clean Binaries",
             "type": "shell",
-            "command": "bash",
+            "command": "scons",
             "options": {
                 "cwd": "{workspaceRoot}/build"
             },
             "args": [
-                "-c",
-                "\"find -maxdepth 1 -type d -not -name options -not -name '.' -exec echo rm -ir {} \\;\""
+                "--clean"
             ],
             "problemMatcher": []
         },
         {
-            "taskName": "Regenerate Data",
+            "label": "Regenerate Data",
             "type": "shell",
             "command": "bash",
             "options": {
@@ -74,7 +73,7 @@
             "problemMatcher": []
         },
         {
-            "taskName": "Build Documentation",
+            "label": "Build Documentation",
             "type": "shell",
             "command": "bash",
             "args": [
@@ -96,7 +95,7 @@
             }
         },
         {
-            "taskName": "Clean Documentation",
+            "label": "Clean Documentation",
             "type": "shell",
             "command": "rm",
             "args": [
@@ -109,7 +108,7 @@
             "problemMatcher": []
         },
         {
-            "taskName": "Run Tests",
+            "label": "Run Tests",
             "type": "shell",
             "command": "scons",
             "args": [
@@ -136,19 +135,19 @@
             }
         },
         {
-            "taskName": "Build Presentation",
+            "label": "Build Presentation",
             "type": "shell",
             "command": "xelatex",
             "args": [
                 "assignment1.tex"
             ],
             "options": {
-                "cwd": "${workspaceRoot}/submodules/solvers/documentation/presentation1"
+                "cwd": "${workspaceRoot}/submodules/solvers/documentation/presentation2"
             },
             "problemMatcher": []
         },
         {
-            "taskName": "Clean Presentation",
+            "label": "Clean Presentation",
             "type": "shell",
             "command": "rm",
             "args": [
@@ -156,7 +155,7 @@
                 "*.aux", "*.log", "*.nav", "*.out", "*.pdf", "*.snm", "*.toc"
             ],
             "options": {
-                "cwd": "${workspaceRoot}/submodules/solvers/documentation/presentation1"
+                "cwd": "${workspaceRoot}/submodules/solvers/documentation/presentation2"
             },
             "problemMatcher": []
         }

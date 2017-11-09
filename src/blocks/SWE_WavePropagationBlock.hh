@@ -40,11 +40,11 @@
 //  1: f-Wave
 //  2: Approximate Augmented Riemann solver
 #if WAVE_PROPAGATION_SOLVER==0
-#include "solvers/Hybrid.hpp"
+#include "../submodules/solvers/src/solver/Hybrid.hpp"
 #elif WAVE_PROPAGATION_SOLVER==1
-#include "solvers/FWave.hpp"
+#include "../submodules/solvers/src/solver/FWave.hpp"
 #elif WAVE_PROPAGATION_SOLVER==2
-#include "solvers/AugRie.hpp"
+#include "../submodules/solvers/src/solver/AugRie.hpp"
 #else
 #warning SWE_WavePropagationBlock should only be used with Riemann solvers 0, 1, and 2 (FWave, AugRie or Hybrid)
 #endif
