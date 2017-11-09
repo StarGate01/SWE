@@ -1,3 +1,3 @@
-[submodule "submodules/swe_solvers"]
-	path = submodules/swe_solvers
-	url = https://github.com/TUM-I5/swe_solvers.git
+[submodule "submodules/solvers"]
+	path = submodules/solvers
+	url = https://gitlab.lrz.de/ChristophHonal/TsunamiSimulation2D.git
