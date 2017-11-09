@@ -129,6 +129,8 @@ vars.AddVariables(
 # set environment
 env = Environment(ENV = {'PATH': os.environ['PATH']},
         variables=vars)
+env.Append(CXXFLAGS="-std=c++11")
+
 
 # generate help text
 Help(vars.GenerateHelpText(env))
@@ -194,6 +196,7 @@ if env['compiler'] != 'cray':
 
 # set (pre-)compiler flags for the compile modes
 if env['compileMode'] == 'debug':
+  env.Append(CXXFLAGS = ['-g'])
   env.Append(CPPDEFINES=['DEBUG'])
 
   if env['compiler'] == 'gnu':

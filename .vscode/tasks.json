@@ -5,6 +5,10 @@
             "taskName": "Build Release Binaries",
             "type": "shell",
             "command": "scons",
+            "args": [
+                "buildVariablesFile=build/options/SWE_gnu.py",
+                "compileMode=release"
+            ],
             "problemMatcher": {
                 "owner": "cpp",
                 "fileLocation": ["relative", "${workspaceRoot}"],
@@ -23,7 +27,8 @@
             "type": "shell",
             "command": "scons",
             "args": [
-                "debug=1"
+                "buildVariablesFile=build/options/SWE_gnu.py",
+                "compileMode=debug"
             ],
             "problemMatcher": {
                 "owner": "cpp",
@@ -45,10 +50,13 @@
         {
             "taskName": "Clean Binaries",
             "type": "shell",
-            "command": "rm",
+            "command": "bash",
+            "options": {
+                "cwd": "{workspaceRoot}/build"
+            },
             "args": [
-                "-r",
-                "build"
+                "-c",
+                "\"find -maxdepth 1 -type d -not -name options -not -name '.' -exec echo rm -ir {} \\;\""
             ],
             "problemMatcher": []
         },
