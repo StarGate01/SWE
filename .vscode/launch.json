@@ -1,0 +1,55 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "GDB Linux Native",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/build/SWE1D",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceRoot}/build",
+            "environment": [],
+            "externalConsole": true,
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "GDB WSL",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "/mnt/c/Users/Christoph/Documents/Studium/5_WS1718/TSISIM/Tutorium/SWE1D/build/SWE1D",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "/mnt/c/Users/Christoph/Documents/Studium/5_WS1718/TSISIM/Tutorium/SWE1D/build",
+            "environment": [],
+            "externalConsole": true,
+            "windows": {
+                "MIMode": "gdb",
+                "setupCommands": [
+                    {
+                        "description": "Enable pretty-printing for gdb",
+                        "text": "-enable-pretty-printing",
+                        "ignoreFailures": true
+                    }
+                ]
+            }, 
+            "pipeTransport": {
+                "pipeCwd": "",
+                "pipeProgram": "c:/windows/sysnative/bash.exe",
+                "pipeArgs": ["-c"],
+                "debuggerPath": "/usr/bin/gdb"
+            },
+            "sourceFileMap": {
+                "/mnt/c": "c:/"
+            }
+        }
+    ]
+}

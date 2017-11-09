@@ -1,0 +1,156 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "taskName": "Build Release Binaries",
+            "type": "shell",
+            "command": "scons",
+            "problemMatcher": {
+                "owner": "cpp",
+                "fileLocation": ["relative", "${workspaceRoot}"],
+                "pattern": {
+                    "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "message": 5
+                }
+            }
+        },
+        {
+            "taskName": "Build Debug Binaries",
+            "type": "shell",
+            "command": "scons",
+            "args": [
+                "debug=1"
+            ],
+            "problemMatcher": {
+                "owner": "cpp",
+                "fileLocation": ["relative", "${workspaceRoot}"],
+                "pattern": {
+                    "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "message": 5
+                }
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "taskName": "Clean Binaries",
+            "type": "shell",
+            "command": "rm",
+            "args": [
+                "-r",
+                "build"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "taskName": "Regenerate Data",
+            "type": "shell",
+            "command": "bash",
+            "options": {
+                "cwd": "${workspaceRoot}/build"
+            },
+            "args": [
+               "-c",
+               "\"rm -f *.vtp *.vtr && ./SWE1D\""
+            ],
+            "problemMatcher": []
+        },
+        {
+            "taskName": "Build Documentation",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+                "-c",
+                "\"doxygen ../documentation/doxygen.cfg && (cd ../documentation/build/latex;make)\""
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}/submodules/solvers/src"
+            },
+            "problemMatcher": {
+                "fileLocation": "absolute",
+                "pattern": {
+                    "regexp": "^(.*):(\\d+):\\s+(warning|error):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "severity": 3,
+                    "message": 4
+                }
+            }
+        },
+        {
+            "taskName": "Clean Documentation",
+            "type": "shell",
+            "command": "rm",
+            "args": [
+                "-r",
+                "build"
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}/submodules/solvers/documentation"
+            },
+            "problemMatcher": []
+        },
+        {
+            "taskName": "Run Tests",
+            "type": "shell",
+            "command": "scons",
+            "args": [
+                "check"
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}/submodules/solvers"
+            },
+            "problemMatcher": {
+                "owner": "cpp",
+                "fileLocation": ["relative", "${workspaceRoot}/submodules/solvers"],
+                "pattern": {
+                    "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "message": 5
+                }
+            },
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
+        },
+        {
+            "taskName": "Build Presentation",
+            "type": "shell",
+            "command": "xelatex",
+            "args": [
+                "assignment1.tex"
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}/submodules/solvers/documentation/presentation1"
+            },
+            "problemMatcher": []
+        },
+        {
+            "taskName": "Clean Presentation",
+            "type": "shell",
+            "command": "rm",
+            "args": [
+                "-f",
+                "*.aux", "*.log", "*.nav", "*.out", "*.pdf", "*.snm", "*.toc"
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}/submodules/solvers/documentation/presentation1"
+            },
+            "problemMatcher": []
+        }
+    ]
+}
