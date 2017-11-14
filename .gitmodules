@@ -1,3 +1,3 @@
 [submodule "submodules/solvers"]
 	path = submodules/solvers
-	url = https://gitlab.lrz.de/ChristophHonal/TsunamiSimulation2D.git
+	url = https://gitlab.lrz.de/ga96fox/TsunamiSimulation.git
