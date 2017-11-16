@@ -62,9 +62,12 @@
             "label": "Regenerate Data",
             "type": "shell",
             "command": "bash",
+            "options": {
+                "cwd": "${workspaceRoot}/build"
+            },
             "args": [
                "-c",
-               "\"rm -f *.vtp *.vtr && build/SWE_gnu_debug_none_fwave\""
+               "\"rm -rf data && mkdir data && cd data && ../SWE_gnu_debug_none_fwave -x 25 -y 25 -o swe\""
             ],
             "problemMatcher": []
         },
