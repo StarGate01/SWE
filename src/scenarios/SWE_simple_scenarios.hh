@@ -33,6 +33,8 @@
 
 #include "SWE_Scenario.hh"
 
+#define SIMULATION_TIME 30
+
 /**
  * Scenario "Radial Dam Break":
  * elevated water in the center of the domain
@@ -49,7 +51,7 @@ class SWE_RadialDamBreakScenario : public SWE_Scenario {
        return ( sqrt( (x-500.f)*(x-500.f) + (y-500.f)*(y-500.f) ) < 100.f ) ? 15.f: 10.0f;
     };
 
-	virtual float endSimulation() { return (float) 15; };
+	virtual float endSimulation() { return (float) SIMULATION_TIME; };
 
     virtual BoundaryType getBoundaryType(BoundaryEdge edge) { return OUTFLOW; };
 
@@ -82,7 +84,7 @@ class SWE_BathymetryDamBreakScenario : public SWE_Scenario {
        return ( std::sqrt( (x-500.f)*(x-500.f) + (y-500.f)*(y-500.f) ) < 50.f ) ? -255.f: -260.f;
     };
     
-	virtual float endSimulation() { return (float) 15; };
+	virtual float endSimulation() { return (float) SIMULATION_TIME; };
 
     virtual BoundaryType getBoundaryType(BoundaryEdge edge) { return OUTFLOW; };
 
@@ -150,7 +152,7 @@ class SWE_SplashingPoolScenario : public SWE_Scenario {
     	return 250.0f+(5.0f-(x+y)/200);
     };
 
-	virtual float endSimulation() { return (float) 15; };
+	virtual float endSimulation() { return (float) SIMULATION_TIME; };
 
     /** Get the boundary positions
      *
