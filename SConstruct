@@ -99,7 +99,8 @@ vars.AddVariables(
   EnumVariable( 'solver', 'Riemann solver', 'augrie',
                 allowed_values=('rusanov', 'fwave', 'augrie', 'hybrid', 'fwavevec', 'augriefun', 'augrie_simd')
               ),
-                  
+  BoolVariable( 'dimsplit', 'compile with dimensional splitting enabled', True),
+
   BoolVariable( 'vectorize', 'add pragmas to help vectorization (release only)', False ),
                   
   BoolVariable( 'openmp', 'compile with OpenMP parallelization enabled', False ),

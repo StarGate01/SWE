@@ -1,11 +1,11 @@
-#include "SWE_DimensionalSplitting.hpp"
+#include "SWE_DimensionalSplittingBlock.hh"
 
 #include <cassert>
 #include <string>
 #include <limits>
 
 
-SWE_DimensionalSplitting::SWE_WavePropagationBlock (int l_nx, int l_ny, float l_dx, float l_dy) :
+SWE_DimensionalSplittingBlock::SWE_DimensionalSplittingBlock (int l_nx, int l_ny, float l_dx, float l_dy) :
 	SWE_Block (l_nx, l_ny, l_dx, l_dy),
 	hNetUpdatesLeft (nx + 1, ny),
 	hNetUpdatesRight (nx + 1, ny),
@@ -25,7 +25,7 @@ SWE_DimensionalSplitting::SWE_WavePropagationBlock (int l_nx, int l_ny, float l_
  * maximum allowed time step size
  */
 void
-SWE_DimensionalSplitting::computeNumericalFluxes ()
+SWE_DimensionalSplittingBlock::computeNumericalFluxes ()
 {
 	//maximum (linearized) wave speed within one iteration
 	float maxWaveSpeed = (float) 0.;
@@ -97,7 +97,7 @@ SWE_DimensionalSplitting::computeNumericalFluxes ()
  * @param dt time step width used in the update.
  */
 void
-SWE_DimensionalSplitting::updateUnknowns (float dt)
+SWE_DimensionalSplittingBlock::updateUnknowns (float dt)
 {
 	//update cell averages with the net-updates
 	for (int i = 1; i < nx+1; i++) {

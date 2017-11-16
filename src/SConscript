@@ -36,11 +36,17 @@ if env['parallelization'] not in ['cuda', 'mpi_with_cuda']:
   if env['solver'] == 'rusanov':
     sourceFiles = ['blocks/rusanov/SWE_RusanovBlock.cpp']
   elif env['solver'] == 'augrie_simd' or env['simdExtensions'] != 'NONE':
-    sourceFiles = ['blocks/SWE_WavePropagationBlockSIMD.cpp']
+    if env['dimsplit'] == True:
+      sourceFiles = ['blocks/SWE_DimensionalSplittingBlockSIMD.cpp']
+    else:
+      sourceFiles = ['blocks/SWE_WavePropagationBlockSIMD.cpp']
   elif env['solver'] == 'augriefun' or env['solver'] == 'fwavevec':
     sourceFiles = ['blocks/SWE_WaveAccumulationBlock.cpp']
   else:
-    sourceFiles = ['blocks/SWE_WavePropagationBlock.cpp']
+    if env['dimsplit'] == True:
+      sourceFiles = ['blocks/SWE_DimensionalSplittingBlock.cpp']
+    else:
+      sourceFiles = ['blocks/SWE_WavePropagationBlock.cpp']
 
 # Code with CUDA
 else:
@@ -51,9 +57,14 @@ else:
                           'blocks/rusanov/SWE_RusanovBlockCUDA_kernels.cu']
                       )
   elif env['solver'] == 'fwave' or env['solver'] == 'augrie':
-    sourceFiles.append( [ 'blocks/cuda/SWE_WavePropagationBlockCuda.cu',
-                          'blocks/cuda/SWE_WavePropagationBlockCuda_kernels.cu']
-                      )
+    if env['dimsplit'] == True:
+      sourceFiles.append( [ 'blocks/cuda/SWE_DimensionalSplittingBlockCuda.cu',
+                            'blocks/cuda/SWE_DimensionalSplittingBlockCuda_kernels.cu']
+                        )
+    else:
+      sourceFiles.append( [ 'blocks/cuda/SWE_WavePropagationBlockCuda.cu',
+                            'blocks/cuda/SWE_WavePropagationBlockCuda_kernels.cu']
+                        )
   if env['openGL'] == True:
     sourceFiles.append( ['opengl/simulation.cu'] )
   
@@ -92,7 +103,10 @@ if env['xmlRuntime'] == True:
 if env['parallelization'] in ['none', 'cuda']:
   if env['solver'] != 'rusanov':
     if env['openGL'] == False:
-      sourceFiles.append( ['examples/swe_simple.cpp'] )
+      if env['dimsplit'] == True:
+        sourceFiles.append( ['examples/swe_dimensionalsplitting.cpp'] )
+      else:
+        sourceFiles.append( ['examples/swe_simple.cpp'] )
     else:
       sourceFiles.append( ['examples/swe_opengl.cpp'] )
   else:
