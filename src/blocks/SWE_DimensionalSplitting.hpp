@@ -6,7 +6,7 @@
 #define _SWE_DIMENSIONAL_SPLITTING_HPP
 
 class SWE_DimensionalSplitting {
-
+    
 };
 
 #endif
