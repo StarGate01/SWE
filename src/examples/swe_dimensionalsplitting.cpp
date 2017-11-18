@@ -23,13 +23,20 @@
  *
  * @section DESCRIPTION
  *
- * Basic setting of SWE, which uses a wave propagation solver and an artificial or ASAGI scenario on a single block.
+ * Basic setting of SWE, which uses a dimensional splitting solver and an artificial or ASAGI scenario on a single block.
  */
 
 #include <cassert>
 #include <cstdlib>
 #include <string>
 #include <iostream>
+
+//Use these macros to select x, y or both dimensions for splitting
+//USeful for demonstating the individual dimensions
+#define DIMSPLIT_SELECT_X 1
+#define DIMSPLIT_SELECT_Y 2
+#define DIMSPLIT_SELECT_XY 4
+#define DIMSPLIT_SELECT DIMSPLIT_SELECT_XY
 
 #ifndef CUDA
 #include "blocks/SWE_DimensionalSplittingBlock.hh"
@@ -59,7 +66,7 @@
 #include "tools/ProgressBar.hh"
 
 /**
- * Main program for the simulation on a single SWE_WavePropagationBlock.
+ * Main program for the simulation on a single SWE_DimensionalSplittingBlock.
  */
 int main( int argc, char** argv ) {
   /**
@@ -150,11 +157,11 @@ int main( int argc, char** argv ) {
   l_dX = (l_scenario.getBoundaryPos(BND_RIGHT) - l_scenario.getBoundaryPos(BND_LEFT) )/l_nX;
   l_dY = (l_scenario.getBoundaryPos(BND_TOP) - l_scenario.getBoundaryPos(BND_BOTTOM) )/l_nY;
 
-  // create a single wave propagation block
+  // create a single dimensional splitting block
   #ifndef CUDA
   SWE_DimensionalSplittingBlock l_dimensionalSplittingBlock(l_nX,l_nY,l_dX,l_dY);
   #else
-  SWE_WavePropagationBlockCuda l_dimensionalSplittingBlock(l_nX,l_nY,l_dX,l_dY);
+  SWE_DimensionalSplittingBlockCuda l_dimensionalSplittingBlock(l_nX,l_nY,l_dX,l_dY);
   #endif
 
   //! origin of the simulation domain in x- and y-direction
@@ -164,7 +171,7 @@ int main( int argc, char** argv ) {
   l_originX = l_scenario.getBoundaryPos(BND_LEFT);
   l_originY = l_scenario.getBoundaryPos(BND_BOTTOM);
 
-  // initialize the wave propagation block
+  // initialize the dimensional splitting block
   l_dimensionalSplittingBlock.initScenario(l_originX, l_originY, l_scenario);
 
 
@@ -227,29 +234,59 @@ int main( int argc, char** argv ) {
   unsigned int l_iterations = 0;
 
   // loop over checkpoints
-  for(int c=1; c<=l_numberOfCheckPoints; c++) {
-
+  for(int c=1; c<=l_numberOfCheckPoints; c++) 
+  {
     // do time steps until next checkpoint is reached
-    while( l_t < l_checkPoints[c] ) {
+    while( l_t < l_checkPoints[c] )
+    {
       // set values in ghost cells:
       l_dimensionalSplittingBlock.setGhostLayer();
       
       // reset the cpu clock
       tools::Logger::logger.resetClockToCurrentTime("Cpu");
 
-      // approximate the maximum time step
-      // TODO: This calculation should be replaced by the usage of the wave speeds occuring during the flux computation
-      // Remark: The code is executed on the CPU, therefore a "valid result" depends on the CPU-GPU-synchronization.
-//      l_dimensionalSplittingBlock.computeMaxTimestep();
-
-      // compute numerical flux on each edge
-      l_dimensionalSplittingBlock.computeNumericalFluxes();
-
-      //! maximum allowed time step width.
+      #if DIMSPLIT_SELECT == DIMSPLIT_SELECT_XY || DIMSPLIT_SELECT == X
+      //compute xy (horizontal) sweep
+      float l_maxWaveSpeedHorizontal = l_dimensionalSplittingBlock.computeNumericalFluxesHorizontal();
+      //approximate max timestep using the max wavespeed in x direction
+      l_dimensionalSplittingBlock.computeMaxTimestep(l_maxWaveSpeedHorizontal, true);
+      //maximum allowed time step width.
       float l_maxTimeStepWidth = l_dimensionalSplittingBlock.getMaxTimestep();
+      //update unknowns in x direction
+      l_dimensionalSplittingBlock.updateUnknownsHorizontal(l_maxTimeStepWidth);
 
-      // update the cell values
-      l_dimensionalSplittingBlock.updateUnknowns(l_maxTimeStepWidth);
+      #if DIMSPLIT_SELECT == DIMSPLIT_SELECT_XY
+      //compute y (vertical) sweep fluxes
+      l_dimensionalSplittingBlock.computeNumericalFluxesVertical();
+      //update unknowns in x direction, reeuse max time step
+      l_dimensionalSplittingBlock.updateUnknownsVertical(l_maxTimeStepWidth);
+      #endif
+      
+      #endif
+
+      #if DIMSPLIT_SELECT == DIMSPLIT_SELECT_Y
+      //compute y (vertical) sweep
+      float l_maxWaveSpeedVertical = l_dimensionalSplittingBlock.computeNumericalFluxesVertical();
+      //approximate max timestep using the max wavespeed in y direction
+      l_dimensionalSplittingBlock.computeMaxTimestep(l_maxWaveSpeedVertical, false);
+      //maximum allowed time step width.
+      float l_maxTimeStepWidth = l_dimensionalSplittingBlock.getMaxTimestep();
+      //update unknowns in y direction
+      l_dimensionalSplittingBlock.updateUnknownsVertical(l_maxTimeStepWidth);
+      #endif
+
+
+      // //compute y (vertical) sweep, based on new state
+      // l_dimensionalSplittingBlock.computeNumericalFluxesVertical();
+      //  //update unknowns in y direction
+      // l_dimensionalSplittingBlock.updateUnknownsVertical(l_maxTimeStepWidth);
+
+      //  // compute numerical flux on each edge
+      // l_dimensionalSplittingBlock.computeNumericalFluxes();
+      // //! maximum allowed time step width.
+      // float l_maxTimeStepWidth = l_dimensionalSplittingBlock.getMaxTimestep();
+      // // update the cell values
+      // l_dimensionalSplittingBlock.updateUnknowns(l_maxTimeStepWidth);
 
       // update the cpu time in the logger
       tools::Logger::logger.updateTime("Cpu");
