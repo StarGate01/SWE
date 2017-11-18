@@ -245,8 +245,8 @@ int main( int argc, char** argv ) {
       // reset the cpu clock
       tools::Logger::logger.resetClockToCurrentTime("Cpu");
 
-      #if DIMSPLIT_SELECT == DIMSPLIT_SELECT_XY || DIMSPLIT_SELECT == DIMSPLIT_SELECT_X
-      //compute xy (horizontal) sweep
+      #if DIMSPLIT_SELECT != DIMSPLIT_SELECT_Y
+      //compute x (horizontal) sweep
       float l_maxWaveSpeedHorizontal = l_dimensionalSplittingBlock.computeNumericalFluxesHorizontal();
       //approximate max timestep using the max wavespeed in x direction
       l_dimensionalSplittingBlock.computeMaxTimestep(l_maxWaveSpeedHorizontal, true);
@@ -254,40 +254,23 @@ int main( int argc, char** argv ) {
       float l_maxTimeStepWidth = l_dimensionalSplittingBlock.getMaxTimestep();
       //update unknowns in x direction
       l_dimensionalSplittingBlock.updateUnknownsHorizontal(l_maxTimeStepWidth);
+      #endif
 
-      #if DIMSPLIT_SELECT == DIMSPLIT_SELECT_XY
+      #if DIMSPLIT_SELECT != DIMSPLIT_SELECT_X
       //compute y (vertical) sweep fluxes
-      l_dimensionalSplittingBlock.computeNumericalFluxesVertical();
-      //update unknowns in x direction, reeuse max time step
-      l_dimensionalSplittingBlock.updateUnknownsVertical(l_maxTimeStepWidth);
-      #endif
-      
-      #endif
+      float l_maxWaveSpeedVertical = l_dimensionalSplittingBlock.computeNumericalFluxesVertical();
 
       #if DIMSPLIT_SELECT == DIMSPLIT_SELECT_Y
-      //compute y (vertical) sweep
-      float l_maxWaveSpeedVertical = l_dimensionalSplittingBlock.computeNumericalFluxesVertical();
       //approximate max timestep using the max wavespeed in y direction
       l_dimensionalSplittingBlock.computeMaxTimestep(l_maxWaveSpeedVertical, false);
       //maximum allowed time step width.
       float l_maxTimeStepWidth = l_dimensionalSplittingBlock.getMaxTimestep();
-      //update unknowns in y direction
-      l_dimensionalSplittingBlock.updateUnknownsVertical(l_maxTimeStepWidth);
       #endif
 
-
-      // //compute y (vertical) sweep, based on new state
-      // l_dimensionalSplittingBlock.computeNumericalFluxesVertical();
-      //  //update unknowns in y direction
-      // l_dimensionalSplittingBlock.updateUnknownsVertical(l_maxTimeStepWidth);
-
-      //  // compute numerical flux on each edge
-      // l_dimensionalSplittingBlock.computeNumericalFluxes();
-      // //! maximum allowed time step width.
-      // float l_maxTimeStepWidth = l_dimensionalSplittingBlock.getMaxTimestep();
-      // // update the cell values
-      // l_dimensionalSplittingBlock.updateUnknowns(l_maxTimeStepWidth);
-
+      //update unknowns in y direction, reeuse max time step
+      l_dimensionalSplittingBlock.updateUnknownsVertical(l_maxTimeStepWidth);
+      #endif
+     
       // update the cpu time in the logger
       tools::Logger::logger.updateTime("Cpu");
 
