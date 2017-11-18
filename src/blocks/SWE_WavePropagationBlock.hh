@@ -35,6 +35,9 @@
 
 #include <string>
 
+#define SUPPRESS_SOLVER_DEBUG_OUTPUT
+// #define SOLVER_DEBUG_OUTPUT_ONLYNONZERO
+
 //which wave propagation solver should be used
 //  0: Hybrid
 //  1: f-Wave
