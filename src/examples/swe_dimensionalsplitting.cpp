@@ -254,6 +254,12 @@ int main( int argc, char** argv ) {
       float l_maxTimeStepWidth = l_dimensionalSplittingBlock.getMaxTimestep();
       //update unknowns in x direction
       l_dimensionalSplittingBlock.updateUnknownsHorizontal(l_maxTimeStepWidth);
+
+      #if !defined(NDEBUG) || defined(DEBUG)
+      //Check CFL condition for x sweep
+      assert(l_maxTimeStepWidth < 0.5 * (l_dX / l_maxWaveSpeedHorizontal));
+      #endif
+
       #endif
 
       #if DIMSPLIT_SELECT != DIMSPLIT_SELECT_X
@@ -269,6 +275,12 @@ int main( int argc, char** argv ) {
 
       //update unknowns in y direction, reeuse max time step
       l_dimensionalSplittingBlock.updateUnknownsVertical(l_maxTimeStepWidth);
+
+      #if !defined(NDEBUG) || defined(DEBUG)
+      //Check CFL condition for y sweep
+      assert(l_maxTimeStepWidth < 0.5 * (l_dY / l_maxWaveSpeedVertical));
+      #endif
+
       #endif
      
       // update the cpu time in the logger
