@@ -245,7 +245,7 @@ int main( int argc, char** argv ) {
       // reset the cpu clock
       tools::Logger::logger.resetClockToCurrentTime("Cpu");
 
-      #if DIMSPLIT_SELECT == DIMSPLIT_SELECT_XY || DIMSPLIT_SELECT == X
+      #if DIMSPLIT_SELECT == DIMSPLIT_SELECT_XY || DIMSPLIT_SELECT == DIMSPLIT_SELECT_X
       //compute xy (horizontal) sweep
       float l_maxWaveSpeedHorizontal = l_dimensionalSplittingBlock.computeNumericalFluxesHorizontal();
       //approximate max timestep using the max wavespeed in x direction
