@@ -138,7 +138,7 @@
             "type": "shell",
             "command": "xelatex",
             "args": [
-                "assignment1.tex"
+                "assignment2.tex"
             ],
             "options": {
                 "cwd": "${workspaceRoot}/submodules/solvers/documentation/presentation2"
