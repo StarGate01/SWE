@@ -33,88 +33,102 @@
 
 #include "SWE_Scenario.hh"
 
-#define SIMULATION_TIME 30
+#define SIMULATION_TIME 80
+
+#define BATHY_OBSTACLE
 
 /**
  * Scenario "Radial Dam Break":
  * elevated water in the center of the domain
  */
-class SWE_RadialDamBreakScenario : public SWE_Scenario {
+class SWE_RadialDamBreakScenario : public SWE_Scenario 
+{
 
   public:
 
-    float getBathymetry(float x, float y) {
-       return 0.f;
+    float getBathymetry(float x, float y)
+    {
+#ifdef BATHY_OBSTACLE
+      return ((x > 300 && x < 500 && y > 200 && y < 400) ? -10.f : 0.f)
+        + ((x > 400 && x < 700 && y > 600 && y < 800) ? 20.f : 0.f);
+#else
+      return 0;
+#endif
     };
 
-    float getWaterHeight(float x, float y) { 
-       return ( sqrt( (x-500.f)*(x-500.f) + (y-500.f)*(y-500.f) ) < 100.f ) ? 15.f: 10.0f;
+    float getWaterHeight(float x, float y)
+    { 
+       return (x > 400 && x < 700 && y > 600 && y < 800)? 0 : 
+        ((sqrt((x - 500.f) * (x - 500.f) + (y - 500.f) * (y - 500.f)) < 100.f) ? 25.f : 10.0f);
     };
 
-	virtual float endSimulation() { return (float) SIMULATION_TIME; };
+	  virtual float endSimulation() 
+    { 
+      return (float) SIMULATION_TIME; 
+    };
 
-    virtual BoundaryType getBoundaryType(BoundaryEdge edge) { return OUTFLOW; };
+    virtual BoundaryType getBoundaryType(BoundaryEdge edge) 
+    {
+       return OUTFLOW; 
+    };
 
     /** Get the boundary positions
      *
      * @param i_edge which edge
      * @return value in the corresponding dimension
      */
-    float getBoundaryPos(BoundaryEdge i_edge) {
-       if ( i_edge == BND_LEFT )
-         return (float)0;
-       else if ( i_edge == BND_RIGHT)
-         return (float)1000;
-       else if ( i_edge == BND_BOTTOM )
-         return (float)0;
-       else
-         return (float)1000;
+    float getBoundaryPos(BoundaryEdge i_edge) 
+    {
+       if (i_edge == BND_LEFT) return (float)0;
+       else if (i_edge == BND_RIGHT) return (float)1000;
+       else if (i_edge == BND_BOTTOM) return (float)0;
+       else return (float)1000;
     };
+
 };
 
 /**
  * Scenario "Bathymetry Dam Break":
  * uniform water depth, but elevated bathymetry in the centre of the domain
  */
-class SWE_BathymetryDamBreakScenario : public SWE_Scenario {
+class SWE_BathymetryDamBreakScenario : public SWE_Scenario 
+{
 
   public:
 
-    float getBathymetry(float x, float y) { 
-       return ( std::sqrt( (x-500.f)*(x-500.f) + (y-500.f)*(y-500.f) ) < 50.f ) ? -255.f: -260.f;
+    float getBathymetry(float x, float y) 
+    { 
+       return (std::sqrt((x - 500.f) * (x - 500.f) + (y - 500.f) * (y - 500.f)) < 50.f) ? -255.f : -260.f;
     };
-    
-	virtual float endSimulation() { return (float) SIMULATION_TIME; };
 
-    virtual BoundaryType getBoundaryType(BoundaryEdge edge) { return OUTFLOW; };
+    float getWaterHeight(float x, float y)
+    {
+      return (float) 260;
+    }
+    
+	  virtual float endSimulation()
+    {
+       return (float) SIMULATION_TIME; 
+    };
+
+    virtual BoundaryType getBoundaryType(BoundaryEdge edge)
+    {
+       return OUTFLOW; 
+    };
 
     /** Get the boundary positions
      *
      * @param i_edge which edge
      * @return value in the corresponding dimension
      */
-    float getBoundaryPos(BoundaryEdge i_edge) {
-       if ( i_edge == BND_LEFT )
-         return (float)0;
-       else if ( i_edge == BND_RIGHT)
-         return (float)1000;
-       else if ( i_edge == BND_BOTTOM )
-         return (float)0;
-       else
-         return (float)1000;
+    float getBoundaryPos(BoundaryEdge i_edge) 
+    {
+       if (i_edge == BND_LEFT) return (float)0;
+       else if (i_edge == BND_RIGHT) return (float)1000;
+       else if (i_edge == BND_BOTTOM) return (float)0;
+       else return (float)1000;
     };
 
-    /**
-     * Get the water height at a specific location.
-     *
-     * @param i_positionX position relative to the origin of the bathymetry grid in x-direction
-     * @param i_positionY position relative to the origin of the bathymetry grid in y-direction
-     * @return water height (before the initial displacement)
-     */
-    float getWaterHeight( float i_positionX,
-                          float i_positionY ) {
-      return (float) 260;
-    }
 };
 
 /**
@@ -123,15 +137,19 @@ class SWE_BathymetryDamBreakScenario : public SWE_Scenario {
  * but non-uniform bathymetry (id. to "Bathymetry Dam Break")
  * test scenario for "sea at rest"-solution 
  */
-class SWE_SeaAtRestScenario : public SWE_Scenario {
+class SWE_SeaAtRestScenario : public SWE_Scenario
+{
 
   public:
 
-    float getWaterHeight(float x, float y) { 
-       return ( sqrt( (x-0.5)*(x-0.5) + (y-0.5)*(y-0.5) ) < 0.1f ) ? 9.9f: 10.0f;
+    float getWaterHeight(float x, float y)
+    { 
+       return (sqrt((x - 0.5) * (x - 0.5) + (y - 0.5) * (y - 0.5)) < 0.1f) ? 9.9f : 10.0f;
     };
-    float getBathymetry(float x, float y) { 
-       return ( sqrt( (x-0.5)*(x-0.5) + (y-0.5)*(y-0.5) ) < 0.1f ) ? 0.1f: 0.0f;
+
+    float getBathymetry(float x, float y)
+    { 
+       return (sqrt((x - 0.5) * (x - 0.5) + (y - 0.5) * (y - 0.5)) < 0.1f) ? 0.1f : 0.0f;
     };
 
 };
@@ -140,34 +158,37 @@ class SWE_SeaAtRestScenario : public SWE_Scenario {
  * Scenario "Splashing Pool":
  * intial water surface has a fixed slope (diagonal to x,y)
  */
-class SWE_SplashingPoolScenario : public SWE_Scenario {
+class SWE_SplashingPoolScenario : public SWE_Scenario
+{
 
   public:
 
-    float getBathymetry(float x, float y) {
+    float getBathymetry(float x, float y) 
+    {
        return -250.f;
     };
 
-    float getWaterHeight(float x, float y) {
-    	return 250.0f+(5.0f-(x+y)/200);
+    float getWaterHeight(float x, float y) 
+    {
+    	return 250.0f + (5.0f - (x + y) / 200);
     };
 
-	virtual float endSimulation() { return (float) SIMULATION_TIME; };
+    virtual float endSimulation() 
+    { 
+      return (float) SIMULATION_TIME; 
+    };
 
     /** Get the boundary positions
      *
      * @param i_edge which edge
      * @return value in the corresponding dimension
      */
-    float getBoundaryPos(BoundaryEdge i_edge) {
-       if ( i_edge == BND_LEFT )
-         return (float)0;
-       else if ( i_edge == BND_RIGHT)
-         return (float)1000;
-       else if ( i_edge == BND_BOTTOM )
-         return (float)0;
-       else
-         return (float)1000;
+    float getBoundaryPos(BoundaryEdge i_edge) 
+    {
+       if (i_edge == BND_LEFT) return (float)0;
+       else if (i_edge == BND_RIGHT) return (float)1000;
+       else if (i_edge == BND_BOTTOM) return (float)0;
+       else return (float)1000;
     };
 
 };
@@ -178,28 +199,40 @@ class SWE_SplashingPoolScenario : public SWE_Scenario {
  * intial water surface designed to form "sea at rest"
  * but: elevated water region in the centre (similar to radial dam break)
  */
-class SWE_SplashingConeScenario : public SWE_Scenario {
+class SWE_SplashingConeScenario : public SWE_Scenario
+{
 
   public:
 
-    float getWaterHeight(float x, float y) { 
-       float r = sqrt( (x-0.5f)*(x-0.5f) + (y-0.5f)*(y-0.5f) );
-       float h = 4.0f-4.5f*(r/0.5f);
-
-       if (r<0.1f) h = h+1.0f;
-
-       return (h>0.0f) ? h : 0.0f;
+    float getWaterHeight(float x, float y)
+    { 
+       float r = sqrt((x - 0.5f) * (x - 0.5f) + (y - 0.5f) * (y - 0.5f));
+       float h = 4.0f - 4.5f * (r / 0.5f);
+       if (r < 0.1f) h = h + 1.0f;
+       return (h > 0.0f) ? h : 0.0f;
     };
 
-    float getBathymetry(float x, float y) { 
-       float r = sqrt( (x-0.5f)*(x-0.5f) + (y-0.5f)*(y-0.5f) );
-       return 1.0f+9.0f*( (r < 0.5f) ? r : 0.5f);
+    float getBathymetry(float x, float y) 
+    { 
+       float r = sqrt((x - 0.5f) * (x - 0.5f) + (y - 0.5f) * (y - 0.5f));
+       return 1.0f + 9.0f * ((r < 0.5f) ? r : 0.5f);
     };
     
-    float waterHeightAtRest() { return 4.0f; };
-    float endSimulation() { return 0.5f; };
+    float waterHeightAtRest()
+    {
+       return 4.0f; 
+    };
 
-    virtual BoundaryType getBoundaryType(BoundaryEdge edge) { return OUTFLOW; };
+    float endSimulation() 
+    { 
+      return 0.5f; 
+    };
+
+    virtual BoundaryType getBoundaryType(BoundaryEdge edge)
+    { 
+      return OUTFLOW;
+    };
+
 };
 
 #endif

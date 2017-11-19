@@ -8,7 +8,7 @@
             "program": "${workspaceRoot}/build/SWE_gnu_debug_none_fwave",
             "args": ["-x", "50", "-y", "50", "-o", "swe"],
             "stopAtEntry": false,
-            "cwd": "${workspaceRoot}/build",
+            "cwd": "${workspaceRoot}/build/data",
             "environment": [],
             "externalConsole": true,
             "MIMode": "gdb",
@@ -28,7 +28,7 @@
             "program": "/mnt/c/Users/Christoph/Documents/Studium/5_WS1718/TSISIM/Tutorium/SWE/build/SWE_gnu_debug_none_fwave",
             "args": ["-x", "50", "-y", "50", "-o", "swe"],
             "stopAtEntry": false,
-            "cwd": "/mnt/c/Users/Christoph/Documents/Studium/5_WS1718/TSISIM/Tutorium/SWE/build",
+            "cwd": "/mnt/c/Users/Christoph/Documents/Studium/5_WS1718/TSISIM/Tutorium/SWE/build/data",
             "environment": [],
             "externalConsole": true,
             "windows": {

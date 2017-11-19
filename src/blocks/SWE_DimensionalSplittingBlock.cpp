@@ -123,7 +123,7 @@ void SWE_DimensionalSplittingBlock::updateUnknownsHorizontal(float dt)
 			hu[i][j] -= dt / dx * (huNetUpdatesRight[i - 1][j - 1] + huNetUpdatesLeft[i][j - 1]);
 		}
 	}
-	zeroSmallValues();
+	//zeroSmallValues();
 }
 
 /**
@@ -142,7 +142,7 @@ void SWE_DimensionalSplittingBlock::updateUnknownsVertical(float dt)
 			hv[i][j] -= dt / dy * (hvNetUpdatesAbove[i - 1][j - 1] + hvNetUpdatesBelow[i - 1][j]);
 		}
 	}
-	zeroSmallValues();
+	//zeroSmallValues();
 }
 
 /**
@@ -162,7 +162,7 @@ void SWE_DimensionalSplittingBlock::updateUnknowns(float dt)
 			hv[i][j] -= dt / dy * (hvNetUpdatesAbove[i - 1][j - 1] + hvNetUpdatesBelow[i - 1][j]);
 		}
 	}
-	zeroSmallValues();
+	//zeroSmallValues();
 }
 
 /**
@@ -180,9 +180,9 @@ void SWE_DimensionalSplittingBlock::zeroSmallValues()
 #ifndef NDEBUG
 				// Only print this warning when debug is enabled
 				// Otherwise we cannot vectorize this loop
-				if (h[i][j] < -0.1) {
-					std::cerr << "Warning, negative height: (i,j)=(" << i << "," << j << ")=" << h[i][j] << std::endl;
-					std::cerr << "         b: " << b[i][j] << std::endl;
+				if (h[i][j] - b[i][j] < -0.1) 
+				{
+					std::cerr << "Warning, negative height-bathy: (i,j)=(" << i << "," << j << ")=" << h[i][j] << "-" << b[i][j] << std::endl;
 				}
 #endif
 				//zero (small) negative depths

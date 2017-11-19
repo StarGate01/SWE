@@ -68,59 +68,53 @@
 /**
  * Main program for the simulation on a single SWE_DimensionalSplittingBlock.
  */
-int main( int argc, char** argv ) {
-  /**
-   * Initialization.
-   */
+int main(int argc, char** argv) 
+{
   // Parse command line parameters
   tools::Args args;
-  #ifndef READXML
+  
+#ifndef READXML
   args.addOption("grid-size-x", 'x', "Number of cells in x direction");
   args.addOption("grid-size-y", 'y', "Number of cells in y direction");
   args.addOption("output-basepath", 'o', "Output base file name");
-  #endif
-
+#endif
   tools::Args::Result ret = args.parse(argc, argv);
 
   switch (ret)
   {
-  case tools::Args::Error:
-	  return 1;
-  case tools::Args::Help:
-	  return 0;
+    case tools::Args::Error: return 1;
+    case tools::Args::Help: return 0;
   }
 
   //! number of grid cells in x- and y-direction.
   int l_nX, l_nY;
-
   //! l_baseName of the plots.
   std::string l_baseName;
 
   // read command line parameters
-  #ifndef READXML
+#ifndef READXML
   l_nX = args.getArgument<int>("grid-size-x");
   l_nY = args.getArgument<int>("grid-size-y");
   l_baseName = args.getArgument<std::string>("output-basepath");
-  #endif
+#endif
 
   // read xml file
-  #ifdef READXML
+#ifdef READXML
   assert(false); //TODO: not implemented.
-  if(argc != 2) {
+  if(argc != 2) 
+  {
     s_sweLogger.printString("Aborting. Please provide a proper input file.");
     s_sweLogger.printString("Example: ./SWE_gnu_debug_none_augrie config.xml");
     return 1;
   }
   s_sweLogger.printString("Reading xml-file.");
-
   std::string l_xmlFile = std::string(argv[1]);
   s_sweLogger.printString(l_xmlFile);
-
   CXMLConfig l_xmlConfig;
   l_xmlConfig.loadConfig(l_xmlFile.c_str());
-  #endif
+#endif
 
-  #ifdef ASAGI
+#ifdef ASAGI
   /* Information about the example bathymetry grid (tohoku_gebco_ucsb3_500m_hawaii_bath.nc):
    *
    * Pixel node registration used [Cartesian grid]
@@ -138,18 +132,16 @@ int main( int argc, char** argv ) {
   simulationArea[1] = 6450000;
   simulationArea[2] = -2450000;
   simulationArea[3] = 1450000;
-
   SWE_AsagiScenario l_scenario( ASAGI_INPUT_DIR "tohoku_gebco_ucsb3_500m_hawaii_bath.nc",
-                                ASAGI_INPUT_DIR "tohoku_gebco_ucsb3_500m_hawaii_displ.nc",
-                                (float) 28800., simulationArea);
-  #else
+    ASAGI_INPUT_DIR "tohoku_gebco_ucsb3_500m_hawaii_displ.nc",
+    (float) 28800., simulationArea);
+#else
   // create a simple artificial scenario
   SWE_RadialDamBreakScenario l_scenario;
-  #endif
+#endif
 
   //! number of checkpoints for visualization (at each checkpoint in time, an output file is written).
-  int l_numberOfCheckPoints = 30;
-
+  int l_numberOfCheckPoints = 40;
   //! size of a single cell in x- and y-direction
   float l_dX, l_dY;
 
@@ -158,70 +150,50 @@ int main( int argc, char** argv ) {
   l_dY = (l_scenario.getBoundaryPos(BND_TOP) - l_scenario.getBoundaryPos(BND_BOTTOM) )/l_nY;
 
   // create a single dimensional splitting block
-  #ifndef CUDA
+#ifndef CUDA
   SWE_DimensionalSplittingBlock l_dimensionalSplittingBlock(l_nX,l_nY,l_dX,l_dY);
-  #else
+#else
   SWE_DimensionalSplittingBlockCuda l_dimensionalSplittingBlock(l_nX,l_nY,l_dX,l_dY);
-  #endif
+#endif
 
   //! origin of the simulation domain in x- and y-direction
   float l_originX, l_originY;
-
   // get the origin from the scenario
   l_originX = l_scenario.getBoundaryPos(BND_LEFT);
   l_originY = l_scenario.getBoundaryPos(BND_BOTTOM);
-
   // initialize the dimensional splitting block
   l_dimensionalSplittingBlock.initScenario(l_originX, l_originY, l_scenario);
 
-
   //! time when the simulation ends.
   float l_endSimulation = l_scenario.endSimulation();
-
   //! checkpoints when output files are written.
   float* l_checkPoints = new float[l_numberOfCheckPoints+1];
-
   // compute the checkpoints in time
-  for(int cp = 0; cp <= l_numberOfCheckPoints; cp++) {
-     l_checkPoints[cp] = cp*(l_endSimulation/l_numberOfCheckPoints);
-  }
+  for(int cp = 0; cp <= l_numberOfCheckPoints; cp++) l_checkPoints[cp] = cp*(l_endSimulation/l_numberOfCheckPoints);
 
   // Init fancy progressbar
   tools::ProgressBar progressBar(l_endSimulation);
-
   // write the output at time zero
   tools::Logger::logger.printOutputTime((float) 0.);
   progressBar.update(0.);
-
   std::string l_fileName = generateBaseFileName(l_baseName,0,0);
+
   //boundary size of the ghost layers
   io::BoundarySize l_boundarySize = {{1, 1, 1, 1}};
 #ifdef WRITENETCDF
   //construct a NetCdfWriter
-  io::NetCdfWriter l_writer( l_fileName,
-		  l_dimensionalSplittingBlock.getBathymetry(),
-		  l_boundarySize,
-		  l_nX, l_nY,
-		  l_dX, l_dY,
-		  l_originX, l_originY);
+  io::NetCdfWriter l_writer(l_fileName, l_dimensionalSplittingBlock.getBathymetry(),
+    l_boundarySize, l_nX, l_nY, l_dX, l_dY, l_originX, l_originY);
 #else
   // consturct a VtkWriter
-  io::VtkWriter l_writer( l_fileName,
-		  l_dimensionalSplittingBlock.getBathymetry(),
-		  l_boundarySize,
-		  l_nX, l_nY,
-		  l_dX, l_dY );
+  io::VtkWriter l_writer(l_fileName, l_dimensionalSplittingBlock.getBathymetry(),
+    l_boundarySize, l_nX, l_nY, l_dX, l_dY );
 #endif
   // Write zero time step
   l_writer.writeTimeStep( l_dimensionalSplittingBlock.getWaterHeight(),
-                          l_dimensionalSplittingBlock.getDischarge_hu(),
-                          l_dimensionalSplittingBlock.getDischarge_hv(),
-                          (float) 0.);
+    l_dimensionalSplittingBlock.getDischarge_hu(), l_dimensionalSplittingBlock.getDischarge_hv(), (float) 0.);
 
 
-  /**
-   * Simulation.
-   */
   // print the start message and reset the wall clock time
   progressBar.clear();
   tools::Logger::logger.printStartMessage();
@@ -230,7 +202,6 @@ int main( int argc, char** argv ) {
   //! simulation time.
   float l_t = 0.0;
   progressBar.update(l_t);
-
   unsigned int l_iterations = 0;
 
   // loop over checkpoints
@@ -241,11 +212,10 @@ int main( int argc, char** argv ) {
     {
       // set values in ghost cells:
       l_dimensionalSplittingBlock.setGhostLayer();
-      
       // reset the cpu clock
       tools::Logger::logger.resetClockToCurrentTime("Cpu");
 
-      #if DIMSPLIT_SELECT != DIMSPLIT_SELECT_Y
+#if DIMSPLIT_SELECT != DIMSPLIT_SELECT_Y
       //compute x (horizontal) sweep
       float l_maxWaveSpeedHorizontal = l_dimensionalSplittingBlock.computeNumericalFluxesHorizontal();
       //approximate max timestep using the max wavespeed in x direction
@@ -255,41 +225,39 @@ int main( int argc, char** argv ) {
       //update unknowns in x direction
       l_dimensionalSplittingBlock.updateUnknownsHorizontal(l_maxTimeStepWidth);
 
-      #if !defined(NDEBUG) || defined(DEBUG)
+#if !defined(NDEBUG) || defined(DEBUG)
       //Check CFL condition for x sweep
       assert(l_maxTimeStepWidth < 0.5 * (l_dX / l_maxWaveSpeedHorizontal));
-      #endif
+#endif
 
-      #endif
+#endif
 
-      #if DIMSPLIT_SELECT != DIMSPLIT_SELECT_X
+#if DIMSPLIT_SELECT != DIMSPLIT_SELECT_X
       //compute y (vertical) sweep fluxes
       float l_maxWaveSpeedVertical = l_dimensionalSplittingBlock.computeNumericalFluxesVertical();
 
-      #if DIMSPLIT_SELECT == DIMSPLIT_SELECT_Y
+#if DIMSPLIT_SELECT == DIMSPLIT_SELECT_Y
       //approximate max timestep using the max wavespeed in y direction
       l_dimensionalSplittingBlock.computeMaxTimestep(l_maxWaveSpeedVertical, false);
       //maximum allowed time step width.
       float l_maxTimeStepWidth = l_dimensionalSplittingBlock.getMaxTimestep();
-      #endif
+#endif
 
       //update unknowns in y direction, reeuse max time step
       l_dimensionalSplittingBlock.updateUnknownsVertical(l_maxTimeStepWidth);
 
-      #if !defined(NDEBUG) || defined(DEBUG)
+#if !defined(NDEBUG) || defined(DEBUG)
       //Check CFL condition for y sweep
       assert(l_maxTimeStepWidth < 0.5 * (l_dY / l_maxWaveSpeedVertical));
-      #endif
+#endif
 
-      #endif
+#endif
      
       // update the cpu time in the logger
       tools::Logger::logger.updateTime("Cpu");
-
       // update simulation time with time step width.
       l_t += l_maxTimeStepWidth;
       l_iterations++;
-
       // print the current simulation time
       progressBar.clear();
       tools::Logger::logger.printSimulationTime(l_t);
@@ -300,27 +268,18 @@ int main( int argc, char** argv ) {
     progressBar.clear();
     tools::Logger::logger.printOutputTime(l_t);
     progressBar.update(l_t);
-
     // write output
     l_writer.writeTimeStep( l_dimensionalSplittingBlock.getWaterHeight(),
-                            l_dimensionalSplittingBlock.getDischarge_hu(),
-                            l_dimensionalSplittingBlock.getDischarge_hv(),
-                            l_t);
+      l_dimensionalSplittingBlock.getDischarge_hu(), l_dimensionalSplittingBlock.getDischarge_hv(), l_t);
   }
 
-  /**
-   * Finalize.
-   */
   // write the statistics message
   progressBar.clear();
   tools::Logger::logger.printStatisticsMessage();
-
   // print the cpu time
   tools::Logger::logger.printTime("Cpu", "CPU time");
-
   // print the wall clock time (includes plotting)
   tools::Logger::logger.printWallClockTime(time(NULL));
-
   // printer iteration counter
   tools::Logger::logger.printIterationsDone(l_iterations);
 
