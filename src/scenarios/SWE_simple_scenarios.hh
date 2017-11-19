@@ -58,8 +58,11 @@ class SWE_RadialDamBreakScenario : public SWE_Scenario
 
     float getWaterHeight(float x, float y)
     { 
-       return (x > 400 && x < 700 && y > 600 && y < 800)? 0 : 
-        ((sqrt((x - 500.f) * (x - 500.f) + (y - 500.f) * (y - 500.f)) < 100.f) ? 25.f : 10.0f);
+      return
+#ifdef BATHY_OBSTACLE
+      (x > 400 && x < 700 && y > 600 && y < 800)? 0 : 
+#endif
+      ((sqrt((x - 500.f) * (x - 500.f) + (y - 500.f) * (y - 500.f)) < 100.f) ? 25.f : 10.0f);
     };
 
 	  virtual float endSimulation() 
