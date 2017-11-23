@@ -30,6 +30,7 @@
 #define __SWE_SIMPLE_SCENARIOS_H
 
 #include <cmath>
+#include <math.h>
 
 #include "SWE_Scenario.hh"
 
@@ -233,5 +234,66 @@ class SWE_SplashingConeScenario : public SWE_Scenario
     };
 
 };
+
+
+/**
+ * Scenario "Sine wave artifical tusnami:
+ * uniform water and bathymetry level with a sine wave shaped elevation in the middle
+ */
+class SWE_ArtificialTsunamiScenario : public SWE_Scenario 
+{
+
+  public:
+
+    float getBathymetry(float x, float y) 
+    { 
+
+      if (abs(x-5000) <= 500 && abs(y-5000) <= 500)
+      {
+        return (float) (-100 + (5 * (sin((((x-5000)/500)+1)*M_PI)) * (-(((y-5000)/500)*((y-5000)/500)+1))));
+      }
+       else
+       {
+          return (float) -100;
+       }
+    };
+
+    float getWaterHeight(float x, float y)
+    {
+      if (abs(x-5000) <= 500 && abs(y-5000) <= 500)
+      {
+        return (float) (5 * (sin((((x-5000)/500)+1)*M_PI)) * (-(((y-5000)/500)*((y-5000)/500)+1)));
+      }
+       else
+       {
+          return (float) 0;
+       }
+    }
+    
+	  virtual float endSimulation()
+    {
+       return (float) SIMULATION_TIME; 
+    };
+
+    virtual BoundaryType getBoundaryType(BoundaryEdge edge)
+    {
+       return WALL; 
+    };
+
+    /** Get the boundary positions
+     *
+     * @param i_edge which edge
+     * @return value in the corresponding dimension
+     */
+    float getBoundaryPos(BoundaryEdge i_edge) 
+    {
+       if (i_edge == BND_LEFT) return (float)0;
+       else if (i_edge == BND_RIGHT) return (float)10000;
+       else if (i_edge == BND_BOTTOM) return (float)0;
+       else return (float)10000;
+    };
+
+};
+
 
 #endif
