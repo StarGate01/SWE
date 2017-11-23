@@ -55,6 +55,7 @@
 #else
 #include "scenarios/SWE_simple_scenarios.hh"
 #include "scenarios/SWE_TsunamiScenario.hh"
+#include "scenarios/SWE_ArtificialTsunamiScenario.hh"
 #endif
 
 #ifdef READXML
