@@ -29,3 +29,4 @@
 # Build options
 solver='fwave'
 #solver='augrie'
+writeNetCDF='yes'
