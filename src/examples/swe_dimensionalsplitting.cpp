@@ -54,6 +54,7 @@
 #include "scenarios/SWE_AsagiScenario.hh"
 #else
 #include "scenarios/SWE_simple_scenarios.hh"
+#include "scenarios/SWE_TsunamiScenario.hh"
 #endif
 
 #ifdef READXML
@@ -76,11 +77,14 @@ int main(int argc, char** argv)
 #ifndef READXML
   args.addOption("grid-size-x", 'x', "Number of cells in x direction");
   args.addOption("grid-size-y", 'y', "Number of cells in y direction");
-  args.addOption("input-bathymetry", 'b', "Input bathymetry file name");
+  args.addOption("input-bathymetry", 'a', "Input bathymetry file name");
   args.addOption("input-displacement", 'h', "Input displacement file name");
   args.addOption("time-duration", 'd', "Time duration");
   args.addOption("checkpoint-amount", 'p', "Amount of checkpoints");
-  args.addOption("boundary-condition", 'c', "Boundary condition");
+  args.addOption("boundary-condition-left", 'l', "Boundary condition left");
+  args.addOption("boundary-condition-right", 'r', "Boundary condition right");
+  args.addOption("boundary-condition-top", 't', "Boundary condition top");
+  args.addOption("boundary-condition-bottom", 'b', "Boundary condition bottom");
   args.addOption("output-basepath", 'o', "Output base file name");
 #endif
   tools::Args::Result ret = args.parse(argc, argv);
@@ -99,7 +103,8 @@ int main(int argc, char** argv)
   int l_time_dur, l_time;
   //number of checkpoints for visualization (at each checkpoint in time, an output file is written).
   int l_checkpoints;
-  BoundaryType l_bound_type;
+  //boundary conditions
+  BoundaryType l_bound_types[4]; 
   //l_baseName of the plots.
   std::string l_baseName;
 
@@ -110,8 +115,11 @@ int main(int argc, char** argv)
   l_ifile_baty = args.getArgument<std::string>("input-bathymetry");
   l_ifile_disp = args.getArgument<std::string>("input-displacement");
   l_time_dur = args.getArgument<int>("time-duration");
-  l_checkpoints = rgs.getArgument<int>("checkpoint-amount");
-  l_bound_type = args.getArgument<BoundaryType>("boundary-condition");
+  l_checkpoints = args.getArgument<int>("checkpoint-amount");
+  l_bound_types[0] = static_cast<BoundaryType>(args.getArgument<int>("boundary-condition-left"));
+  l_bound_types[1] = static_cast<BoundaryType>(args.getArgument<int>("boundary-condition-right"));
+  l_bound_types[2] = static_cast<BoundaryType>(args.getArgument<int>("boundary-condition-bottom"));
+  l_bound_types[3] = static_cast<BoundaryType>(args.getArgument<int>("boundary-condition-top"));
   l_baseName = args.getArgument<std::string>("output-basepath");
 #endif
 
@@ -154,7 +162,7 @@ int main(int argc, char** argv)
     (float) 28800., simulationArea);
 #else
   // create a scenario
-  SWE_TsunamiScenario l_scenario(l_bound_type, l_time_dur);
+  SWE_TsunamiScenario l_scenario(l_bound_types, l_time_dur);
 #endif
 
   //! size of a single cell in x- and y-direction
