@@ -260,15 +260,8 @@ class SWE_ArtificialTsunamiScenario : public SWE_Scenario
 
     float getWaterHeight(float x, float y)
     {
-      if (abs(x-5000) <= 500 && abs(y-5000) <= 500)
-      {
-        return (float) (5 * (sin((((x-5000)/500)+1)*M_PI)) * (-(((y-5000)/500)*((y-5000)/500)+1)));
-      }
-       else
-       {
-          return (float) 0;
-       }
-    }
+      return (float) 0;
+    };
     
 	  virtual float endSimulation()
     {
