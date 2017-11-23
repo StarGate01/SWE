@@ -29,16 +29,10 @@
 #ifndef __SWE_TSUNAMI_SCENARIO_H
 #define __SWE_TSUNAMI_SCENARIO_H
 
-#include <cmath>
+#include <string>
 
 #include "SWE_Scenario.hh"
 
-// #define BATHY_OBSTACLE
-
-/**
- * Scenario "Radial Dam Break":
- * elevated water in the center of the domain
- */
 class SWE_TsunamiScenario : public SWE_Scenario 
 {
   private:
@@ -46,11 +40,12 @@ class SWE_TsunamiScenario : public SWE_Scenario
     int simulationTime;
 
   public:
-    SWE_TsunamiScenario(BoundaryType* outConditions, int time)
+    SWE_TsunamiScenario(std::string dispFilePath, std::string bathyFilePath, BoundaryType* outConditions, int time)
       :outflowConditions(outConditions),
       simulationTime(time)
       {
-
+          //TODO: Read files
+          //TODO: Set parameters
       };
 
     float getBathymetry(float x, float y)
