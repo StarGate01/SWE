@@ -54,6 +54,7 @@
 #include "scenarios/SWE_AsagiScenario.hh"
 #else
 #include "scenarios/SWE_simple_scenarios.hh"
+#include "scenarios/SWE_TsunamiScenario.hh"
 #endif
 
 #ifdef READXML
@@ -76,6 +77,14 @@ int main(int argc, char** argv)
 #ifndef READXML
   args.addOption("grid-size-x", 'x', "Number of cells in x direction");
   args.addOption("grid-size-y", 'y', "Number of cells in y direction");
+  args.addOption("input-bathymetry", 'a', "Input bathymetry file name");
+  args.addOption("input-displacement", 'h', "Input displacement file name");
+  args.addOption("time-duration", 'd', "Time duration");
+  args.addOption("checkpoint-amount", 'p', "Amount of checkpoints");
+  args.addOption("boundary-condition-left", 'l', "Boundary condition left");
+  args.addOption("boundary-condition-right", 'r', "Boundary condition right");
+  args.addOption("boundary-condition-top", 't', "Boundary condition top");
+  args.addOption("boundary-condition-bottom", 'b', "Boundary condition bottom");
   args.addOption("output-basepath", 'o', "Output base file name");
 #endif
   tools::Args::Result ret = args.parse(argc, argv);
@@ -86,15 +95,31 @@ int main(int argc, char** argv)
     case tools::Args::Help: return 0;
   }
 
-  //! number of grid cells in x- and y-direction.
+  //number of grid cells in x- and y-direction.
   int l_nX, l_nY;
-  //! l_baseName of the plots.
+  //input file paths
+  std::string l_ifile_baty, l_ifile_disp;
+  //other parameters
+  int l_time_dur, l_time;
+  //number of checkpoints for visualization (at each checkpoint in time, an output file is written).
+  int l_checkpoints;
+  //boundary conditions
+  BoundaryType l_bound_types[4]; 
+  //l_baseName of the plots.
   std::string l_baseName;
 
-  // read command line parameters
+  //read command line parameters
 #ifndef READXML
   l_nX = args.getArgument<int>("grid-size-x");
   l_nY = args.getArgument<int>("grid-size-y");
+  l_ifile_baty = args.getArgument<std::string>("input-bathymetry");
+  l_ifile_disp = args.getArgument<std::string>("input-displacement");
+  l_time_dur = args.getArgument<int>("time-duration");
+  l_checkpoints = args.getArgument<int>("checkpoint-amount");
+  l_bound_types[0] = static_cast<BoundaryType>(args.getArgument<int>("boundary-condition-left"));
+  l_bound_types[1] = static_cast<BoundaryType>(args.getArgument<int>("boundary-condition-right"));
+  l_bound_types[2] = static_cast<BoundaryType>(args.getArgument<int>("boundary-condition-bottom"));
+  l_bound_types[3] = static_cast<BoundaryType>(args.getArgument<int>("boundary-condition-top"));
   l_baseName = args.getArgument<std::string>("output-basepath");
 #endif
 
@@ -136,12 +161,10 @@ int main(int argc, char** argv)
     ASAGI_INPUT_DIR "tohoku_gebco_ucsb3_500m_hawaii_displ.nc",
     (float) 28800., simulationArea);
 #else
-  // create a simple artificial scenario
-  SWE_RadialDamBreakScenario l_scenario;
+  // create a scenario
+  SWE_TsunamiScenario l_scenario(l_ifile_baty, l_ifile_disp, l_bound_types, l_time_dur);
 #endif
 
-  //! number of checkpoints for visualization (at each checkpoint in time, an output file is written).
-  int l_numberOfCheckPoints = 40;
   //! size of a single cell in x- and y-direction
   float l_dX, l_dY;
 
@@ -156,7 +179,7 @@ int main(int argc, char** argv)
   SWE_DimensionalSplittingBlockCuda l_dimensionalSplittingBlock(l_nX,l_nY,l_dX,l_dY);
 #endif
 
-  //! origin of the simulation domain in x- and y-direction
+  //origin of the simulation domain in x- and y-direction
   float l_originX, l_originY;
   // get the origin from the scenario
   l_originX = l_scenario.getBoundaryPos(BND_LEFT);
@@ -164,12 +187,12 @@ int main(int argc, char** argv)
   // initialize the dimensional splitting block
   l_dimensionalSplittingBlock.initScenario(l_originX, l_originY, l_scenario);
 
-  //! time when the simulation ends.
+  //time when the simulation ends.
   float l_endSimulation = l_scenario.endSimulation();
-  //! checkpoints when output files are written.
-  float* l_checkPoints = new float[l_numberOfCheckPoints+1];
+  //checkpoints when output files are written.
+  float* l_checkPoints = new float[l_checkpoints+1];
   // compute the checkpoints in time
-  for(int cp = 0; cp <= l_numberOfCheckPoints; cp++) l_checkPoints[cp] = cp*(l_endSimulation/l_numberOfCheckPoints);
+  for(int cp = 0; cp <= l_checkpoints; cp++) l_checkPoints[cp] = cp*(l_endSimulation/l_checkpoints);
 
   // Init fancy progressbar
   tools::ProgressBar progressBar(l_endSimulation);
@@ -205,7 +228,7 @@ int main(int argc, char** argv)
   unsigned int l_iterations = 0;
 
   // loop over checkpoints
-  for(int c=1; c<=l_numberOfCheckPoints; c++) 
+  for(int c=1; c<=l_checkpoints; c++) 
   {
     // do time steps until next checkpoint is reached
     while( l_t < l_checkPoints[c] )
