@@ -67,7 +67,7 @@
             },
             "args": [
                "-c",
-               "\"rm -rf data && mkdir data && cd data && ../SWE_gnu_debug_none_fwave -x 50 -y 50 -o swe\""
+               "\"rm -rf data && mkdir data && cd data && ../SWE_gnu_debug_none_fwave -x 50 -y 50 -a ../input/artificial/artificialtsunami_bathymetry_1000.nc -c ../input/artificial/artificialtsunami_displ_1000.nc -d 80 -p 40 -l 1 -r 1 -t 1 -b 1 -o swe\""
             ],
             "problemMatcher": []
         },

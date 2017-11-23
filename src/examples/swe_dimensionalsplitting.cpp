@@ -78,7 +78,7 @@ int main(int argc, char** argv)
   args.addOption("grid-size-x", 'x', "Number of cells in x direction");
   args.addOption("grid-size-y", 'y', "Number of cells in y direction");
   args.addOption("input-bathymetry", 'a', "Input bathymetry file name");
-  args.addOption("input-displacement", 'h', "Input displacement file name");
+  args.addOption("input-displacement", 'c', "Input displacement file name");
   args.addOption("time-duration", 'd', "Time duration");
   args.addOption("checkpoint-amount", 'p', "Amount of checkpoints");
   args.addOption("boundary-condition-left", 'l', "Boundary condition left");
@@ -110,17 +110,31 @@ int main(int argc, char** argv)
 
   //read command line parameters
 #ifndef READXML
+  std::stringstream sstm;
+  sstm << "\n\nGot command line parameters: \n";
   l_nX = args.getArgument<int>("grid-size-x");
+  sstm << "Number of cells in x direction:\t" << l_nX << "\n";
   l_nY = args.getArgument<int>("grid-size-y");
+  sstm << "Number of cells in y direction:\t" << l_nY << "\n";
   l_ifile_baty = args.getArgument<std::string>("input-bathymetry");
+  sstm << "Input bathymetry file name:\t" << l_ifile_baty << "\n";
   l_ifile_disp = args.getArgument<std::string>("input-displacement");
+  sstm << "Input displacement file name:\t" << l_ifile_disp << "\n";
   l_time_dur = args.getArgument<int>("time-duration");
+  sstm << "Time duration:\t\t\t" << l_time_dur << "\n";
   l_checkpoints = args.getArgument<int>("checkpoint-amount");
+  sstm << "Amount of checkpoints:\t\t" << l_checkpoints << "\n";
   l_bound_types[0] = static_cast<BoundaryType>(args.getArgument<int>("boundary-condition-left"));
+  sstm << "Boundary condition left:\t" << l_bound_types[0] << "\n";
   l_bound_types[1] = static_cast<BoundaryType>(args.getArgument<int>("boundary-condition-right"));
+  sstm << "Boundary condition right:\t" << l_bound_types[1] << "\n";
   l_bound_types[2] = static_cast<BoundaryType>(args.getArgument<int>("boundary-condition-bottom"));
+  sstm << "Boundary condition top:\t\t" << l_bound_types[2] << "\n";
   l_bound_types[3] = static_cast<BoundaryType>(args.getArgument<int>("boundary-condition-top"));
+  sstm << "Boundary condition bottom:\t" << l_bound_types[3] << "\n";
   l_baseName = args.getArgument<std::string>("output-basepath");
+  sstm << "Output base file name:\t\t" << l_baseName << "\n";
+  tools::Logger::logger.printString(sstm.str());
 #endif
 
   // read xml file
@@ -128,13 +142,13 @@ int main(int argc, char** argv)
   assert(false); //TODO: not implemented.
   if(argc != 2) 
   {
-    s_sweLogger.printString("Aborting. Please provide a proper input file.");
-    s_sweLogger.printString("Example: ./SWE_gnu_debug_none_augrie config.xml");
+    tools::Logger::logger.printString("Aborting. Please provide a proper input file.");
+    tools::Logger::logger.printString("Example: ./SWE_gnu_debug_none_augrie config.xml");
     return 1;
   }
-  s_sweLogger.printString("Reading xml-file.");
+  tools::Logger::logger.printString("Reading xml-file.");
   std::string l_xmlFile = std::string(argv[1]);
-  s_sweLogger.printString(l_xmlFile);
+  tools::Logger::logger.printString(l_xmlFile);
   CXMLConfig l_xmlConfig;
   l_xmlConfig.loadConfig(l_xmlFile.c_str());
 #endif
@@ -162,7 +176,8 @@ int main(int argc, char** argv)
     (float) 28800., simulationArea);
 #else
   // create a scenario
-  SWE_TsunamiScenario l_scenario(l_ifile_baty, l_ifile_disp, l_bound_types, l_time_dur);
+  // SWE_TsunamiScenario l_scenario(l_ifile_baty, l_ifile_disp, l_bound_types, l_time_dur);
+  SWE_RadialDamBreakScenario l_scenario;
 #endif
 
   //! size of a single cell in x- and y-direction
