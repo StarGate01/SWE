@@ -42,15 +42,15 @@
 class SWE_TsunamiScenario : public SWE_Scenario 
 {
   private:
-    BoundaryType outflowConditions;
+    BoundaryType* outflowConditions;
     int simulationTime;
 
   public:
-    SWE_TsunamiScenario(BoundaryType outConditions, int time)
+    SWE_TsunamiScenario(BoundaryType* outConditions, int time)
       :outflowConditions(outConditions),
       simulationTime(time)
       {
-          
+
       };
 
     float getBathymetry(float x, float y)
@@ -63,14 +63,26 @@ class SWE_TsunamiScenario : public SWE_Scenario
         //TODO: Implement
     };
 
-	  virtual float endSimulation(int seconds)
+	  virtual float endSimulation()
     { 
-        //TODO: Implement
+        return simulationTime;
     };
 
     virtual BoundaryType getBoundaryType(BoundaryEdge edge) 
     {
-        //TODO: Implement
+        switch(edge)
+        {
+          case BND_LEFT:
+            return outflowConditions[0];
+          case BND_RIGHT:
+            return outflowConditions[1];
+          case BND_BOTTOM:
+            return outflowConditions[2];
+          case BND_TOP:
+            return outflowConditions[3];
+        }
+        //Default
+        return WALL;
     };
 
     float getBoundaryPos(BoundaryEdge i_edge) 
