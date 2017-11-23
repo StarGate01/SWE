@@ -71,6 +71,8 @@
  */
 int main(int argc, char** argv) 
 {
+  tools::Logger::logger.printString("\nThis is swe_dimensionalsplitting, using SWE_DimensionalSplittingBlock\n");
+
   // Parse command line parameters
   tools::Args args;
   
@@ -111,7 +113,7 @@ int main(int argc, char** argv)
   //read command line parameters
 #ifndef READXML
   std::stringstream sstm;
-  sstm << "\n\nGot command line parameters: \n";
+  sstm << "\nGot command line parameters: \n";
   l_nX = args.getArgument<int>("grid-size-x");
   sstm << "Number of cells in x direction:\t" << l_nX << "\n";
   l_nY = args.getArgument<int>("grid-size-y");
