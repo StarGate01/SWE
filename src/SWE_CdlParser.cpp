@@ -1,4 +1,5 @@
 #include "SWE_CdlParser.hh"
+#include <stdexcept>
 #include <cmath>
 
 //TODO: Modify all implementations such, that they return the original string instead of the modified string when failing
@@ -31,7 +32,7 @@ bool SWE_CDLParser::readNextWord(string* text, string expected, const string sep
     return true;
 };
 
-bool SWE_CDLParser::readIntAssignment(string* text, string var, const char op, const string seperators = " ")
+bool SWE_CDLParser::readIntAssignment(string* text, string var, const char op, int* ret, const string seperators = " ")
 {
     //Read var
     if(!SWE_CDLParser::readNextWord(text, var, seperators))
@@ -41,12 +42,19 @@ bool SWE_CDLParser::readIntAssignment(string* text, string var, const char op, c
     if(!SWE_CDLParser::readNextWord(text, string(1, op), seperators))
         return false;       //Fail if invalid
 
-    int value = readNextInt(text, seperators);
-    //TODO: Return value
+    try
+    {
+        (*ret) = readNextInt(text, seperators);
+    }
+    catch(const std::exception& e)
+    {
+        return false;
+    }
+    
     return true;
 }
 
-bool SWE_CDLParser::readDoubleAssignment(string* text, string var, const char op, const string seperators = " ")
+bool SWE_CDLParser::readDoubleAssignment(string* text, string var, const char op, double* ret, const string seperators = " ")
 {
     //Read var
     if(!SWE_CDLParser::readNextWord(text, var, seperators))
@@ -56,8 +64,15 @@ bool SWE_CDLParser::readDoubleAssignment(string* text, string var, const char op
     if(!SWE_CDLParser::readNextWord(text, string(1, op), seperators))
         return false;       //Fail if invalid
 
-    double value = readNextDouble(text, seperators);
-    //TODO: Return value
+    try
+    {
+        (*ret) = readNextDouble(text, seperators);
+    }
+    catch(const std::exception& e)
+    {
+        return false;
+    }
+
     return true;
 }
 
@@ -68,7 +83,7 @@ int SWE_CDLParser::readNextInt(string* text, const string seperators = " ")
 
     //Return if string consists only of seperators
     if(start == string::npos)
-        return NAN;
+        throw std::invalid_argument("No int value found");
 
     //Cut front part of the string away
     *text = (*text).substr(start);
@@ -88,7 +103,7 @@ double SWE_CDLParser::readNextDouble(string* text, const string seperators = " "
 
     //Return if string consists only of seperators
     if(start == string::npos)
-        return NAN;
+        throw std::invalid_argument("No int value found");
 
     //Cut front part of the string away
     *text = (*text).substr(start);
