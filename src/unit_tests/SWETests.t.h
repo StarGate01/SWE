@@ -1,5 +1,5 @@
 #include <cxxtest/TestSuite.h>
-#include "../SWE_CdlParser.hh"
+#include "../reader/SWE_CdlParser.hh"
 #include "../../submodules/solvers/src/solver/FConst.hpp"       //Required for ZERO_PRECISION
 
 namespace swe_tests

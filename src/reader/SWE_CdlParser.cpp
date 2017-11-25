@@ -1,6 +1,8 @@
-#include "SWE_CdlParser.hh"
 #include <stdexcept>
 #include <cmath>
+#include "SWE_CdlParser.hh"
+
+using namespace reader;
 
 //TODO: Modify all implementations such, that they return the original string instead of the modified string when failing
 
