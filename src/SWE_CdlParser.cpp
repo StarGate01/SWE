@@ -1,6 +1,8 @@
 #include "SWE_CdlParser.hh"
 #include <cmath>
 
+//TODO: Modify all implementations such, that they return the original string instead of the modified string when failing
+
 bool SWE_CDLParser::readNextWord(string* text, string expected, const string seperators = " \n\t")
 {
     //Find beginning of the word
@@ -29,9 +31,80 @@ bool SWE_CDLParser::readNextWord(string* text, string expected, const string sep
     return true;
 };
 
+bool SWE_CDLParser::readIntAssignment(string* text, string var, const char op, const string seperators = " ")
+{
+    //Read var
+    if(!SWE_CDLParser::readNextWord(text, var, seperators))
+        return false;       //Fail if invalid
+
+    //Read op
+    if(!SWE_CDLParser::readNextWord(text, string(1, op), seperators))
+        return false;       //Fail if invalid
+
+    int value = readNextInt(text, seperators);
+    //TODO: Return value
+    return true;
+}
+
+bool SWE_CDLParser::readDoubleAssignment(string* text, string var, const char op, const string seperators = " ")
+{
+    //Read var
+    if(!SWE_CDLParser::readNextWord(text, var, seperators))
+        return false;       //Fail if invalid
+
+    //Read op
+    if(!SWE_CDLParser::readNextWord(text, string(1, op), seperators))
+        return false;       //Fail if invalid
+
+    double value = readNextDouble(text, seperators);
+    //TODO: Return value
+    return true;
+}
+
+int SWE_CDLParser::readNextInt(string* text, const string seperators = " ")
+{
+    //Find beginning of the number
+    size_t start = (*text).find_first_not_of(seperators);
+
+    //Return if string consists only of seperators
+    if(start == string::npos)
+        return NAN;
+
+    //Cut front part of the string away
+    *text = (*text).substr(start);
+
+    //Extract number until seperator
+    size_t endofnumber = (*text).find_first_not_of("0123456789");
+    string nrToParse = (*text).substr(0, endofnumber);
+
+    //Convert and return number
+    return std::stoi(nrToParse);
+}
+
+double SWE_CDLParser::readNextDouble(string* text, const string seperators = " ")
+{
+    //Find beginning of the number
+    size_t start = (*text).find_first_not_of(seperators);
+
+    //Return if string consists only of seperators
+    if(start == string::npos)
+        return NAN;
+
+    //Cut front part of the string away
+    *text = (*text).substr(start);
+
+    //Extract number until seperator
+    size_t endofnumber = (*text).find_first_not_of("0123456789.");
+    string nrToParse = (*text).substr(0, endofnumber);
+
+    //Convert and return number
+    return std::stod(nrToParse);
+}
+
 void SWE_CDLParser::parse_netCDF(string text)
 {
     //Check header
+
     //extract name
     //Parse dimensions
     //Parse variables
