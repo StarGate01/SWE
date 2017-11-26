@@ -9,6 +9,7 @@ namespace swe_tests
 
 class swe_tests::SWETestsSuite : public CxxTest::TestSuite
 {
+    //TODO: Provide tests for new methods in SWE_CDLParser
     //TODO: Debug this test
     void testReadAssignment(void)
     {

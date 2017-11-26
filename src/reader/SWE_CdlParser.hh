@@ -20,6 +20,9 @@ namespace reader
         static bool readDoubleAssignment(string* text, string var, const char op, double* ret, const string seperators = " ");
         static int readNextInt(string* text, const string seperators = " ");    
         static double readNextDouble(string* text, const string seperators = " ");
+        static string readNextString(string* text, const string seperators = " ");
+        static string peekNextString(string* text, const string seperators = " ");
+        
         void parse_netCDF(string text);
 
     };
