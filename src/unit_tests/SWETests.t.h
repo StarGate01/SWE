@@ -9,8 +9,57 @@ namespace swe_tests
 
 class swe_tests::SWETestsSuite : public CxxTest::TestSuite
 {
-    //TODO: Provide tests for new methods in SWE_CDLParser
     //TODO: Debug this test
+    /**
+     * @test Verify implementation of reader::SWE_CDLParser::readNextString
+    */
+    void testReadNextString(void)
+    {
+        // ## Valid test ##
+        string* text = new string("That's one small step for a man, one giant leap for mankind");
+        TS_ASSERT_EQUALS(reader::SWE_CDLParser::readNextString(text).compare("That's"), 0);
+        TS_ASSERT_EQUALS(text->compare(" one small step for a man, one giant leap for mankind"), 0);
+        
+        // ## Invalid text ##
+        (*text) = "    ";
+        bool exceptionThrown = false;
+        try{
+            reader::SWE_CDLParser::readNextString(text);
+        }
+        catch(exception& e)
+        {
+            exceptionThrown = true;
+        }
+        TS_ASSERT(exceptionThrown);
+    }
+
+    //TODO: Debug this test
+    /**
+     * @test Verify implementation of reader::SWE_CDLParser::peekNextString
+    */
+    void testPeekNextString(void)
+    {
+        const string str = "  secret ";
+        string* text = new string(str);
+        
+        // ## Valid test ##
+        TS_ASSERT_EQUALS(reader::SWE_CDLParser::peekNextString(text, " ").compare("secret"), 0);
+        TS_ASSERT_EQUALS(text->compare(str), 0);
+
+        // ## Invalid test ##
+        bool exceptionThrown = false;
+        try{
+            text = new string("      ");
+        }
+        catch(exception& e)
+        {
+            exceptionThrown = true;
+        }
+        TS_ASSERT(exceptionThrown);
+    }
+
+    //TODO: Debug this test
+    //TODO: Add documentation
     void testReadAssignment(void)
     {
         int* reti;
@@ -62,6 +111,7 @@ class swe_tests::SWETestsSuite : public CxxTest::TestSuite
         TS_ASSERT((*text) == " charlie = notreallyavalidnumber");
     }
 
+    //TODO: Add documentation
     void testReadNextWord(void)
     {
         string* text = new string("This      is\na random text\tto test some bug-free methods");
