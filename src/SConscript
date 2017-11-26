@@ -95,6 +95,10 @@ if env['writeNetCDF'] == True:
 else:
   sourceFiles.append( ['writer/VtkWriter.cpp'] )
 
+# CDL parser
+if env['parseCDL'] == True:
+  sourceFiles.append( ['parser/CDLParser.cpp'] )
+
 # xml reader
 if env['xmlRuntime'] == True:
   sourceFiles.append( ['tools/CXMLConfig.cpp'] )

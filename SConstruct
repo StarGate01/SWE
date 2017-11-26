@@ -92,6 +92,8 @@ vars.AddVariables(
 
   BoolVariable( 'writeNetCDF', 'write output in the netCDF-format', False ),
 
+  BoolVariable( 'parseCDL', 'support reading of CDL files', True ),
+
   BoolVariable( 'asagi', 'use ASAGI', False ),
 
   PathVariable( 'asagiInputDir', 'location of netcdf input files', '', PathVariable.PathAccept ),

@@ -8,7 +8,7 @@ using namespace std;
 namespace reader
 {
 
-    class SWE_CDLParser
+    class CDLParser
     {
 
     private:

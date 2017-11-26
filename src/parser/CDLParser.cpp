@@ -1,4 +1,4 @@
-#include "SWE_CdlParser.hh"
+#include "CDLParser.hh"
 
 #include <stdexcept>
 #include <cmath>
@@ -6,7 +6,7 @@
 using namespace reader;
 
 
-bool SWE_CDLParser::readNextWord(string* text, string expected, const string seperators = " \n\t")
+bool CDLParser::readNextWord(string* text, string expected, const string seperators = " \n\t")
 {
     string originalString = *text;
 
@@ -45,16 +45,16 @@ bool SWE_CDLParser::readNextWord(string* text, string expected, const string sep
     return true;
 };
 
-bool SWE_CDLParser::readIntAssignment(string* text, string var, const char op, int* ret, const string seperators = " ")
+bool CDLParser::readIntAssignment(string* text, string var, const char op, int* ret, const string seperators = " ")
 {
     string originalString = *text;
 
     //Read var
-    if(!SWE_CDLParser::readNextWord(text, var, seperators))
+    if(!CDLParser::readNextWord(text, var, seperators))
         return false;       //Fail if invalid
 
     //Read op
-    if(!SWE_CDLParser::readNextWord(text, string(1, op), seperators))
+    if(!CDLParser::readNextWord(text, string(1, op), seperators))
         return false;       //Fail if invalid
 
     //Parse number
@@ -71,16 +71,16 @@ bool SWE_CDLParser::readIntAssignment(string* text, string var, const char op, i
     return true;
 }
 
-bool SWE_CDLParser::readDoubleAssignment(string* text, string var, const char op, double* ret, const string seperators = " ")
+bool CDLParser::readDoubleAssignment(string* text, string var, const char op, double* ret, const string seperators = " ")
 {
     string originalString = *text;
 
     //Read var
-    if(!SWE_CDLParser::readNextWord(text, var, seperators))
+    if(!CDLParser::readNextWord(text, var, seperators))
         return false;       //Fail if invalid
 
     //Read op
-    if(!SWE_CDLParser::readNextWord(text, string(1, op), seperators))
+    if(!CDLParser::readNextWord(text, string(1, op), seperators))
         return false;       //Fail if invalid
 
     //Parse number
@@ -97,7 +97,7 @@ bool SWE_CDLParser::readDoubleAssignment(string* text, string var, const char op
     return true;
 }
 
-int SWE_CDLParser::readNextInt(string* text, const string seperators = " ")
+int CDLParser::readNextInt(string* text, const string seperators = " ")
 {
     string originalString = *text;
 
@@ -122,7 +122,7 @@ int SWE_CDLParser::readNextInt(string* text, const string seperators = " ")
     return std::stoi(nrToParse);
 }
 
-double SWE_CDLParser::readNextDouble(string* text, const string seperators = " ")
+double CDLParser::readNextDouble(string* text, const string seperators = " ")
 {
     string originalString = *text;
 
@@ -147,7 +147,7 @@ double SWE_CDLParser::readNextDouble(string* text, const string seperators = " "
     return std::stod(nrToParse);
 }
 
-string SWE_CDLParser::readNextString(string* text, const string seperators = " ")
+string CDLParser::readNextString(string* text, const string seperators = " ")
 {
     string originalString = *text;
 
@@ -172,7 +172,7 @@ string SWE_CDLParser::readNextString(string* text, const string seperators = " "
     return str;
 }
 
-string SWE_CDLParser::peekNextString(string* text, const string seperators = " ")
+string CDLParser::peekNextString(string* text, const string seperators = " ")
 {
     string originalString = *text;
 
@@ -196,7 +196,7 @@ string SWE_CDLParser::peekNextString(string* text, const string seperators = " "
 
 
 
-void SWE_CDLParser::parse_netCDF(string text)
+void CDLParser::parse_netCDF(string text)
 {
     // ## Check header ##
     if(!readNextWord(&text, "netcdf"))
