@@ -27,6 +27,7 @@
 # Definition of the source files.
 #
 
+
 import sys
 
 Import('env')
@@ -126,7 +127,20 @@ else:
 for i in sourceFiles:
   env.src_files.append(env.Object(i))
 
-# Declare cxx test suites
-env.CxxTest('SWETests', ['unit_tests/SWETests.t.h'])
+
+# # This function recursivley flattens a list
+# def smart_flatten(inlist, outlist):
+#   for el in inlist:
+#     if isinstance(el, list):
+#       smart_flatten(el, outlist)
+#     else:
+#       outlist.append(el)
+
+# # Declare cxx test suites
+# sourceFilesTest = ['unit_tests/SWETests.t.h']
+# smart_flatten(sourceFiles, sourceFilesTest)
+# print '[%s]' % ', '.join(map(str, sourceFilesTest))
+
+env.CxxTest('SWETests', ['unit_tests/SWETests.t.h', 'parser/CDLParser.cpp'])
 
 Export('env')

@@ -134,7 +134,9 @@
             "type": "shell",
             "command": "scons",
             "args": [
-                "check"
+                "check",
+                "buildVariablesFile=build/options/SWE_gnu.py",
+                "compileMode=debug"
             ],
             "options": {
                 "cwd": "${workspaceRoot}"
