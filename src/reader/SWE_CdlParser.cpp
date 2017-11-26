@@ -1,6 +1,7 @@
+#include "SWE_CdlParser.hh"
+
 #include <stdexcept>
 #include <cmath>
-#include "SWE_CdlParser.hh"
 
 using namespace reader;
 

@@ -23,7 +23,6 @@
  *
  * @section DESCRIPTION
  *
- * TODO
  */
 
 #ifndef __SWE_TSUNAMI_SCENARIO_H
