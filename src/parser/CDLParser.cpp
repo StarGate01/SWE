@@ -126,8 +126,6 @@ bool CDLParser::readDoubleAssignment(string* text, string var, const char op, do
     return readDoubleAssignment(text, var, op, ret, STRING_SPACING);
 };
 
-//TODO: Restore text string in readNextInt and readNextDouble, if conversion fails!!!!
-
 int CDLParser::readNextInt(string* text, string seperators)
 {
     string originalString = *text;
@@ -139,7 +137,7 @@ int CDLParser::readNextInt(string* text, string seperators)
     if(start == string::npos)
     {
         *text = originalString;
-        throw std::invalid_argument("No int value found");
+        throw std::invalid_argument("No int value found in text");
     }
         
     //Cut front part of the string away
@@ -153,7 +151,14 @@ int CDLParser::readNextInt(string* text, string seperators)
     *text = (*text).substr(endofnumber);
 
     //Convert and return number
-    int res = std::stoi(nrToParse);
+    int res;
+    try{
+    res = std::stoi(nrToParse);
+    }catch(std::exception& e)
+    {
+        *text = originalString;
+        throw std::invalid_argument("Failed to convert int: " + string(e.what()));
+    }
     return res;
 };
 
@@ -186,8 +191,17 @@ double CDLParser::readNextDouble(string* text, string seperators)
     //Cut number away from text
     *text = (*text).substr(endofnumber);
 
+    double res;
+
+    try{
+        res = std::stod(nrToParse);
+    }catch(std::exception& e)
+    {
+        *text = originalString;
+        throw std::invalid_argument("No double value found");
+    }
     //Convert and return number
-    return std::stod(nrToParse);
+    return res;
 };
 
 double CDLParser::readNextDouble(string* text)
