@@ -90,14 +90,7 @@ void io::VtkWriter::writeTimeStep(
 		for (int i=1; i < nX+1; i++)
 			vtkFile << i_h[i][j] << std::endl;
 	vtkFile << "</DataArray>" << std::endl;
-
-	// Total Water surface height h+b
-	vtkFile << "<DataArray Name=\"h+b\" type=\"Float32\" format=\"ascii\">" << std::endl;
-	for (int j=1; j < nY+1; j++)
-		for (int i=1; i < nX+1; i++)
-			vtkFile << i_h[i][j] + b[i][j] << std::endl;
-	vtkFile << "</DataArray>" << std::endl;
-
+	
 	// Momentums
 	vtkFile << "<DataArray Name=\"hu\" type=\"Float32\" format=\"ascii\">" << std::endl;
 	for (int j=1; j < nY+1; j++)
