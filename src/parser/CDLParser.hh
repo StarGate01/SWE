@@ -54,9 +54,9 @@ namespace parser
          * 
          * @return True if parsing was successful. Otherwise false
         */
-        static bool readIntAssignment(string* text, string var, const char op, int* ret, string seperators);
+        static bool readIntAssignment(string* text, string var, const char op, int &ret, string seperators);
         //TODO: Add documentation
-        static bool readIntAssignment(string* text, string var, const char op, int* ret);
+        static bool readIntAssignment(string* text, string var, const char op, int &ret);
         
 
         /**
@@ -79,9 +79,9 @@ namespace parser
          * 
          * @return True if parsing was successful. Otherwise false
         */
-        static bool readDoubleAssignment(string* text, string var, const char op, double* ret, string seperators);
+        static bool readDoubleAssignment(string* text, string var, const char op, double &ret, string seperators);
         //TODO: Add documentation
-        static bool readDoubleAssignment(string* text, string var, const char op, double* ret);
+        static bool readDoubleAssignment(string* text, string var, const char op, double &ret);
         
 
         /**
