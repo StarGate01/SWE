@@ -5,7 +5,7 @@
 
 using namespace std;
 
-namespace reader
+namespace parser
 {
 
     class CDLParser

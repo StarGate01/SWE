@@ -130,8 +130,7 @@ vars.AddVariables(
 )
 
 # set environment
-env = Environment(ENV = {'PATH': os.environ['PATH']},
-        variables=vars)
+env = Environment(ENV = {'PATH': os.environ['PATH']}, variables=vars, tools = ['default', 'cxxtest'])
 env.Append(CXXFLAGS="-std=c++11")
 
 

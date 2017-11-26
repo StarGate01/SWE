@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <cmath>
 
-using namespace reader;
+using namespace parser;
 
 
 bool CDLParser::readNextWord(string* text, string expected, const string seperators = " \n\t")
