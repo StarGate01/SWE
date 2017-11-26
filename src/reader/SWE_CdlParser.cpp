@@ -318,13 +318,13 @@ void SWE_CDLParser::parse_netCDF(string text)
 
     // ## Parse variables ##
     if(!readNextWord(&text, "variables:"))
-        throw std::runtime_error("Failed to find dimensions keyword");
+        throw std::runtime_error("Failed to find variables keyword");
 
     //TODO: Parse variables
 
     // ## Parse data ##
     if(!readNextWord(&text, "data:"))
-        throw std::runtime_error("Failed to find dimensions keyword");
+        throw std::runtime_error("Failed to find data keyword");
 
     //TODO: Parse data
 };
