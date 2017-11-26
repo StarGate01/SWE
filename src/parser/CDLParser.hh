@@ -3,11 +3,13 @@
 
 #include <string>
 
+#define STRING_SPACING string(" ")
+#define STRING_SEPERATOR string(" \n\t")
+
 using namespace std;
 
 namespace parser
 {
-
     class CDLParser
     {
 
@@ -28,7 +30,9 @@ namespace parser
          * 
          * @return True if parsing was successful. Otherwise false
         */
-        static bool readNextWord(string* text, string expected, const string seperators = " \n\t");
+        static bool readNextWord(string* text, string expected, string seperators);
+        //TODO: Add documentation
+        static bool readNextWord(string* text, string expected);
 
         /**
          * @brief Parses a specific pattern of words, such as 'var = 12', in a string and cuts the parsed section from the input string
@@ -50,7 +54,10 @@ namespace parser
          * 
          * @return True if parsing was successful. Otherwise false
         */
-        static bool readIntAssignment(string* text, string var, const char op, int* ret, const string seperators = " ");
+        static bool readIntAssignment(string* text, string var, const char op, int* ret, string seperators);
+        //TODO: Add documentation
+        static bool readIntAssignment(string* text, string var, const char op, int* ret);
+        
 
         /**
          * @brief Parses a specific pattern of words, such as 'var = 12.34', in a string and cuts the parsed section from the input string
@@ -72,7 +79,10 @@ namespace parser
          * 
          * @return True if parsing was successful. Otherwise false
         */
-        static bool readDoubleAssignment(string* text, string var, const char op, double* ret, const string seperators = " ");
+        static bool readDoubleAssignment(string* text, string var, const char op, double* ret, string seperators);
+        //TODO: Add documentation
+        static bool readDoubleAssignment(string* text, string var, const char op, double* ret);
+        
 
         /**
          * @brief Parses an int number at the start of \p text, ignoring preceding \p seperators
@@ -88,7 +98,10 @@ namespace parser
          * 
          * @throws Exceptions thrown by std::stoi, namely being std::invalid_argument and std::out_of_range
         */
-        static int readNextInt(string* text, const string seperators = " ");    
+        static int readNextInt(string* text, string seperators);
+        //TODO: Add documentation
+        static int readNextInt(string* text);
+        
 
         /**
          * @brief Parses a double number at the start of \p text, ignoring preceding \p seperators
@@ -104,7 +117,10 @@ namespace parser
          * 
          * @throws Exceptions thrown by std::stod, namely being std::invalid_argument and std::out_of_range
         */
-        static double readNextDouble(string* text, const string seperators = " ");
+        static double readNextDouble(string* text, string seperators);
+
+        static double readNextDouble(string* text);
+        
 
         /**
          * @brief Parses a string at the start of \p text, ignoring preceding \p seperators
@@ -120,7 +136,10 @@ namespace parser
          * 
          * @throws std::invalid_argument, if \p text contains only seperators
         */
-        static string readNextString(string* text, const string seperators = " ");
+        static string readNextString(string* text, string seperators);
+
+        static string readNextString(string* text);
+        
 
         /**
          * @brief Parses a string at the start of \p text, ignoring preceding \p seperators
@@ -135,7 +154,10 @@ namespace parser
          * 
          * @throws std::invalid_argument, if \p text contains only seperators
         */
-        static string peekNextString(string* text, const string seperators = " ");
+        static string peekNextString(string* text, string seperators);
+
+        static string peekNextString(string* text);
+        
         
         void parse_netCDF(string text);
 

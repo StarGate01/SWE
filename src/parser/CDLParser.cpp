@@ -6,7 +6,7 @@
 using namespace parser;
 
 
-bool CDLParser::readNextWord(string* text, string expected, const string seperators = " \n\t")
+bool CDLParser::readNextWord(string* text, string expected, string seperators)
 {
     string originalString = *text;
 
@@ -15,7 +15,7 @@ bool CDLParser::readNextWord(string* text, string expected, const string seperat
     //Return if string consists only of seperators
     if(start == string::npos)
     {
-        *text = originalString.copy;
+        *text = originalString;
         return false;
     }
 
@@ -23,29 +23,34 @@ bool CDLParser::readNextWord(string* text, string expected, const string seperat
     *text = (*text).substr(start);
 
     //Return if impossible to find word in string
-    if((*text).length < expected.length)
+    if(text->length() < expected.length())
     {
-        *text = originalString.copy;
+        *text = originalString;
         return false;
     }
 
     //Iterate though string and compare it to expected
-    for(int i = 0; i < expected.length; i++)
+    for(int i = 0; i < (int) expected.length(); i++)
     {
         if((*text)[i] != expected[i])
         {
-            *text = originalString.copy;
+            *text = originalString;
             return false;
         }
     }
 
     //So far: Successful comparison
     //Cut string to remaining text
-    *text = (*text).substr(expected.length);
+    *text = (*text).substr(expected.length());
     return true;
 };
 
-bool CDLParser::readIntAssignment(string* text, string var, const char op, int* ret, const string seperators = " ")
+bool CDLParser::readNextWord(string* text, string expected)
+{
+    return readNextWord(text, expected, STRING_SEPERATOR);
+};
+
+bool CDLParser::readIntAssignment(string* text, string var, const char op, int* ret, string seperators)
 {
     string originalString = *text;
 
@@ -69,9 +74,14 @@ bool CDLParser::readIntAssignment(string* text, string var, const char op, int* 
     }
     
     return true;
-}
+};
 
-bool CDLParser::readDoubleAssignment(string* text, string var, const char op, double* ret, const string seperators = " ")
+bool CDLParser::readIntAssignment(string* text, string var, const char op, int* ret)
+{
+    return readIntAssignment(text, var, op, ret, STRING_SPACING);
+};
+
+bool CDLParser::readDoubleAssignment(string* text, string var, const char op, double* ret, string seperators)
 {
     string originalString = *text;
 
@@ -95,9 +105,14 @@ bool CDLParser::readDoubleAssignment(string* text, string var, const char op, do
     }
 
     return true;
-}
+};
 
-int CDLParser::readNextInt(string* text, const string seperators = " ")
+bool CDLParser::readDoubleAssignment(string* text, string var, const char op, double* ret)
+{
+    return readDoubleAssignment(text, var, op, ret, STRING_SPACING);
+};
+
+int CDLParser::readNextInt(string* text, string seperators)
 {
     string originalString = *text;
 
@@ -120,9 +135,14 @@ int CDLParser::readNextInt(string* text, const string seperators = " ")
 
     //Convert and return number
     return std::stoi(nrToParse);
-}
+};
 
-double CDLParser::readNextDouble(string* text, const string seperators = " ")
+int CDLParser::readNextInt(string* text)
+{
+    return readNextInt(text, STRING_SPACING);
+};
+
+double CDLParser::readNextDouble(string* text, string seperators)
 {
     string originalString = *text;
 
@@ -145,9 +165,14 @@ double CDLParser::readNextDouble(string* text, const string seperators = " ")
 
     //Convert and return number
     return std::stod(nrToParse);
-}
+};
 
-string CDLParser::readNextString(string* text, const string seperators = " ")
+double CDLParser::readNextDouble(string* text)
+{
+    return readNextDouble(text, STRING_SPACING);
+};
+
+string CDLParser::readNextString(string* text, string seperators)
 {
     string originalString = *text;
 
@@ -170,9 +195,14 @@ string CDLParser::readNextString(string* text, const string seperators = " ")
 
     //Return string
     return str;
-}
+};
 
-string CDLParser::peekNextString(string* text, const string seperators = " ")
+string CDLParser::readNextString(string* text)
+{
+    return readNextString(text, STRING_SPACING);
+};
+
+string CDLParser::peekNextString(string* text, string seperators)
 {
     string originalString = *text;
 
@@ -192,9 +222,12 @@ string CDLParser::peekNextString(string* text, const string seperators = " ")
 
     //Convert and return number
     return str;
-}
+};
 
-
+string CDLParser::peekNextString(string* text)
+{
+    return peekNextString(text, STRING_SPACING);
+};
 
 void CDLParser::parse_netCDF(string text)
 {

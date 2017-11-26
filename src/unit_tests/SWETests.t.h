@@ -9,6 +9,7 @@ namespace swe_tests
 
 class swe_tests::SWETestsSuite : public CxxTest::TestSuite
 {
+    public:
     //TODO: Debug this test
     /**
      * @test Verify implementation of parser::CDLParser::readNextString
