@@ -72,7 +72,7 @@
             "problemMatcher": []
         },
         {
-            "label": "Build Documentation",
+            "label": "Build Solver Documentation",
             "type": "shell",
             "command": "bash",
             "args": [
@@ -94,7 +94,7 @@
             }
         },
         {
-            "label": "Clean Documentation",
+            "label": "Clean Solver Documentation",
             "type": "shell",
             "command": "rm",
             "args": [
@@ -103,6 +103,41 @@
             ],
             "options": {
                 "cwd": "${workspaceRoot}/submodules/solvers/documentation"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build Framework Documentation",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+                "-c",
+                "\"doxygen ../documentation/doxygen.cfg && (cd ../documentation/build/latex;make)\""
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}/src"
+            },
+            "problemMatcher": {
+                "fileLocation": "absolute",
+                "pattern": {
+                    "regexp": "^(.*):(\\d+):\\s+(warning|error):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "severity": 3,
+                    "message": 4
+                }
+            }
+        },
+        {
+            "label": "Clean Framework Documentation",
+            "type": "shell",
+            "command": "rm",
+            "args": [
+                "-r",
+                "build"
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}/documentation"
             },
             "problemMatcher": []
         },
