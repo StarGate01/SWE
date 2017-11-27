@@ -23,7 +23,6 @@ bool CDLParser::cutLeadingSeperators(string &text, string seperators)
     return false;
 };
 
-//TODO: Add throw to documentation
 std::list<Assignment<int>> CDLParser::readIntAssignmentList(string &text, const char op, string interSep, string finalSep, string seperators)
 {
     std::list<Assignment<int>> lst;
@@ -36,10 +35,9 @@ std::list<Assignment<int>> CDLParser::readIntAssignmentList(string &text, const 
         item.name = peekNextString(text, seperators);
 
         //Read value
-        //TODO: Validate var to not be seperator
         if(!readIntAssignment(text, item.name, op, item.value, seperators))
         {
-            throw invalid_argument("Failed to read int assignment");
+            throw std::invalid_argument("Failed to read int assignment");
         }
 
         //Store assignment
@@ -70,10 +68,9 @@ std::list<Assignment<double>> CDLParser::readDoubleAssignmentList(string &text, 
         item.name = peekNextString(text, seperators);
 
         //Read value
-        //TODO: Validate var to not be seperator
         if(!readDoubleAssignment(text, item.name, op, item.value, seperators))
         {
-            throw invalid_argument("Failed to read int assignment");
+            throw std::invalid_argument("Failed to read int assignment");
         }
 
         //Store assignment

@@ -9,52 +9,63 @@ namespace swe_tests
 
 class swe_tests::SWETestsSuite : public CxxTest::TestSuite
 {
-    public:
+    private:
+        /**
+         * Compare two std::list<parser::Assignment<int>> structs
+         */
         bool compareIntAssignment(std::list<parser::Assignment<int>> a, std::list<parser::Assignment<int>> b)
-        {
-            //Check number of items in list equal
-            if(a.size() != b.size())
             {
-                std::cout << "Failed to compare size a=" << a.size() << " != " << b.size() << std::endl;
-                return false;
-            }
-            
-            std::list<parser::Assignment<int>>::iterator a_it;
-            std::list<parser::Assignment<int>>::iterator b_it;
-            for(a_it = a.begin(), b_it = b.begin(); a_it != a.end() && b_it != b.end(); a_it++, b_it++)
-            {
-                if(a_it->name != b_it->name || a_it->value != b_it->value)
+                //Check number of items in list equal
+                if(a.size() != b.size())
                 {
-                    std::cout << std::endl << "Failed to compare item: " << a_it->name << "=" << b_it->name << " | " << a_it->value << "=" << b_it->value << std::endl;
+                    std::cout << "Failed to compare size a=" << a.size() << " != " << b.size() << std::endl;
                     return false;
                 }
-            }
-            return true;
-        }
-
-        bool compareDoubleAssignment(std::list<parser::Assignment<double>> a, std::list<parser::Assignment<double>> b)
-        {
-            //Check number of items in list equal
-            if(a.size() != b.size())
-            {
-                std::cout << "Failed to compare size a=" << a.size() << " != " << b.size() << std::endl;
-                return false;
+                
+                std::list<parser::Assignment<int>>::iterator a_it;
+                std::list<parser::Assignment<int>>::iterator b_it;
+                for(a_it = a.begin(), b_it = b.begin(); a_it != a.end() && b_it != b.end(); a_it++, b_it++)
+                {
+                    if(a_it->name != b_it->name || a_it->value != b_it->value)
+                    {
+                        std::cout << std::endl << "Failed to compare item: " << a_it->name << "=" << b_it->name << " | " << a_it->value << "=" << b_it->value << std::endl;
+                        return false;
+                    }
+                }
+                return true;
             }
             
-            std::list<parser::Assignment<double>>::iterator a_it;
-            std::list<parser::Assignment<double>>::iterator b_it;
-            for(a_it = a.begin(), b_it = b.begin(); a_it != a.end() && b_it != b.end(); a_it++, b_it++)
+            /**
+             * Compare two std::list<parser::Assignment<double>> structs
+             */
+            bool compareDoubleAssignment(std::list<parser::Assignment<double>> a, std::list<parser::Assignment<double>> b)
             {
-                if(a_it->name != b_it->name || a_it->value != b_it->value)
+                //Check number of items in list equal
+                if(a.size() != b.size())
                 {
-                    std::cout << std::endl << "Failed to compare item: " << a_it->name << "=" << b_it->name << " | " << a_it->value << "=" << b_it->value << std::endl;
+                    std::cout << "Failed to compare size a=" << a.size() << " != " << b.size() << std::endl;
                     return false;
                 }
+                
+                std::list<parser::Assignment<double>>::iterator a_it;
+                std::list<parser::Assignment<double>>::iterator b_it;
+                for(a_it = a.begin(), b_it = b.begin(); a_it != a.end() && b_it != b.end(); a_it++, b_it++)
+                {
+                    if(a_it->name != b_it->name || a_it->value != b_it->value)
+                    {
+                        std::cout << std::endl << "Failed to compare item: " << a_it->name << "=" << b_it->name << " | " << a_it->value << "=" << b_it->value << std::endl;
+                        return false;
+                    }
+                }
+                return true;
             }
-            return true;
-        }
 
-        void testReadIntAssignmentList(void)
+
+    public:
+        /**
+         * @test Verify implementation of parser::CDLParser::readIntAssignmentList and parser::CDLParser::readDoubleAssignmentList
+        */
+        void testReadAssignmentList(void)
         {
             // ## Test 1 (int) ##
             string text = "first = 11, second = 12, third = 13;";

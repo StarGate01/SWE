@@ -49,6 +49,8 @@ namespace parser
          * @param seperators Characters to be ignored in parsing
          * 
          * @return List of Assignment structs
+         * 
+         * @throw Throws std::invalid_argument if parsing fails (for error, see error message)
         */
         static std::list<Assignment<int>> readIntAssignmentList(string &text, const char op, string interSep, string finalSep, string seperators);
         
@@ -64,6 +66,8 @@ namespace parser
          * @param seperators Characters to be ignored in parsing
          * 
          * @return List of Assignment structs
+         * 
+         * @throw Throws std::invalid_argument if parsing fails (for error, see error message)
         */
         static std::list<Assignment<double>> readDoubleAssignmentList(string &text, const char op, string interSep, string finalSep, string seperators);
         
