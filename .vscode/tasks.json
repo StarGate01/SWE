@@ -107,12 +107,34 @@
             "problemMatcher": []
         },
         {
-            "label": "Build Framework Documentation",
+            "label": "Build All Framework Documentation",
             "type": "shell",
             "command": "bash",
             "args": [
                 "-c",
-                "\"doxygen ../documentation/doxygen.cfg && (cd ../documentation/build/latex;make)\""
+                "\"mkdir -p ../documentation/build/all && doxygen ../documentation/doxygen.cfg && (cd ../documentation/build/all/latex;make)\""
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}/src"
+            },
+            "problemMatcher": {
+                "fileLocation": "absolute",
+                "pattern": {
+                    "regexp": "^(.*):(\\d+):\\s+(warning|error):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "severity": 3,
+                    "message": 4
+                }
+            }
+        },
+        {
+            "label": "Build Fragment Framework Documentation",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+                "-c",
+                "\"mkdir -p ../documentation/build/fragment &&doxygen ../documentation/doxygen_fragment.cfg && (cd ../documentation/build/fragment/latex;make)\""
             ],
             "options": {
                 "cwd": "${workspaceRoot}/src"
