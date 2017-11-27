@@ -3,6 +3,9 @@
 #include <stdexcept>
 #include <cmath>
 
+//DEBUG
+#include <iostream>
+
 using namespace parser;
 
 
@@ -39,7 +42,6 @@ bool CDLParser::readNextWord(string* text, string expected, string seperators)
         }
     }
 
-    //So far: Successful comparison
     //Cut string to remaining text
     *text = (*text).substr(expected.length());
     return true;
@@ -50,22 +52,28 @@ bool CDLParser::readNextWord(string* text, string expected)
     return readNextWord(text, expected, STRING_SEPERATOR);
 };
 
-bool CDLParser::readIntAssignment(string* text, string var, const char op, int* ret, string seperators)
+bool CDLParser::readIntAssignment(string* text, string var, const char op, int &ret, string seperators)
 {
     string originalString = *text;
 
     //Read var
     if(!CDLParser::readNextWord(text, var, seperators))
+    {
+        *text = originalString;        
         return false;       //Fail if invalid
+    }
 
     //Read op
     if(!CDLParser::readNextWord(text, string(1, op), seperators))
+    {
+        *text = originalString;        
         return false;       //Fail if invalid
+    }
 
     //Parse number
     try
     {
-        (*ret) = readNextInt(text, seperators);
+        ret = readNextInt(text, seperators);
     }
     catch(const std::exception& e)
     {
@@ -76,27 +84,33 @@ bool CDLParser::readIntAssignment(string* text, string var, const char op, int* 
     return true;
 };
 
-bool CDLParser::readIntAssignment(string* text, string var, const char op, int* ret)
+bool CDLParser::readIntAssignment(string* text, string var, const char op, int &ret)
 {
     return readIntAssignment(text, var, op, ret, STRING_SPACING);
 };
 
-bool CDLParser::readDoubleAssignment(string* text, string var, const char op, double* ret, string seperators)
+bool CDLParser::readDoubleAssignment(string* text, string var, const char op, double &ret, string seperators)
 {
     string originalString = *text;
 
     //Read var
     if(!CDLParser::readNextWord(text, var, seperators))
+    {
+        *text = originalString;
         return false;       //Fail if invalid
+    }
 
     //Read op
     if(!CDLParser::readNextWord(text, string(1, op), seperators))
+    {
+        *text = originalString;
         return false;       //Fail if invalid
+    }
 
     //Parse number
     try
     {
-        (*ret) = readNextDouble(text, seperators);
+        ret = readNextDouble(text, seperators);
     }
     catch(const std::exception& e)
     {
@@ -107,7 +121,7 @@ bool CDLParser::readDoubleAssignment(string* text, string var, const char op, do
     return true;
 };
 
-bool CDLParser::readDoubleAssignment(string* text, string var, const char op, double* ret)
+bool CDLParser::readDoubleAssignment(string* text, string var, const char op, double &ret)
 {
     return readDoubleAssignment(text, var, op, ret, STRING_SPACING);
 };
@@ -123,7 +137,7 @@ int CDLParser::readNextInt(string* text, string seperators)
     if(start == string::npos)
     {
         *text = originalString;
-        throw std::invalid_argument("No int value found");
+        throw std::invalid_argument("No int value found in text");
     }
         
     //Cut front part of the string away
@@ -133,8 +147,19 @@ int CDLParser::readNextInt(string* text, string seperators)
     size_t endofnumber = (*text).find_first_not_of("0123456789");
     string nrToParse = (*text).substr(0, endofnumber);
 
+    //Cut number away from text
+    *text = (*text).substr(endofnumber);
+
     //Convert and return number
-    return std::stoi(nrToParse);
+    int res;
+    try{
+    res = std::stoi(nrToParse);
+    }catch(std::exception& e)
+    {
+        *text = originalString;
+        throw std::invalid_argument("Failed to convert int: " + string(e.what()));
+    }
+    return res;
 };
 
 int CDLParser::readNextInt(string* text)
@@ -163,8 +188,20 @@ double CDLParser::readNextDouble(string* text, string seperators)
     size_t endofnumber = (*text).find_first_not_of("0123456789.");
     string nrToParse = (*text).substr(0, endofnumber);
 
+    //Cut number away from text
+    *text = (*text).substr(endofnumber);
+
+    double res;
+
+    try{
+        res = std::stod(nrToParse);
+    }catch(std::exception& e)
+    {
+        *text = originalString;
+        throw std::invalid_argument("No double value found");
+    }
     //Convert and return number
-    return std::stod(nrToParse);
+    return res;
 };
 
 double CDLParser::readNextDouble(string* text)
@@ -192,6 +229,9 @@ string CDLParser::readNextString(string* text, string seperators)
     //Extract string until seperator
     size_t endofstring = (*text).find_first_of(seperators);
     string str = (*text).substr(0, endofstring);
+
+    //Ct word away the parsed section from string
+    *text = (*text).substr(endofstring);
 
     //Return string
     return str;
