@@ -58,6 +58,40 @@ std::list<Assignment<int>> CDLParser::readIntAssignmentList(string &text, const 
     return lst;
 };
 
+std::list<Assignment<double>> CDLParser::readDoubleAssignmentList(string &text, const char op, string interSep, string finalSep, string seperators)
+{
+    std::list<Assignment<double>> lst;
+    bool continueParsing = true;
+    do
+    {
+        Assignment<double> item;
+        //Peek variable name
+        cutLeadingSeperators(text, seperators);
+        item.name = peekNextString(text, seperators);
+
+        //Read value
+        //TODO: Validate var to not be seperator
+        if(!readDoubleAssignment(text, item.name, op, item.value, seperators))
+        {
+            throw invalid_argument("Failed to read int assignment");
+        }
+
+        //Store assignment
+        lst.push_back(item);
+
+        //Check for further items and remove interSep, if further items exist
+        continueParsing = (peekNextString(text, seperators) == interSep);
+        if(continueParsing)
+            readNextString(text, seperators);
+    }while(continueParsing);
+
+    //Confirm final seperator
+    if(!readNextWord(text, finalSep, seperators))
+        throw std::invalid_argument("No final seperator detected at the end of list");
+
+    return lst;
+};
+
 bool CDLParser::readNextWord(string &text, string expected, string seperators)
 {
     string originalString = text;

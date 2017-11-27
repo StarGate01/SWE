@@ -10,7 +10,7 @@ namespace swe_tests
 class swe_tests::SWETestsSuite : public CxxTest::TestSuite
 {
     public:
-        bool compareIntAssignment(std::list<parser::Assignment<int>> a, std::list<parser::Assignment<int>> b, bool printItems = false)
+        bool compareIntAssignment(std::list<parser::Assignment<int>> a, std::list<parser::Assignment<int>> b)
         {
             //Check number of items in list equal
             if(a.size() != b.size())
@@ -32,23 +32,50 @@ class swe_tests::SWETestsSuite : public CxxTest::TestSuite
             return true;
         }
 
+        bool compareDoubleAssignment(std::list<parser::Assignment<double>> a, std::list<parser::Assignment<double>> b)
+        {
+            //Check number of items in list equal
+            if(a.size() != b.size())
+            {
+                std::cout << "Failed to compare size a=" << a.size() << " != " << b.size() << std::endl;
+                return false;
+            }
+            
+            std::list<parser::Assignment<double>>::iterator a_it;
+            std::list<parser::Assignment<double>>::iterator b_it;
+            for(a_it = a.begin(), b_it = b.begin(); a_it != a.end() && b_it != b.end(); a_it++, b_it++)
+            {
+                if(a_it->name != b_it->name || a_it->value != b_it->value)
+                {
+                    std::cout << std::endl << "Failed to compare item: " << a_it->name << "=" << b_it->name << " | " << a_it->value << "=" << b_it->value << std::endl;
+                    return false;
+                }
+            }
+            return true;
+        }
+
         void testReadIntAssignmentList(void)
         {
+            // ## Test 1 (int) ##
             string text = "first = 11, second = 12, third = 13;";
             std::list<parser::Assignment<int>> ret = parser::CDLParser::readIntAssignmentList(text, '=', ",", ";", " ");
-
-            //DEBUG
-            // std::cout << "List contains: " << std::endl;
-            // std::list<parser::Assignment<int>>::iterator it;
-            // for(it = ret.begin(); it != ret.end(); it++)
-            //     std::cout << it->name << " " << it->value << std::endl;
-            //END DEBUG
 
             struct parser::Assignment<int> i1 = {"first", 11};
             struct parser::Assignment<int> i2 = {"second", 12};
             struct parser::Assignment<int> i3 = {"third", 13};
             std::list<parser::Assignment<int>> exp = {i1, i2, i3};          
             TS_ASSERT(compareIntAssignment(ret, exp));
+
+
+            // ## Test 2 (double) ##
+            text = "first = 1.1, second = 1.2, third = 1.3;";
+            std::list<parser::Assignment<double>> retd = parser::CDLParser::readDoubleAssignmentList(text, '=', ",", ";", " ");
+
+            struct parser::Assignment<double> d1 = {"first", 1.1};
+            struct parser::Assignment<double> d2 = {"second", 1.2};
+            struct parser::Assignment<double> d3 = {"third", 1.3};
+            std::list<parser::Assignment<double>> expd = {d1, d2, d3};          
+            TS_ASSERT(compareDoubleAssignment(retd, expd));
         }
 
         /**
