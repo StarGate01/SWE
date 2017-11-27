@@ -17,15 +17,15 @@
 //  0: Hybrid
 //  1: f-Wave
 //  2: Approximate Augmented Riemann solver
-#if WAVE_PROPAGATION_SOLVER==0
-#include "../submodules/solvers/src/solver/Hybrid.hpp"
-#elif WAVE_PROPAGATION_SOLVER==1
+// #if WAVE_PROPAGATION_SOLVER==0
+// #include "../submodules/solvers/src/solver/Hybrid.hpp"
+// #elif WAVE_PROPAGATION_SOLVER==1
 #include "../submodules/solvers/src/solver/FWave.hpp"
-#elif WAVE_PROPAGATION_SOLVER==2
-#include "../submodules/solvers/src/solver/AugRie.hpp"
-#else
-#warning SWE_DimensionalSplittingBlock should only be used with Riemann solvers 0, 1, and 2 (FWave, AugRie or Hybrid)
-#endif
+// #elif WAVE_PROPAGATION_SOLVER==2
+// #include "../submodules/solvers/src/solver/AugRie.hpp"
+// #else
+// #warning SWE_DimensionalSplittingBlock should only be used with Riemann solvers 0, 1, and 2 (FWave, AugRie or Hybrid)
+// #endif
 
 /**
  * SWE_DimensionalSplittingBlock is an implementation of the SWE_Block abstract class.
