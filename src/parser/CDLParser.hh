@@ -2,6 +2,7 @@
 #define SWE_CDLPARSER_HH
 
 #include <string>
+#include <list>
 
 #define STRING_SPACING string(" ")
 #define STRING_SEPERATOR string(" \n\t")
@@ -10,6 +11,13 @@ using namespace std;
 
 namespace parser
 {
+    template<typename T>
+    struct Assignment
+    {
+        string name;
+        T value;
+    };
+
     class CDLParser
     {
 
@@ -17,6 +25,48 @@ namespace parser
         //TODO: Implement data structure of parsed data
 
     public:
+        /**
+         * @brief Cut leading characters defined in \p seperators from \p text
+         * 
+         * Will return empty string if \p text consists only of seperators
+         * 
+         * @param text String to be processed
+         * @param seperators List of characters to be removed
+         * 
+         * @return True if string contains more than only seperators. Otherwise false
+        */
+        static bool cutLeadingSeperators(string &text, string seperators);
+
+        /**
+         * @brief Reads a list of assignments
+         * 
+         * TODO: Add description
+         * 
+         * @param text String to be parsed (will be changed)
+         * @param op Assignment operator (i.e. '=')
+         * @param interSep Seperator in between assignments
+         * @param finalSep List terminating character
+         * @param seperators Characters to be ignored in parsing
+         * 
+         * @return List of Assignment structs
+        */
+        static std::list<Assignment<int>> readIntAssignmentList(string &text, const char op, string interSep, string finalSep, string seperators);
+        
+        /**
+         * @brief Reads a list of assignments
+         * 
+         * TODO: Add description
+         * 
+         * @param text String to be parsed (will be changed)
+         * @param op Assignment operator (i.e. '=')
+         * @param interSep Seperator in between assignments
+         * @param finalSep List terminating character
+         * @param seperators Characters to be ignored in parsing
+         * 
+         * @return List of Assignment structs
+        */
+        static std::list<Assignment<double>> readDoubleAssignmentList(string &text, const char op, string interSep, string finalSep, string seperators);
+        
         /**
          * @brief Reads the next word from a string, ignoring preceding 'seperator' characters and cuts the parsed section from the input string
          * 

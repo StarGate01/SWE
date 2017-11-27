@@ -10,6 +10,46 @@ namespace swe_tests
 class swe_tests::SWETestsSuite : public CxxTest::TestSuite
 {
     public:
+        bool compareIntAssignment(std::list<parser::Assignment<int>> a, std::list<parser::Assignment<int>> b, bool printItems = false)
+        {
+            //Check number of items in list equal
+            if(a.size() != b.size())
+            {
+                std::cout << "Failed to compare size a=" << a.size() << " != " << b.size() << std::endl;
+                return false;
+            }
+            
+            std::list<parser::Assignment<int>>::iterator a_it;
+            std::list<parser::Assignment<int>>::iterator b_it;
+            for(a_it = a.begin(), b_it = b.begin(); a_it != a.end() && b_it != b.end(); a_it++, b_it++)
+            {
+                if(a_it->name != b_it->name || a_it->value != b_it->value)
+                {
+                    std::cout << std::endl << "Failed to compare item: " << a_it->name << "=" << b_it->name << " | " << a_it->value << "=" << b_it->value << std::endl;
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        void testReadIntAssignmentList(void)
+        {
+            string text = "first = 11, second = 12, third = 13;";
+            std::list<parser::Assignment<int>> ret = parser::CDLParser::readIntAssignmentList(text, '=', ",", ";", " ");
+
+            //DEBUG
+            // std::cout << "List contains: " << std::endl;
+            // std::list<parser::Assignment<int>>::iterator it;
+            // for(it = ret.begin(); it != ret.end(); it++)
+            //     std::cout << it->name << " " << it->value << std::endl;
+            //END DEBUG
+
+            struct parser::Assignment<int> i1 = {"first", 11};
+            struct parser::Assignment<int> i2 = {"second", 12};
+            struct parser::Assignment<int> i3 = {"third", 13};
+            std::list<parser::Assignment<int>> exp = {i1, i2, i3};          
+            TS_ASSERT(compareIntAssignment(ret, exp));
+        }
 
         /**
          * @test Verify implementation of parser::CDLParser::readNextString

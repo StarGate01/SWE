@@ -9,24 +9,61 @@
 using namespace parser;
 
 
+bool CDLParser::cutLeadingSeperators(string &text, string seperators)
+{
+    //Find beginning of the word
+    size_t start = text.find_first_not_of(seperators);
+    //Cut string if other content is found
+    if(start != string::npos)
+    {
+        text = text.substr(start);
+        return true;
+    }
+    text = "";
+    return false;
+};
+
+//TODO: Add throw to documentation
+std::list<Assignment<int>> CDLParser::readIntAssignmentList(string &text, const char op, string interSep, string finalSep, string seperators)
+{
+    std::list<Assignment<int>> lst;
+    bool continueParsing = true;
+    do
+    {
+        Assignment<int> item;
+        //Peek variable name
+        cutLeadingSeperators(text, seperators);
+        item.name = peekNextString(text, seperators);
+
+        //Read value
+        //TODO: Validate var to not be seperator
+        if(!readIntAssignment(text, item.name, op, item.value, seperators))
+        {
+            throw invalid_argument("Failed to read int assignment");
+        }
+
+        //Store assignment
+        lst.push_back(item);
+
+        //Check for further items and remove interSep, if further items exist
+        continueParsing = (peekNextString(text, seperators) == interSep);
+        if(continueParsing)
+            readNextString(text, seperators);
+    }while(continueParsing);
+
+    //Confirm final seperator
+    if(!readNextWord(text, finalSep, seperators))
+        throw std::invalid_argument("No final seperator detected at the end of list");
+
+    return lst;
+};
+
 bool CDLParser::readNextWord(string &text, string expected, string seperators)
 {
     string originalString = text;
 
-    //Find beginning of the word
-    size_t start = text.find_first_not_of(seperators);
-    //Return if string consists only of seperators
-    if(start == string::npos)
-    {
-        text = originalString;
-        return false;
-    }
-
-    //Cut front part of the string away
-    text = text.substr(start);
-
-    //Return if impossible to find word in string
-    if(text.length() < expected.length())
+    //Cut leading seperators and check if it is still possible to find expected word
+    if(!cutLeadingSeperators(text, seperators) || text.length() < expected.length())
     {
         text = originalString;
         return false;
@@ -56,17 +93,10 @@ bool CDLParser::readIntAssignment(string &text, string var, const char op, int &
 {
     string originalString = text;
 
-    //Read var
-    if(!CDLParser::readNextWord(text, var, seperators))
+    //Read var and op
+    if(!CDLParser::readNextWord(text, var, seperators) || !CDLParser::readNextWord(text, string(1, op), seperators))
     {
-        text = originalString;        
-        return false;       //Fail if invalid
-    }
-
-    //Read op
-    if(!CDLParser::readNextWord(text, string(1, op), seperators))
-    {
-        text = originalString;        
+        text = originalString;
         return false;       //Fail if invalid
     }
 
@@ -93,15 +123,8 @@ bool CDLParser::readDoubleAssignment(string &text, string var, const char op, do
 {
     string originalString = text;
 
-    //Read var
-    if(!CDLParser::readNextWord(text, var, seperators))
-    {
-        text = originalString;
-        return false;       //Fail if invalid
-    }
-
-    //Read op
-    if(!CDLParser::readNextWord(text, string(1, op), seperators))
+    //Read var and op
+    if(!CDLParser::readNextWord(text, var, seperators) || !CDLParser::readNextWord(text, string(1, op), seperators))
     {
         text = originalString;
         return false;       //Fail if invalid
@@ -130,18 +153,11 @@ int CDLParser::readNextInt(string &text, string seperators)
 {
     string originalString = text;
 
-    //Find beginning of the number
-    size_t start = text.find_first_not_of(seperators);
-
-    //Return if string consists only of seperators
-    if(start == string::npos)
+    if(!cutLeadingSeperators(text, seperators))
     {
         text = originalString;
-        throw std::invalid_argument("No int value found in text");
+        throw std::invalid_argument("No int value to parse");
     }
-        
-    //Cut front part of the string away
-    text = text.substr(start);
 
     //Extract number until seperator
     size_t endofnumber = text.find_first_not_of("0123456789");
@@ -171,18 +187,11 @@ double CDLParser::readNextDouble(string &text, string seperators)
 {
     string originalString = text;
 
-    //Find beginning of the number
-    size_t start = text.find_first_not_of(seperators);
-
-    //Return if string consists only of seperators
-    if(start == string::npos)
+    if(!cutLeadingSeperators(text, seperators))
     {
         text = originalString;
-        throw std::invalid_argument("No int value found");
+        throw std::invalid_argument("No double value to parse");
     }
-
-    //Cut front part of the string away
-    text = text.substr(start);
 
     //Extract number until seperator
     size_t endofnumber = text.find_first_not_of("0123456789.");
@@ -213,18 +222,11 @@ string CDLParser::readNextString(string &text, string seperators)
 {
     string originalString = text;
 
-    //Find beginning of the string
-    size_t start = text.find_first_not_of(seperators);
-
-    //Return if string consists only of seperators
-    if(start == string::npos)
+    if(!cutLeadingSeperators(text, seperators))
     {
         text = originalString;
-        throw std::invalid_argument("No int value found");
+        throw std::invalid_argument("No int value to parse");
     }
-
-    //Cut front part of the string away
-    text = text.substr(start);
 
     //Extract string until seperator
     size_t endofstring = text.find_first_of(seperators);
@@ -244,21 +246,17 @@ string CDLParser::readNextString(string &text)
 
 string CDLParser::peekNextString(string &text, string seperators)
 {
-    string originalString = text;
+    string copy = text;
 
-    //Find beginning of the string
-    size_t start = originalString.find_first_not_of(seperators);
-
-    //Return if string consists only of seperators
-    if(start == string::npos)
-        throw std::invalid_argument("No int value found");
-
-    //Cut front part of the string away
-    originalString = originalString.substr(start);
-
+    //Remove leading seperators in string
+    if(!cutLeadingSeperators(copy, seperators))
+    {
+        text = copy;
+        throw std::invalid_argument("Only seperators found in text");
+    }
     //Extract string until seperator
-    size_t endofstring = originalString.find_first_of(seperators);
-    string str = originalString.substr(0, endofstring);
+    size_t endofstring = copy.find_first_of(seperators);
+    string str = copy.substr(0, endofstring);
 
     //Convert and return number
     return str;
