@@ -30,9 +30,9 @@ namespace parser
          * 
          * @return True if parsing was successful. Otherwise false
         */
-        static bool readNextWord(string* text, string expected, string seperators);
+        static bool readNextWord(string &text, string expected, string seperators);
         //TODO: Add documentation
-        static bool readNextWord(string* text, string expected);
+        static bool readNextWord(string &text, string expected);
 
         /**
          * @brief Parses a specific pattern of words, such as 'var = 12', in a string and cuts the parsed section from the input string
@@ -54,9 +54,9 @@ namespace parser
          * 
          * @return True if parsing was successful. Otherwise false
         */
-        static bool readIntAssignment(string* text, string var, const char op, int &ret, string seperators);
+        static bool readIntAssignment(string &text, string var, const char op, int &ret, string seperators);
         //TODO: Add documentation
-        static bool readIntAssignment(string* text, string var, const char op, int &ret);
+        static bool readIntAssignment(string &text, string var, const char op, int &ret);
         
 
         /**
@@ -79,9 +79,9 @@ namespace parser
          * 
          * @return True if parsing was successful. Otherwise false
         */
-        static bool readDoubleAssignment(string* text, string var, const char op, double &ret, string seperators);
+        static bool readDoubleAssignment(string &text, string var, const char op, double &ret, string seperators);
         //TODO: Add documentation
-        static bool readDoubleAssignment(string* text, string var, const char op, double &ret);
+        static bool readDoubleAssignment(string &text, string var, const char op, double &ret);
         
 
         /**
@@ -98,9 +98,9 @@ namespace parser
          * 
          * @throws Exceptions thrown by std::stoi, namely being std::invalid_argument and std::out_of_range
         */
-        static int readNextInt(string* text, string seperators);
+        static int readNextInt(string &text, string seperators);
         //TODO: Add documentation
-        static int readNextInt(string* text);
+        static int readNextInt(string &text);
         
 
         /**
@@ -117,9 +117,9 @@ namespace parser
          * 
          * @throws Exceptions thrown by std::stod, namely being std::invalid_argument and std::out_of_range
         */
-        static double readNextDouble(string* text, string seperators);
+        static double readNextDouble(string &text, string seperators);
 
-        static double readNextDouble(string* text);
+        static double readNextDouble(string &text);
         
 
         /**
@@ -136,9 +136,9 @@ namespace parser
          * 
          * @throws std::invalid_argument, if \p text contains only seperators
         */
-        static string readNextString(string* text, string seperators);
+        static string readNextString(string &text, string seperators);
 
-        static string readNextString(string* text);
+        static string readNextString(string &text);
         
 
         /**
@@ -154,9 +154,9 @@ namespace parser
          * 
          * @throws std::invalid_argument, if \p text contains only seperators
         */
-        static string peekNextString(string* text, string seperators);
+        static string peekNextString(string &text, string seperators);
 
-        static string peekNextString(string* text);
+        static string peekNextString(string &text);
         
         
         void parse_netCDF(string text);
