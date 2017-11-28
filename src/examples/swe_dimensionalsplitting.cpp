@@ -74,53 +74,6 @@
  */
 int main(int argc, char** argv) 
 {
-
-  /*netcdf foo { // example netCDF specification in CDL
-  dimensions:
-    lat = 10, lon = 5, time = unlimited;
-    test = 1;
-  variables:
-    int lat(lat), lon(lon), time(time);
-    float z(time,lat,lon), t(lat,lon);
-    lat:units = "degrees_north";
-    lon:units = "degrees_east";
-    time:units = "seconds";
-    z:valid_range = 0., 5000.;
-    :gltest = 42;
-  data:
-    lat = 0, 10, 20, 30, 40, 50, 60, 70, 80, 90;*/
-
-  parser::CDLData testdata = parser::CDLStreamParser::CDLStringToData(R"(
-    netcdf mslp {  // example for workshop
-    dimensions:
-      lat = 6 ;
-      lon = 4 ;
-      time = UNLIMITED ;      // currently 2
-    variables:
-      float lat(lat) ;
-        lat:units = "degrees_north" ;
-      float lon(lon) ;
-        lon:units = "degrees_east" ;
-      double time(time) ;
-        time:units = "seconds since 2009-01-01" ;
-      float pr(time, lat, lon) ;
-        pr:standard_name = "air_pressure_at_sea_level" ;
-        pr:units = "hPa" ;
-      :title="example for workshop";
-    data:
-
-    lat = 25, 30, 35, 40, 45, 50 ;
-    lon = -125, -110, -95, -80 ;
-    time = 7776000, 15552000 ;
-    pr =
-      900.5, 901, 902, 903, 904, 905, 906, 907, 908, 909, 910, 911,
-      912, 913, 914, 915, 916, 917, 918, 919, 920, 921, 922, 923,
-      972, 973, 974, 975, 976, 977, 978, 979, 980, 981, 982, 983,
-      984, 985, 986, 987, 988, 989, 990, 991, 992, 993, 994, 995 ;
-    }
-  })");
-  return 3;
-
   tools::Logger::logger.printString("\nThis is swe_dimensionalsplitting, using SWE_DimensionalSplittingBlock\n");
 
   // Parse command line parameters
