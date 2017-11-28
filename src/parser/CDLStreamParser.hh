@@ -2,72 +2,13 @@
 #define SWE_CDLSTREAMPARSER_HH
 
 #include <queue>
+#include "CDLStreamTokenizer.hh"
 #include "CDLData.hh"
 
 using namespace std;
 
 namespace parser
 {
-
-    enum class TokenType : unsigned int
-    { 
-        None,
-        Literal,
-        Seperator,
-        DataSeperator,
-        SectorSeperator,
-        AssignmentOperator,
-        MemberOperator,
-        LeftParenthesis,
-        RightParenthesis,
-        LeftBrace,
-        RightBrace
-    };
-
-    struct TokenProcessingState
-    {
-
-        string literalBuffer = "";
-        bool hadColon = false;
-        char commentState = 0;
-        bool verbatim = false;
-
-    };
-
-    struct Token
-    {
-
-        TokenType type;
-        string value;
-
-        Token()
-        {};
-
-        Token(TokenType t, string v)
-            : type(t),
-              value(v)
-        {};
-
-    };
-
-    class CDLStreamTokenizer
-    {
-
-        private:
-            
-            TokenProcessingState state;
-            queue<Token> tokens;
-
-        public:
-
-            CDLStreamTokenizer() 
-            {};
-
-            bool hasTokens();
-            Token getToken();
-            void read(char c);
-
-    };
 
     enum class StreamPosition : unsigned int
     {
@@ -112,21 +53,22 @@ namespace parser
         private:
 
             ParserProcessingState state;
-            CDLData* data;
-        
+            CDLData data;
+
             void processDimensionalToken(Token t);
             void processVariableToken(Token t);
             void processDataToken(Token t);
 
         public:
 
-            static CDLData* CDLStringToData(string s);
+            static CDLData CDLStreamToData(istream& s);
+            static CDLData CDLStringToData(string s);
 
-            CDLStreamParser(CDLData* d)
-                : data(d)
+            CDLStreamParser()
             {};
 
             void processToken(Token t);
+            CDLData retrieve() { return data; }
 
     };
 

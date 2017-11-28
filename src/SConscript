@@ -99,6 +99,7 @@ else:
 # CDL parser
 if env['parseCDL'] == True:
   sourceFiles.append( ['parser/CDLParser.cpp'] )
+  sourceFiles.append( ['parser/CDLStreamTokenizer.cpp'] )
   sourceFiles.append( ['parser/CDLStreamParser.cpp'] )
 
 # xml reader
@@ -142,6 +143,6 @@ for i in sourceFiles:
 # smart_flatten(sourceFiles, sourceFilesTest)
 # print '[%s]' % ', '.join(map(str, sourceFilesTest))
 
-env.CxxTest('SWETests', ['unit_tests/SWETests.t.h', 'parser/CDLParser.cpp', 'parser/CDLStreamParser.cpp'])
+env.CxxTest('SWETests', ['unit_tests/SWETests.t.h', 'parser/CDLParser.cpp', 'parser/CDLStreamTokenizer.cpp', 'parser/CDLStreamParser.cpp'])
 
 Export('env')

@@ -7,60 +7,6 @@
 using namespace parser;
 using namespace std;
 
-bool CDLStreamTokenizer::hasTokens()
-{
-    return !tokens.empty();
-}
-
-Token CDLStreamTokenizer::getToken()
-{
-    if(tokens.empty()) throw runtime_error("Token queue is empty");
-    Token result = tokens.front();
-    tokens.pop();
-    return result;
-};
-
-void CDLStreamTokenizer::read(char c)
-{
-    if(c == '\n')
-    {
-        state.commentState = 0;
-        if(state.hadColon) tokens.push(Token(TokenType::SectorSeperator, ":"));
-    }
-    else if(state.hadColon) tokens.push(Token(TokenType::MemberOperator, ":"));
-    state.hadColon = false;
-    if(state.commentState == 2) return;
-    if((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '.' || c == '_' || c == '-' || c = '+')
-        state.literalBuffer += c;
-    else
-    {
-        if(state.verbatim)
-        {
-            if(c == '"') state.verbatim = false;
-            else
-            {
-                state.literalBuffer += c;
-                return;
-            }
-        }
-        else if(c == '"') state.verbatim = true;
-        if(state.literalBuffer.length() != 0)
-        {
-            tokens.push(Token(TokenType::Literal, state.literalBuffer));
-            state.literalBuffer = "";
-        }
-        if(c == ';') tokens.push(Token(TokenType::Seperator, ";"));
-        else if(c == ',') tokens.push(Token(TokenType::DataSeperator, ","));
-        else if(c == '=') tokens.push(Token(TokenType::AssignmentOperator, "="));
-        else if(c == ':') state.hadColon = true;
-        else if(c == '(') tokens.push(Token(TokenType::LeftParenthesis, "("));
-        else if(c == ')') tokens.push(Token(TokenType::RightParenthesis, ")"));
-        else if(c == '{') tokens.push(Token(TokenType::LeftBrace, "{"));
-        else if(c == '}') tokens.push(Token(TokenType::RightBrace, "}"));
-        else if(c == '/' && state.commentState <= 2) state.commentState++;
-    }
-};
-
 void CDLStreamParser::processToken(Token t)
 {
     switch(state.position)
@@ -73,7 +19,7 @@ void CDLStreamParser::processToken(Token t)
         case StreamPosition::Header:
             if(t.type == TokenType::Literal)
             {
-                data->name = t.value;
+                data.name = t.value;
                 state.position = StreamPosition::HeaderName;
             } 
             else throw runtime_error("Expected literal for header name");
@@ -165,8 +111,8 @@ void CDLStreamParser::processDimensionalToken(Token t)
         case StreamPosition::Start:
             if(t.type == TokenType::Literal)
             {
-                data->dimensions[t.value] = CDLDimension({name: t.value});
-                state.currentDimension = &(data->dimensions[t.value]);
+                data.dimensions[t.value] = CDLDimension({name: t.value});
+                state.currentDimension = &(data.dimensions[t.value]);
                 state.subPosition = StreamPosition::AwaitingAssignmentOperator;
             }
             else if (t.type != TokenType::DataSeperator) throw runtime_error("Expected literal for dimension name");
@@ -219,8 +165,8 @@ void CDLStreamParser::processVariableToken(Token t)
             {
                 state.subPosition = StreamPosition::AwaitingMemberName;
                 state.globalAttribute = false;
-                map<string, CDLVariable>::iterator it = data->variables.find(state.lastLiteral.value);
-                if(it != data->variables.end())
+                map<string, CDLVariable>::iterator it = data.variables.find(state.lastLiteral.value);
+                if(it != data.variables.end())
                 {
                     state.currentVariable = &(it->second);
                     state.subPosition = StreamPosition::AwaitingMemberName;
@@ -229,8 +175,8 @@ void CDLStreamParser::processVariableToken(Token t)
             }
             else if(t.type == TokenType::Literal)
             {
-                data->variables[t.value] = CDLVariable({name: t.value, type: state.lastLiteral.value});
-                state.currentVariable = &(data->variables[t.value]);
+                data.variables[t.value] = CDLVariable({name: t.value, type: state.lastLiteral.value});
+                state.currentVariable = &(data.variables[t.value]);
                 state.subPosition = StreamPosition::AwaitingLeftParenthesis;
             }
             else if(t.type != TokenType::DataSeperator) throw runtime_error("Expected literal, ':' or ','"); 
@@ -246,8 +192,8 @@ void CDLStreamParser::processVariableToken(Token t)
                 }
                 else
                 {
-                    data->globalAttributes[t.value] = CDLAttribute({name: t.value});
-                    state.currentAttribute = &(data->globalAttributes[t.value]);
+                    data.globalAttributes[t.value] = CDLAttribute({name: t.value});
+                    state.currentAttribute = &(data.globalAttributes[t.value]);
                 }
                 state.subPosition = StreamPosition::AwaitingAssignmentOperator;
             }
@@ -287,8 +233,8 @@ void CDLStreamParser::processDataToken(Token t)
         case StreamPosition::Start:
             if(t.type == TokenType::Literal)
             {
-                map<string, CDLVariable>::iterator it = data->variables.find(t.value);
-                if(it != data->variables.end())
+                map<string, CDLVariable>::iterator it = data.variables.find(t.value);
+                if(it != data.variables.end())
                 {
                     state.currentVariable = &(it->second);
                     state.subPosition = StreamPosition::AwaitingAssignmentOperator;
@@ -314,15 +260,23 @@ void CDLStreamParser::processDataToken(Token t)
 };
 
 
-CDLData* CDLStreamParser::CDLStringToData(string s)
+CDLData CDLStreamParser::CDLStringToData(string s)
 {
-    CDLData* ret = new CDLData();
+    istringstream ss(s);
+    return CDLStreamToData(ss);
+};
+
+CDLData CDLStreamParser::CDLStreamToData(istream& s)
+{
     CDLStreamTokenizer tokenizer;
-    CDLStreamParser parser(ret);
+    CDLStreamParser parser;
     unsigned long int lineNumber = 0;
     unsigned int linePos = 0;
-    for(char& c : s) 
+    char c;
+    while(true)
     {
+        c = s.get();
+        if(c == EOF) break;
         tokenizer.read(c);
         linePos++;
         while(tokenizer.hasTokens()) 
@@ -342,5 +296,5 @@ CDLData* CDLStreamParser::CDLStringToData(string s)
             linePos = 0;
         }
     }
-    return ret;
+    return parser.retrieve();
 };

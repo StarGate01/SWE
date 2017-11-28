@@ -40,7 +40,8 @@
         "functional": "cpp",
         "memory": "cpp",
         "any": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "queue": "cpp"
     },
     "spellright.language": "en",
     "spellright.documentTypes": [

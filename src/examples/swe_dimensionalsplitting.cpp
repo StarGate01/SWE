@@ -90,7 +90,7 @@ int main(int argc, char** argv)
   data:
     lat = 0, 10, 20, 30, 40, 50, 60, 70, 80, 90;*/
 
-  parser::CDLData* testdata = parser::CDLStreamParser::CDLStringToData(R"(
+  parser::CDLData testdata = parser::CDLStreamParser::CDLStringToData(R"(
     netcdf mslp {  // example for workshop
     dimensions:
       lat = 6 ;
@@ -119,7 +119,6 @@ int main(int argc, char** argv)
       984, 985, 986, 987, 988, 989, 990, 991, 992, 993, 994, 995 ;
     }
   })");
-  delete testdata;
   return 3;
 
   tools::Logger::logger.printString("\nThis is swe_dimensionalsplitting, using SWE_DimensionalSplittingBlock\n");
