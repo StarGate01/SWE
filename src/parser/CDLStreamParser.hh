@@ -81,37 +81,23 @@ namespace parser
         AwaitingDimSectorSeperator,
         AwaitingValSectorSeperator,
         AwaitingDatSectorSeperator,
+        AwaitingAssignmentOperator,
+        AwaitingValue,
+        AwaitingLeftParenthesis,
+        AwaitingDimensionName,
+        AwaitingMemberOperatorOrVariableName,
+        AwaitingMemberName,
         Dimensions,
         Variables,
         Data,
         End
     };
 
-    enum class DimDatStreamPosition : unsigned int
-    {
-        Start,
-        AwaitingAssignmentOperator,
-        AwaitingValue
-    };
-
-    enum class VarStreamPosition : unsigned int
-    {
-        Start,
-        AwaitingLeftParenthesis,
-        AwaitingDimensionName,
-        AwaitingMemberOperatorOrVariableName,
-        AwaitingMemberName,
-        AwaitingAssignmentOperator,
-        AwaitingMemberValue
-    };
-
     struct ParserProcessingState
     {
 
         StreamPosition position = StreamPosition::Start;
-        DimDatStreamPosition dimPosition = DimDatStreamPosition::Start;
-        VarStreamPosition varPosition = VarStreamPosition::Start;
-        DimDatStreamPosition datPosition = DimDatStreamPosition::Start;
+        StreamPosition subPosition = StreamPosition::Start;
 
         vector<Token> currentLine;
 
