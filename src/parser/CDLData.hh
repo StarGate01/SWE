@@ -17,6 +17,11 @@ namespace parser
         int length;
         bool unlimited;
 
+        bool operator== (const CDLDimension &b)
+        {
+            return (length == b.length && unlimited == b.unlimited && name.compare(b.name) == 0);
+        }
+
     };
 
     struct CDLAttribute
@@ -24,6 +29,11 @@ namespace parser
 
         string name;
         vector<string> values;
+
+        bool operator== (const CDLAttribute &b)
+        {
+            return (name.compare(b.name) == 0 && values == b.values);
+        }
 
     };
     
@@ -36,6 +46,12 @@ namespace parser
         map<string, CDLAttribute> attributes;
         vector<string> data;
 
+        bool operator== (const CDLVariable &b)
+        {
+            return (name.compare(b.name) == 0 && type.compare(b.type) == 0 
+                && components == b.components && attributes == b.attributes && data == b.data);
+        }
+
     };
 
     struct CDLData
@@ -45,6 +61,12 @@ namespace parser
         map<string, CDLAttribute> globalAttributes;
         map<string, CDLDimension> dimensions;
         map<string, CDLVariable> variables;
+
+        bool operator== (const CDLData &b)
+        {
+            return (name.compare(b.name) == 0 && globalAttributes == b.globalAttributes 
+                && dimensions == b.dimensions && variables == b.variables);
+        }
 
     };
 
