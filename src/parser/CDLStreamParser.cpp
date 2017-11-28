@@ -286,8 +286,7 @@ CDLData CDLStreamParser::CDLStreamToData(istream& s)
             { 
                 stringstream ss;
                 ss << "Unexpected token at line " << lineNumber << ", column " << linePos << ": " << e.what();
-                string error = ss.str();
-                cout << error;
+                throw runtime_error(ss.str());
             }
         }
         if(c == '\n') 

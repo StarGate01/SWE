@@ -61,8 +61,8 @@ namespace parser
 
         public:
 
-            static CDLData CDLStreamToData(istream& s);
             static CDLData CDLStringToData(string s);
+            static CDLData CDLStreamToData(istream& s);
 
             CDLStreamParser()
             {};
