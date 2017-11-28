@@ -143,6 +143,7 @@ for i in sourceFiles:
 # smart_flatten(sourceFiles, sourceFilesTest)
 # print '[%s]' % ', '.join(map(str, sourceFilesTest))
 
-env.CxxTest('SWETests', ['unit_tests/SWETests.t.h', 'parser/CDLParser.cpp', 'parser/CDLStreamTokenizer.cpp', 'parser/CDLStreamParser.cpp'])
+# env.CxxTest('SWETests', ['unit_tests/SWETests.t.h', 'parser/CDLParser.cpp'])
+env.CxxTest('SWECDLTests', ['unit_tests/SWECDLTests.t.h', 'parser/CDLStreamTokenizer.cpp', 'parser/CDLStreamParser.cpp'])
 
 Export('env')

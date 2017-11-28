@@ -19,7 +19,7 @@ namespace parser
 
         bool operator== (const CDLDimension &b) const
         {
-            return (length == b.length && unlimited == b.unlimited && name.compare(b.name) == 0);
+            return (length == b.length && unlimited == b.unlimited && name == b.name);
         }
 
     };
@@ -32,7 +32,7 @@ namespace parser
 
         bool operator== (const CDLAttribute &b) const
         {
-            return (name.compare(b.name) == 0 && values == b.values);
+            return (name == b.name && values == b.values);
         }
 
     };
@@ -48,7 +48,7 @@ namespace parser
 
         bool operator== (const CDLVariable &b) const
         {
-            return (name.compare(b.name) == 0 && type.compare(b.type) == 0 
+            return (name == b.name && type == b.type 
                 && components == b.components && attributes == b.attributes && data == b.data);
         }
 
@@ -64,7 +64,7 @@ namespace parser
 
         bool operator== (const CDLData &b) const
         {
-            return (name.compare(b.name) == 0 && globalAttributes == b.globalAttributes
+            return (name == b.name && globalAttributes == b.globalAttributes
                 && dimensions == b.dimensions && variables == b.variables);
         }
 

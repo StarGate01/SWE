@@ -31,7 +31,7 @@ void CDLStreamParser::processToken(Token t)
             break;
 
         case StreamPosition::Outside:
-            if(t.type == TokenType::Literal && t.value.compare("dimensions") == 0) 
+            if(t.type == TokenType::Literal && t.value == "dimensions") 
                 state.position = StreamPosition::AwaitingDimSectorSeperator;
             else throw runtime_error("Expected 'dimensions' for section name");
             break;
@@ -44,7 +44,7 @@ void CDLStreamParser::processToken(Token t)
         case StreamPosition::Dimensions:
             if(t.type != TokenType::Seperator)
             {
-                if(state.lineEmpty && t.type == TokenType::Literal && t.value.compare("variables") == 0)
+                if(state.lineEmpty && t.type == TokenType::Literal && t.value == "variables")
                     state.position = StreamPosition::AwaitingValSectorSeperator;
                 else
                 {
@@ -67,7 +67,7 @@ void CDLStreamParser::processToken(Token t)
         case StreamPosition::Variables:
             if(t.type != TokenType::Seperator)
             {
-                if(state.lineEmpty && t.type == TokenType::Literal && t.value.compare("data") == 0)
+                if(state.lineEmpty && t.type == TokenType::Literal && t.value == "data")
                     state.position = StreamPosition::AwaitingDatSectorSeperator;
                 else 
                 {
@@ -126,7 +126,7 @@ void CDLStreamParser::processDimensionalToken(Token t)
         case StreamPosition::AwaitingValue:
             if(t.type == TokenType::Literal)
             {
-                if(t.value.compare("unlimited") == 0 || t.value.compare("UNLIMITED") == 0) 
+                if(t.value == "unlimited" || t.value == "UNLIMITED") 
                     state.currentDimension->unlimited = true;
                 else
                 {
