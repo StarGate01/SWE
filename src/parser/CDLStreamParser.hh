@@ -41,11 +41,7 @@ namespace parser
 
         Token()
         {};
-
-        Token(TokenType t)
-            : type(t)
-        {};
-
+        
         Token(TokenType t, string v)
             : type(t),
               value(v)
@@ -99,14 +95,13 @@ namespace parser
         StreamPosition position = StreamPosition::Start;
         StreamPosition subPosition = StreamPosition::Start;
 
-        vector<Token> currentLine;
-
         CDLDimension *currentDimension;
         CDLVariable *currentVariable;
         CDLAttribute *currentAttribute;
 
         Token lastLiteral;
         bool globalAttribute;
+        bool lineEmpty;
 
     };
 

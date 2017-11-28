@@ -25,9 +25,9 @@ void CDLStreamTokenizer::read(char c)
     if(c == '\n')
     {
         state.commentState = 0;
-        if(state.hadColon) tokens.push(Token(TokenType::SectorSeperator));
+        if(state.hadColon) tokens.push(Token(TokenType::SectorSeperator, ":"));
     }
-    else if(state.hadColon) tokens.push(Token(TokenType::MemberOperator));
+    else if(state.hadColon) tokens.push(Token(TokenType::MemberOperator, ":"));
     state.hadColon = false;
 
     if(state.commentState == 2) return;
@@ -42,14 +42,14 @@ void CDLStreamTokenizer::read(char c)
             tokens.push(Token(TokenType::Literal, state.literalBuffer));
             state.literalBuffer = "";
         }
-        if(c == ';') tokens.push(Token(TokenType::Seperator));
-        else if(c == ',') tokens.push(Token(TokenType::DataSeperator));
-        else if(c == '=') tokens.push(Token(TokenType::AssignmentOperator));
+        if(c == ';') tokens.push(Token(TokenType::Seperator, ";"));
+        else if(c == ',') tokens.push(Token(TokenType::DataSeperator, ","));
+        else if(c == '=') tokens.push(Token(TokenType::AssignmentOperator, "="));
         else if(c == ':') state.hadColon = true;
-        else if(c == '(') tokens.push(Token(TokenType::LeftParenthesis));
-        else if(c == ')') tokens.push(Token(TokenType::RightParenthesis));
-        else if(c == '{') tokens.push(Token(TokenType::LeftBrace));
-        else if(c == '}') tokens.push(Token(TokenType::RightBrace));
+        else if(c == '(') tokens.push(Token(TokenType::LeftParenthesis, "("));
+        else if(c == ')') tokens.push(Token(TokenType::RightParenthesis, ")"));
+        else if(c == '{') tokens.push(Token(TokenType::LeftBrace, "{"));
+        else if(c == '}') tokens.push(Token(TokenType::RightBrace, "}"));
         else if(c == '/' && state.commentState <= 2) state.commentState++;
     }
 };
@@ -91,15 +91,18 @@ void CDLStreamParser::processToken(Token t)
         case StreamPosition::Dimensions:
             if(t.type != TokenType::Seperator)
             {
-                if(state.currentLine.size() == 0 && t.type == TokenType::Literal && t.value.compare("variables") == 0)
+                if(state.lineEmpty && t.type == TokenType::Literal && t.value.compare("variables") == 0)
                     state.position = StreamPosition::AwaitingValSectorSeperator;
-                else state.currentLine.push_back(t);
+                else
+                {
+                    state.lineEmpty = false;
+                    processDimensionalToken(t);
+                }
             } 
             else
             {
                 state.subPosition = StreamPosition::Start;
-                for(Token const& tn: state.currentLine) processDimensionalToken(tn);
-                state.currentLine.clear();
+                state.lineEmpty = true;
             }
             break;
         
@@ -111,15 +114,18 @@ void CDLStreamParser::processToken(Token t)
         case StreamPosition::Variables:
             if(t.type != TokenType::Seperator)
             {
-                if(state.currentLine.size() == 0  && t.type == TokenType::Literal && t.value.compare("data") == 0)
+                if(state.lineEmpty && t.type == TokenType::Literal && t.value.compare("data") == 0)
                     state.position = StreamPosition::AwaitingDatSectorSeperator;
-                else state.currentLine.push_back(t);
+                else 
+                {
+                    state.lineEmpty = false;
+                    processVariableToken(t);
+                }
             } 
             else
             {
                 state.subPosition = StreamPosition::Start;
-                for(Token const& tn: state.currentLine) processVariableToken(tn);
-                state.currentLine.clear();
+                state.lineEmpty = true;
             }
             break;
 
@@ -318,7 +324,7 @@ CDLData* CDLStreamParser::CDLStringToData(string s)
             catch(const runtime_error &e) 
             { 
                 stringstream ss;
-                ss << "At line " << lineNumber << ", column " << linePos << ": " << e.what();
+                ss << "Unexpected token at line " << lineNumber << ", column " << linePos << ": " << e.what();
                 string error = ss.str();
                 cout << error;
             }
