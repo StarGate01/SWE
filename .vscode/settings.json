@@ -35,7 +35,11 @@
         "typeinfo": "cpp",
         "utility": "cpp",
         "ctime": "cpp",
-        "iomanip": "cpp"
+        "iomanip": "cpp",
+        "bitset": "cpp",
+        "functional": "cpp",
+        "memory": "cpp",
+        "any": "cpp"
     },
     "spellright.language": "en",
     "spellright.documentTypes": [
