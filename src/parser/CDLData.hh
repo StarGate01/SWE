@@ -10,17 +10,6 @@ using namespace std;
 namespace parser
 {
 
-    enum class CDLPrimitiveTypes : unsigned int
-    {
-        Char,
-        Byte,
-        Short,
-        Int,
-        Float,
-        Double,
-        String
-    };
-
     struct CDLDimension
     {
 
@@ -42,7 +31,7 @@ namespace parser
     {
 
         string name;
-        CDLPrimitiveTypes type;
+        string type;
         vector<string> components;
         map<string, CDLAttribute> attributes;
         vector<string> data;
@@ -53,6 +42,7 @@ namespace parser
     {
 
         string name;
+        map<string, CDLAttribute> globalAttributes;
         map<string, CDLDimension> dimensions;
         map<string, CDLVariable> variables;
 

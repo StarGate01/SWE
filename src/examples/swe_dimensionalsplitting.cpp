@@ -75,21 +75,24 @@
 int main(int argc, char** argv) 
 {
 
-  parser::CDLData* testdata = parser::CDLStreamParser::CDLStringToData(R"(
-netcdf foo { // example netCDF specification in CDL
-dimensions:
-  lat = 10, lon = 5, time = unlimited;
-variables:
-  int lat(lat), lon(lon), time(time);
-  float z(time,lat,lon), t(lat,lon);
-  lat:units = "degrees_north";
-  lon:units = "degrees_east";
-  time:units = "seconds";
-  z:valid_range = 0., 5000.;
-data:
-  lat = 0, 10, 20, 30, 40, 50, 60, 70, 80, 90;
-})");
-  delete testdata;
+parser::CDLData* testdata = parser::CDLStreamParser::CDLStringToData(R"(
+  netcdf foo { // example netCDF specification in CDL
+  dimensions:
+    lat = 10, lon = 5, time = unlimited;
+    test = 1;
+  variables:
+    int lat(lat), lon(lon), time(time);
+    float z(time,lat,lon), t(lat,lon);
+    lat:units = "degrees_north";
+    lon:units = "degrees_east";
+    time:units = "seconds";
+    z:valid_range = 0., 5000.;
+    :gltest = 42;
+  data:
+    lat = 0, 10, 20, 30, 40, 50, 60, 70, 80, 90;
+  })");
+delete testdata;
+return 3;
 
   tools::Logger::logger.printString("\nThis is swe_dimensionalsplitting, using SWE_DimensionalSplittingBlock\n");
 

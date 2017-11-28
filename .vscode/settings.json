@@ -39,7 +39,8 @@
         "bitset": "cpp",
         "functional": "cpp",
         "memory": "cpp",
-        "any": "cpp"
+        "any": "cpp",
+        "algorithm": "cpp"
     },
     "spellright.language": "en",
     "spellright.documentTypes": [

@@ -39,6 +39,9 @@ namespace parser
         TokenType type;
         string value;
 
+        Token()
+        {};
+
         Token(TokenType t)
             : type(t)
         {};
@@ -84,14 +87,40 @@ namespace parser
         End
     };
 
+    enum class DimDatStreamPosition : unsigned int
+    {
+        Start,
+        AwaitingAssignmentOperator,
+        AwaitingValue
+    };
+
+    enum class VarStreamPosition : unsigned int
+    {
+        Start,
+        AwaitingLeftParenthesis,
+        AwaitingDimensionName,
+        AwaitingMemberOperatorOrVariableName,
+        AwaitingMemberName,
+        AwaitingAssignmentOperator,
+        AwaitingMemberValue
+    };
+
     struct ParserProcessingState
     {
 
         StreamPosition position = StreamPosition::Start;
-        bool activeDataAssignment = false;
-        CDLVariable *currentDataVariable;
+        DimDatStreamPosition dimPosition = DimDatStreamPosition::Start;
+        VarStreamPosition varPosition = VarStreamPosition::Start;
+        DimDatStreamPosition datPosition = DimDatStreamPosition::Start;
+
         vector<Token> currentLine;
-        TokenType awaiting = TokenType::None;
+
+        CDLDimension *currentDimension;
+        CDLVariable *currentVariable;
+        CDLAttribute *currentAttribute;
+
+        Token lastLiteral;
+        bool globalAttribute;
 
     };
 
@@ -104,7 +133,9 @@ namespace parser
             CDLData* data;
         
             void processDimensionalToken(Token t);
-            
+            void processVariableToken(Token t);
+            void processDataToken(Token t);
+
         public:
 
             static CDLData* CDLStringToData(string s);
