@@ -17,7 +17,7 @@ namespace parser
         int length;
         bool unlimited;
 
-        bool operator== (const CDLDimension &b)
+        bool operator== (const CDLDimension &b) const
         {
             return (length == b.length && unlimited == b.unlimited && name.compare(b.name) == 0);
         }
@@ -30,7 +30,7 @@ namespace parser
         string name;
         vector<string> values;
 
-        bool operator== (const CDLAttribute &b)
+        bool operator== (const CDLAttribute &b) const
         {
             return (name.compare(b.name) == 0 && values == b.values);
         }
@@ -46,7 +46,7 @@ namespace parser
         map<string, CDLAttribute> attributes;
         vector<string> data;
 
-        bool operator== (const CDLVariable &b)
+        bool operator== (const CDLVariable &b) const
         {
             return (name.compare(b.name) == 0 && type.compare(b.type) == 0 
                 && components == b.components && attributes == b.attributes && data == b.data);
@@ -62,9 +62,9 @@ namespace parser
         map<string, CDLDimension> dimensions;
         map<string, CDLVariable> variables;
 
-        bool operator== (const CDLData &b)
+        bool operator== (const CDLData &b) const
         {
-            return (name.compare(b.name) == 0 && globalAttributes == b.globalAttributes 
+            return (name.compare(b.name) == 0 && globalAttributes == b.globalAttributes
                 && dimensions == b.dimensions && variables == b.variables);
         }
 

@@ -37,9 +37,9 @@ namespace parser
         StreamPosition position = StreamPosition::Start;
         StreamPosition subPosition = StreamPosition::Start;
 
-        CDLDimension *currentDimension;
-        CDLVariable *currentVariable;
-        CDLAttribute *currentAttribute;
+        CDLDimension* currentDimension;
+        CDLVariable* currentVariable;
+        CDLAttribute* currentAttribute;
 
         Token lastLiteral;
         bool globalAttribute = false;

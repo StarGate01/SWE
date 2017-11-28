@@ -259,7 +259,6 @@ void CDLStreamParser::processDataToken(Token t)
     }
 };
 
-
 CDLData CDLStreamParser::CDLStringToData(string s)
 {
     istringstream ss(s);
