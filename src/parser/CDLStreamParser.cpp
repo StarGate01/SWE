@@ -29,14 +29,21 @@ void CDLStreamTokenizer::read(char c)
     }
     else if(state.hadColon) tokens.push(Token(TokenType::MemberOperator, ":"));
     state.hadColon = false;
-
     if(state.commentState == 2) return;
-    if((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '.' || c == '_')
-    {
+    if((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '.' || c == '_' || c == '-' || c = '+')
         state.literalBuffer += c;
-    }
     else
     {
+        if(state.verbatim)
+        {
+            if(c == '"') state.verbatim = false;
+            else
+            {
+                state.literalBuffer += c;
+                return;
+            }
+        }
+        else if(c == '"') state.verbatim = true;
         if(state.literalBuffer.length() != 0)
         {
             tokens.push(Token(TokenType::Literal, state.literalBuffer));

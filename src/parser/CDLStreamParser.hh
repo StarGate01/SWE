@@ -30,6 +30,7 @@ namespace parser
         string literalBuffer = "";
         bool hadColon = false;
         char commentState = 0;
+        bool verbatim = false;
 
     };
 
@@ -41,7 +42,7 @@ namespace parser
 
         Token()
         {};
-        
+
         Token(TokenType t, string v)
             : type(t),
               value(v)
@@ -100,8 +101,8 @@ namespace parser
         CDLAttribute *currentAttribute;
 
         Token lastLiteral;
-        bool globalAttribute;
-        bool lineEmpty;
+        bool globalAttribute = false;
+        bool lineEmpty = false;
 
     };
 
