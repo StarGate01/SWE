@@ -111,6 +111,7 @@ class swe_tests::SWECDLTestsSuite : public CxxTest::TestSuite
                 invalid token
             )";
 
+            //Expect this operation to fail
             bool exceptionCatched = false;
             try{
                 CDLStreamParser::CDLStringToData(cdltext, newdata);
