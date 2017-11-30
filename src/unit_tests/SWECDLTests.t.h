@@ -112,13 +112,9 @@ class swe_tests::SWECDLTestsSuite : public CxxTest::TestSuite
             )";
 
             //Expect this operation to fail
-            bool exceptionCatched = false;
-            try{
-                CDLStreamParser::CDLStringToData(cdltext, newdata);
-            }catch(exception& e)
-            {
-                exceptionCatched = true;
-            }
-            TS_ASSERT(exceptionCatched);
+            bool exceptionCought = false;
+            try{ CDLStreamParser::CDLStringToData(cdltext, newdata); }
+            catch(runtime_error& e) { exceptionCought = true; }
+            TS_ASSERT(exceptionCought);
         }
 };
