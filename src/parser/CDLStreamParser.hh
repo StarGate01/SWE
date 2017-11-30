@@ -38,12 +38,13 @@ namespace parser
         StreamPosition subPosition = StreamPosition::Start;
 
         CDLDimension* currentDimension;
-        CDLVariable* currentVariable;
+        ICDLVariable* currentVariable;
         CDLAttribute* currentAttribute;
 
         Token lastLiteral;
         bool globalAttribute = false;
         bool lineEmpty = false;
+        bool isUnsigned = false;
 
     };
 
@@ -53,7 +54,7 @@ namespace parser
         private:
 
             ParserProcessingState state;
-            CDLData data;
+            CDLData& data;
 
             void processDimensionalToken(Token t);
             void processVariableToken(Token t);
@@ -61,10 +62,11 @@ namespace parser
 
         public:
 
-            static CDLData CDLStringToData(string s);
-            static CDLData CDLStreamToData(istream& s);
+            static void CDLStringToData(string s, CDLData& d);
+            static void CDLStreamToData(istream& s, CDLData& d);
 
-            CDLStreamParser()
+            CDLStreamParser(CDLData& d)
+                : data(d)
             {};
 
             void processToken(Token t);

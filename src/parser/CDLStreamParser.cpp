@@ -1,6 +1,7 @@
 #include <stdexcept>
 #include <sstream>
 #include <iostream>
+#include <algorithm>
 
 #include "CDLStreamParser.hh"
 
@@ -165,19 +166,47 @@ void CDLStreamParser::processVariableToken(Token t)
             {
                 state.subPosition = StreamPosition::AwaitingMemberName;
                 state.globalAttribute = false;
-                map<string, CDLVariable>::iterator it = data.variables.find(state.lastLiteral.value);
+                map<string, ICDLVariable*>::iterator it = data.variables.find(state.lastLiteral.value);
                 if(it != data.variables.end())
                 {
-                    state.currentVariable = &(it->second);
+                    state.currentVariable = it->second;
                     state.subPosition = StreamPosition::AwaitingMemberName;
                 }
-                else throw runtime_error("Expected a previously declared variable"); 
+                else 
+                {
+                    stringstream ss;
+                    ss << "Expected a previously declared variable, " << state.lastLiteral.value << " is undeclared";
+                    throw runtime_error(ss.str()); 
+                }
             }
             else if(t.type == TokenType::Literal)
             {
-                data.variables[t.value] = CDLVariable({name: t.value, type: state.lastLiteral.value});
-                state.currentVariable = &(data.variables[t.value]);
-                state.subPosition = StreamPosition::AwaitingLeftParenthesis;
+                string& ct = state.lastLiteral.value;
+                transform(ct.begin(), ct.end(), ct.begin(), ::tolower);
+                if(ct == "unsigned") 
+                {
+                    state.isUnsigned = true;
+                    state.lastLiteral.value = t.value;
+                }
+                else
+                {
+                    #define CDL_CREATE(T) state.currentVariable = new CDLVariable<T>()
+                    #define CDL_CREATE_SIGN(T) state.isUnsigned ? CDL_CREATE(u##T) : CDL_CREATE(T)
+                    if(ct == "char") CDL_CREATE(int8_t);
+                    else if(ct == "byte") CDL_CREATE_SIGN(int8_t);
+                    else if(ct == "short") CDL_CREATE_SIGN(int16_t);
+                    else if(ct == "int") CDL_CREATE_SIGN(int32_t);
+                    else if(ct == "int64") CDL_CREATE_SIGN(int64_t);
+                    else if(ct == "float") CDL_CREATE(float);
+                    else if(ct == "double") CDL_CREATE(double);
+                    else CDL_CREATE(string);
+                    state.currentVariable->name = t.value;
+                    state.currentVariable->type = state.lastLiteral.value;
+                    state.currentVariable->isUnsigned = state.isUnsigned;
+                    data.variables[t.value] = state.currentVariable;
+                    state.subPosition = StreamPosition::AwaitingLeftParenthesis;
+                    state.isUnsigned = false;
+                }
             }
             else if(t.type != TokenType::DataSeperator) throw runtime_error("Expected literal, ':' or ','"); 
             break;
@@ -217,7 +246,17 @@ void CDLStreamParser::processVariableToken(Token t)
             break;
         
         case StreamPosition::AwaitingDimensionName:
-            if(t.type == TokenType::Literal) state.currentVariable->components.push_back(t.value);
+            if(t.type == TokenType::Literal) 
+            {
+                map<string, CDLDimension>::iterator it = data.dimensions.find(t.value);
+                if(it != data.dimensions.end()) state.currentVariable->components.push_back(t.value);
+                else
+                {
+                    stringstream ss;
+                    ss << "Expected a previously defined dimnsion, " << t.value << " is undefined";
+                    throw runtime_error(ss.str()); 
+                }
+            }
             else if(t.type == TokenType::RightParenthesis) state.subPosition = StreamPosition::AwaitingMemberOperatorOrVariableName;
             else if(t.type != TokenType::DataSeperator) throw runtime_error("Expected literals for variable dimensions");
             break;
@@ -233,13 +272,18 @@ void CDLStreamParser::processDataToken(Token t)
         case StreamPosition::Start:
             if(t.type == TokenType::Literal)
             {
-                map<string, CDLVariable>::iterator it = data.variables.find(t.value);
+                map<string, ICDLVariable*>::iterator it = data.variables.find(t.value);
                 if(it != data.variables.end())
                 {
-                    state.currentVariable = &(it->second);
+                    state.currentVariable = it->second;
                     state.subPosition = StreamPosition::AwaitingAssignmentOperator;
                 }
-                else throw runtime_error("Expected a previously declared variable"); 
+                else
+                {
+                    stringstream ss;
+                    ss << "Expected a previously declared variable, " << t.value << " is undeclared";
+                    throw runtime_error(ss.str());
+                }
             }
             else throw runtime_error("Expected literal for variable name");
             break;
@@ -250,7 +294,30 @@ void CDLStreamParser::processDataToken(Token t)
             break;
 
         case StreamPosition::AwaitingValue:
-            if(t.type == TokenType::Literal) state.currentVariable->data.push_back(t.value);
+            if(t.type == TokenType::Literal) 
+            {
+                #define CDLCAST(T, A) (dynamic_cast<CDLVariable<T>*>(state.currentVariable))->data.push_back(A)
+                #define CDLCAST_SIGN_EX(T, A1, A2) state.currentVariable->isUnsigned? CDLCAST(u##T, A1): CDLCAST(T, A2)
+                #define CDLCAST_SIGN(T, A) CDLCAST_SIGN_EX(T, A, A)
+                string& ct = state.currentVariable->type;
+                try
+                {
+                    if(ct == "char") CDLCAST(int8_t, stoi(t.value));
+                    else if(ct == "byte") CDLCAST_SIGN(int8_t, stoi(t.value));
+                    else if(ct == "short") CDLCAST_SIGN(int16_t, stoi(t.value));
+                    else if(ct == "int") CDLCAST_SIGN_EX(int32_t, stoul(t.value), stol(t.value));
+                    else if(ct == "int64") CDLCAST_SIGN_EX(int64_t, stoull(t.value), stoll(t.value));
+                    else if(ct == "float") CDLCAST(float, stof(t.value));
+                    else if(ct == "double") CDLCAST(double, stod(t.value));
+                    else CDLCAST(string, t.value);
+                }
+                catch(...) 
+                { 
+                    stringstream ss;
+                    ss << "Expected data " << t.value << " to be of type " << (state.currentVariable->isUnsigned? "unsigned" : "") << ct;
+                    throw runtime_error(ss.str()); 
+                }
+            }
             else if(t.type == TokenType::Seperator) state.subPosition = StreamPosition::Start;
             else if(t.type != TokenType::DataSeperator) throw runtime_error("Expected literal for data value");
             break;
@@ -259,18 +326,18 @@ void CDLStreamParser::processDataToken(Token t)
     }
 };
 
-CDLData CDLStreamParser::CDLStringToData(string s)
+void CDLStreamParser::CDLStringToData(string s, CDLData& d)
 {
     istringstream ss(s);
-    return CDLStreamToData(ss);
+    return CDLStreamToData(ss, d);
 };
 
-CDLData CDLStreamParser::CDLStreamToData(istream& s)
+void CDLStreamParser::CDLStreamToData(istream& s, CDLData& d)
 {
     CDLStreamTokenizer tokenizer;
-    CDLStreamParser parser;
-    unsigned long int lineNumber = 0;
-    unsigned int linePos = 0;
+    CDLStreamParser parser(d);
+    unsigned long int lineNumber = 1;
+    unsigned int linePos = 1;
     char c;
     while(true)
     {
@@ -291,8 +358,7 @@ CDLData CDLStreamParser::CDLStreamToData(istream& s)
         if(c == '\n') 
         {
             lineNumber++;
-            linePos = 0;
+            linePos = 1;
         }
     }
-    return parser.retrieve();
 };

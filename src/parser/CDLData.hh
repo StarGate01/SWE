@@ -20,7 +20,7 @@ namespace parser
         bool operator== (const CDLDimension &b) const
         {
             return (length == b.length && unlimited == b.unlimited && name == b.name);
-        }
+        };
 
     };
 
@@ -33,24 +33,56 @@ namespace parser
         bool operator== (const CDLAttribute &b) const
         {
             return (name == b.name && values == b.values);
-        }
+        };
 
     };
     
-    struct CDLVariable
-    {
+    struct ICDLVariable 
+    { 
 
-        string name;
         string type;
+        bool isUnsigned;
+        string name;
         vector<string> components;
         map<string, CDLAttribute> attributes;
-        vector<string> data;
 
-        bool operator== (const CDLVariable &b) const
+        void assign(string t, bool u, string n, vector<string> c, map<string, CDLAttribute> a)
         {
-            return (name == b.name && type == b.type 
-                && components == b.components && attributes == b.attributes && data == b.data);
-        }
+            type = t;
+            isUnsigned = u;
+            name = n;
+            components = c;
+            attributes = a;
+        };
+
+        bool operator== (const ICDLVariable &b) const
+        {
+            return (name == b.name && type == b.type && components == b.components 
+                && attributes == b.attributes);
+        };
+
+        virtual ~ICDLVariable()
+        {};
+
+    };
+
+    template<typename T> struct CDLVariable : public ICDLVariable
+    {
+
+        vector<T> data;
+
+        CDLVariable<T>()
+        {};
+
+        CDLVariable<T>(vector<T> d)
+            : ICDLVariable(), 
+              data(d)
+        {};
+
+        bool operator== (const CDLVariable<T> &b) const
+        {
+            return (ICDLVariable::operator==(b) && data == b.data);
+        };
 
     };
 
@@ -60,12 +92,36 @@ namespace parser
         string name;
         map<string, CDLAttribute> globalAttributes;
         map<string, CDLDimension> dimensions;
-        map<string, CDLVariable> variables;
+        map<string, ICDLVariable*> variables;
 
         bool operator== (const CDLData &b) const
         {
-            return (name == b.name && globalAttributes == b.globalAttributes
-                && dimensions == b.dimensions && variables == b.variables);
+            if (!(name == b.name && globalAttributes == b.globalAttributes && dimensions == b.dimensions)) return false;
+            if (variables.size() != b.variables.size()) return false;
+            if (!(equal(begin(variables), end(variables), begin(b.variables),
+                [] (const pair<string, ICDLVariable*> lhs, const pair<string, ICDLVariable*> rhs)
+                { 
+                    #define CDL_EQ(T) (*(dynamic_cast<CDLVariable<T>*>(lhs.second))) == (*(dynamic_cast<CDLVariable<T>*>(rhs.second)))
+                    #define CDL_NEQ_RET(T) { if(!(CDL_EQ(T))) return false; }
+                    #define CDL_NEQ_RET_SIGN(T) { if(!((!lhs.second->isUnsigned && (CDL_EQ(T))) || (lhs.second->isUnsigned && (CDL_EQ(u##T))))) return false; }
+                    string& ct = lhs.second->type;
+                    if(ct == "char") CDL_NEQ_RET(int8_t)
+                    else if(ct == "byte") CDL_NEQ_RET_SIGN(int8_t)
+                    else if(ct == "short") CDL_NEQ_RET_SIGN(int16_t)
+                    else if(ct == "int") CDL_NEQ_RET_SIGN(int32_t)
+                    else if(ct == "int64") CDL_NEQ_RET_SIGN(int64_t)
+                    else if(ct == "float") CDL_NEQ_RET(float)
+                    else if(ct == "double") CDL_NEQ_RET(double)
+                    else CDL_NEQ_RET(string)
+                    return true;
+                }))) return false;
+            return true;
+        };
+
+        ~CDLData()
+        {
+           for (auto & v : variables) delete v.second;
+           variables.clear();
         }
 
     };

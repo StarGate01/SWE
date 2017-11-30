@@ -69,6 +69,8 @@
 
 #include "parser/CDLStreamParser.hh"
 
+using namespace parser;
+
 /**
  * Main program for the simulation on a single SWE_DimensionalSplittingBlock.
  */
