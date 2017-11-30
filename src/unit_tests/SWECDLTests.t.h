@@ -82,6 +82,7 @@ class swe_tests::SWECDLTestsSuite : public CxxTest::TestSuite
              TS_ASSERT(file.is_open());
 
              //Compare
+             //TODO: Check interface between Parser and Test
              //TS_ASSERT(CDLStreamParser::CDLStringToData(file) == cdldata);
              file.close();
         }
