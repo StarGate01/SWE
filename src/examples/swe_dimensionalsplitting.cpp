@@ -76,6 +76,12 @@ using namespace parser;
  */
 int main(int argc, char** argv) 
 {
+  // ifstream file("../input/artificial/artificialtsunami_displ_1000.cdl");
+  // CDLData testdata;
+  // CDLStreamParser::CDLStreamToData(file, testdata);
+
+  // vector<float>& zvalues = ((dynamic_cast<CDLVariable<float>*>(testdata.variables["z"]))->data);
+
   tools::Logger::logger.printString("\nThis is swe_dimensionalsplitting, using SWE_DimensionalSplittingBlock\n");
 
   // Parse command line parameters
