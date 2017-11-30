@@ -12,41 +12,41 @@ void CDLStreamParser::processToken(Token t)
 {
     switch(state.position)
     {
-        case StreamPosition::Start:
-            if(t.type == TokenType::Literal && t.value == "netcdf") state.position = StreamPosition::Header;
+        case State::StreamPosition::Start:
+            if(t.type == Token::Type::Literal && t.value == "netcdf") state.position = State::StreamPosition::Header;
             else throw runtime_error("Expected literal 'netcfd' for header");
             break;
         
-        case StreamPosition::Header:
-            if(t.type == TokenType::Literal)
+        case State::StreamPosition::Header:
+            if(t.type == Token::Type::Literal)
             {
                 data.name = t.value;
-                state.position = StreamPosition::HeaderName;
+                state.position = State::StreamPosition::HeaderName;
             } 
             else throw runtime_error("Expected literal for header name");
             break;
 
-        case StreamPosition::HeaderName:
-            if(t.type == TokenType::LeftBrace) state.position = StreamPosition::Outside;
+        case State::StreamPosition::HeaderName:
+            if(t.type == Token::Type::LeftBrace) state.position = State::StreamPosition::Outside;
             else throw runtime_error("Expected '{' for header end");
             break;
 
-        case StreamPosition::Outside:
-            if(t.type == TokenType::Literal && t.value == "dimensions") 
-                state.position = StreamPosition::AwaitingDimSectorSeperator;
+        case State::StreamPosition::Outside:
+            if(t.type == Token::Type::Literal && t.value == "dimensions") 
+                state.position = State::StreamPosition::AwaitingDimSectorSeperator;
             else throw runtime_error("Expected 'dimensions' for section name");
             break;
 
-        case StreamPosition::AwaitingDimSectorSeperator:
-            if(t.type == TokenType::SectorSeperator) state.position = StreamPosition::Dimensions;
+        case State::StreamPosition::AwaitingDimSectorSeperator:
+            if(t.type == Token::Type::SectorSeperator) state.position = State::StreamPosition::Dimensions;
             else throw runtime_error("Expected ':' for section dimensions beginning");
             break;
 
-        case StreamPosition::Dimensions:
-            if(t.type != TokenType::Seperator)
+        case State::StreamPosition::Dimensions:
+            if(t.type != Token::Type::Seperator)
             {
-                if(state.lineEmpty && t.type == TokenType::Literal && t.value == "variables")
-                    state.position = StreamPosition::AwaitingValSectorSeperator;
+                if(state.lineEmpty && t.type == Token::Type::Literal && t.value == "variables")
+                    state.position = State::StreamPosition::AwaitingValSectorSeperator;
                 else
                 {
                     state.lineEmpty = false;
@@ -55,21 +55,21 @@ void CDLStreamParser::processToken(Token t)
             } 
             else
             {
-                state.subPosition = StreamPosition::Start;
+                state.subPosition = State::StreamPosition::Start;
                 state.lineEmpty = true;
             }
             break;
         
-        case StreamPosition::AwaitingValSectorSeperator:
-            if(t.type == TokenType::SectorSeperator) state.position = StreamPosition::Variables;
-            else state.position = StreamPosition::Dimensions;
+        case State::StreamPosition::AwaitingValSectorSeperator:
+            if(t.type == Token::Type::SectorSeperator) state.position = State::StreamPosition::Variables;
+            else state.position = State::StreamPosition::Dimensions;
             break;
 
-        case StreamPosition::Variables:
-            if(t.type != TokenType::Seperator)
+        case State::StreamPosition::Variables:
+            if(t.type != Token::Type::Seperator)
             {
-                if(state.lineEmpty && t.type == TokenType::Literal && t.value == "data")
-                    state.position = StreamPosition::AwaitingDatSectorSeperator;
+                if(state.lineEmpty && t.type == Token::Type::Literal && t.value == "data")
+                    state.position = State::StreamPosition::AwaitingDatSectorSeperator;
                 else 
                 {
                     state.lineEmpty = false;
@@ -78,26 +78,26 @@ void CDLStreamParser::processToken(Token t)
             } 
             else
             {
-                state.subPosition = StreamPosition::Start;
+                state.subPosition = State::StreamPosition::Start;
                 state.lineEmpty = true;
             }
             break;
 
-        case StreamPosition::AwaitingDatSectorSeperator:
-            if(t.type == TokenType::SectorSeperator) 
+        case State::StreamPosition::AwaitingDatSectorSeperator:
+            if(t.type == Token::Type::SectorSeperator) 
             {
-                state.subPosition = StreamPosition::Start;
-                state.position = StreamPosition::Data;
+                state.subPosition = State::StreamPosition::Start;
+                state.position = State::StreamPosition::Data;
             }
-            else state.position = StreamPosition::Variables;
+            else state.position = State::StreamPosition::Variables;
             break;
 
-        case StreamPosition::Data:
-            if(t.type != TokenType::RightBrace) processDataToken(t);
-            else state.position = StreamPosition::End;
+        case State::StreamPosition::Data:
+            if(t.type != Token::Type::RightBrace) processDataToken(t);
+            else state.position = State::StreamPosition::End;
             break;
 
-        case StreamPosition::End:
+        case State::StreamPosition::End:
             throw runtime_error("Expected no tokens after '}'");
             break;
         
@@ -109,23 +109,23 @@ void CDLStreamParser::processDimensionalToken(Token t)
 {
     switch(state.subPosition)
     {
-        case StreamPosition::Start:
-            if(t.type == TokenType::Literal)
+        case State::StreamPosition::Start:
+            if(t.type == Token::Type::Literal)
             {
                 data.dimensions[t.value] = CDLDimension({name: t.value});
                 state.currentDimension = &(data.dimensions[t.value]);
-                state.subPosition = StreamPosition::AwaitingAssignmentOperator;
+                state.subPosition = State::StreamPosition::AwaitingAssignmentOperator;
             }
-            else if (t.type != TokenType::DataSeperator) throw runtime_error("Expected literal for dimension name");
+            else if (t.type != Token::Type::DataSeperator) throw runtime_error("Expected literal for dimension name");
             break;
 
-        case StreamPosition::AwaitingAssignmentOperator:
-            if(t.type == TokenType::AssignmentOperator) state.subPosition = StreamPosition::AwaitingValue;
+        case State::StreamPosition::AwaitingAssignmentOperator:
+            if(t.type == Token::Type::AssignmentOperator) state.subPosition = State::StreamPosition::AwaitingValue;
             else throw runtime_error("Expected '=' for dimension assignment");
             break;
 
-        case StreamPosition::AwaitingValue:
-            if(t.type == TokenType::Literal)
+        case State::StreamPosition::AwaitingValue:
+            if(t.type == Token::Type::Literal)
             {
                 if(t.value == "unlimited" || t.value == "UNLIMITED") 
                     state.currentDimension->unlimited = true;
@@ -134,7 +134,7 @@ void CDLStreamParser::processDimensionalToken(Token t)
                     try { state.currentDimension->length = stoi(t.value); }
                     catch(...) { throw runtime_error("Expected dimension length to be integer"); }
                 }
-                state.subPosition = StreamPosition::Start;
+                state.subPosition = State::StreamPosition::Start;
             }
             else throw runtime_error("Expected literal for dimension length");
             break;
@@ -147,30 +147,30 @@ void CDLStreamParser::processVariableToken(Token t)
 {
     switch(state.subPosition)
     {
-        case StreamPosition::Start:
-            if(t.type == TokenType::Literal)
+        case State::StreamPosition::Start:
+            if(t.type == Token::Type::Literal)
             {
-                state.subPosition = StreamPosition::AwaitingMemberOperatorOrVariableName;
+                state.subPosition = State::StreamPosition::AwaitingMemberOperatorOrVariableName;
                 state.lastLiteral = t;
             }
-            else if(t.type == TokenType::MemberOperator) 
+            else if(t.type == Token::Type::MemberOperator) 
             {
-                state.subPosition = StreamPosition::AwaitingMemberName;
+                state.subPosition = State::StreamPosition::AwaitingMemberName;
                 state.globalAttribute = true;
             }
             else throw runtime_error("Expected literal for variable type or variable, or ':' for global attribute");
             break;
 
-        case StreamPosition::AwaitingMemberOperatorOrVariableName:
-            if(t.type == TokenType::MemberOperator)
+        case State::StreamPosition::AwaitingMemberOperatorOrVariableName:
+            if(t.type == Token::Type::MemberOperator)
             {
-                state.subPosition = StreamPosition::AwaitingMemberName;
+                state.subPosition = State::StreamPosition::AwaitingMemberName;
                 state.globalAttribute = false;
                 map<string, ICDLVariable*>::iterator it = data.variables.find(state.lastLiteral.value);
                 if(it != data.variables.end())
                 {
                     state.currentVariable = it->second;
-                    state.subPosition = StreamPosition::AwaitingMemberName;
+                    state.subPosition = State::StreamPosition::AwaitingMemberName;
                 }
                 else 
                 {
@@ -179,7 +179,7 @@ void CDLStreamParser::processVariableToken(Token t)
                     throw runtime_error(ss.str()); 
                 }
             }
-            else if(t.type == TokenType::Literal)
+            else if(t.type == Token::Type::Literal)
             {
                 string& ct = state.lastLiteral.value;
                 transform(ct.begin(), ct.end(), ct.begin(), ::tolower);
@@ -204,15 +204,15 @@ void CDLStreamParser::processVariableToken(Token t)
                     state.currentVariable->type = state.lastLiteral.value;
                     state.currentVariable->isUnsigned = state.isUnsigned;
                     data.variables[t.value] = state.currentVariable;
-                    state.subPosition = StreamPosition::AwaitingLeftParenthesis;
+                    state.subPosition = State::StreamPosition::AwaitingLeftParenthesis;
                     state.isUnsigned = false;
                 }
             }
-            else if(t.type != TokenType::DataSeperator) throw runtime_error("Expected literal, ':' or ','"); 
+            else if(t.type != Token::Type::DataSeperator) throw runtime_error("Expected literal, ':' or ','"); 
             break;
 
-        case StreamPosition::AwaitingMemberName:
-            if(t.type == TokenType::Literal)
+        case State::StreamPosition::AwaitingMemberName:
+            if(t.type == Token::Type::Literal)
             {
                 if(!state.globalAttribute)
                 {
@@ -224,29 +224,29 @@ void CDLStreamParser::processVariableToken(Token t)
                     data.globalAttributes[t.value] = CDLAttribute({name: t.value});
                     state.currentAttribute = &(data.globalAttributes[t.value]);
                 }
-                state.subPosition = StreamPosition::AwaitingAssignmentOperator;
+                state.subPosition = State::StreamPosition::AwaitingAssignmentOperator;
             }
             else throw runtime_error("Expected literal for member name"); 
             break;
 
-        case StreamPosition::AwaitingAssignmentOperator:
-            if(t.type == TokenType::AssignmentOperator) state.subPosition = StreamPosition::AwaitingValue;
+        case State::StreamPosition::AwaitingAssignmentOperator:
+            if(t.type == Token::Type::AssignmentOperator) state.subPosition = State::StreamPosition::AwaitingValue;
             else throw runtime_error("Expected '=' for attribute assignment");
             break;
 
-        case StreamPosition::AwaitingValue:
-            if(t.type == TokenType::Literal) state.currentAttribute->values.push_back(t.value);
-            else if(t.type == TokenType::Seperator) state.subPosition = StreamPosition::Start;
-            else if(t.type != TokenType::DataSeperator) throw runtime_error("Expected literal for attribute value");
+        case State::StreamPosition::AwaitingValue:
+            if(t.type == Token::Type::Literal) state.currentAttribute->values.push_back(t.value);
+            else if(t.type == Token::Type::Seperator) state.subPosition = State::StreamPosition::Start;
+            else if(t.type != Token::Type::DataSeperator) throw runtime_error("Expected literal for attribute value");
             break;
 
-        case StreamPosition::AwaitingLeftParenthesis:
-            if(t.type == TokenType::LeftParenthesis) state.subPosition = StreamPosition::AwaitingDimensionName;
+        case State::StreamPosition::AwaitingLeftParenthesis:
+            if(t.type == Token::Type::LeftParenthesis) state.subPosition = State::StreamPosition::AwaitingDimensionName;
             else throw runtime_error("Expected '(' for variable declaration");
             break;
         
-        case StreamPosition::AwaitingDimensionName:
-            if(t.type == TokenType::Literal) 
+        case State::StreamPosition::AwaitingDimensionName:
+            if(t.type == Token::Type::Literal) 
             {
                 map<string, CDLDimension>::iterator it = data.dimensions.find(t.value);
                 if(it != data.dimensions.end()) state.currentVariable->components.push_back(t.value);
@@ -257,8 +257,8 @@ void CDLStreamParser::processVariableToken(Token t)
                     throw runtime_error(ss.str()); 
                 }
             }
-            else if(t.type == TokenType::RightParenthesis) state.subPosition = StreamPosition::AwaitingMemberOperatorOrVariableName;
-            else if(t.type != TokenType::DataSeperator) throw runtime_error("Expected literals for variable dimensions");
+            else if(t.type == Token::Type::RightParenthesis) state.subPosition = State::StreamPosition::AwaitingMemberOperatorOrVariableName;
+            else if(t.type != Token::Type::DataSeperator) throw runtime_error("Expected literals for variable dimensions");
             break;
 
         default: break;
@@ -269,14 +269,14 @@ void CDLStreamParser::processDataToken(Token t)
 {
     switch(state.subPosition)
     {
-        case StreamPosition::Start:
-            if(t.type == TokenType::Literal)
+        case State::StreamPosition::Start:
+            if(t.type == Token::Type::Literal)
             {
                 map<string, ICDLVariable*>::iterator it = data.variables.find(t.value);
                 if(it != data.variables.end())
                 {
                     state.currentVariable = it->second;
-                    state.subPosition = StreamPosition::AwaitingAssignmentOperator;
+                    state.subPosition = State::StreamPosition::AwaitingAssignmentOperator;
                 }
                 else
                 {
@@ -288,13 +288,13 @@ void CDLStreamParser::processDataToken(Token t)
             else throw runtime_error("Expected literal for variable name");
             break;
 
-        case StreamPosition::AwaitingAssignmentOperator:
-            if(t.type == TokenType::AssignmentOperator) state.subPosition = StreamPosition::AwaitingValue;
+        case State::StreamPosition::AwaitingAssignmentOperator:
+            if(t.type == Token::Type::AssignmentOperator) state.subPosition = State::StreamPosition::AwaitingValue;
             else throw runtime_error("Expected '=' for data assignment");
             break;
 
-        case StreamPosition::AwaitingValue:
-            if(t.type == TokenType::Literal) 
+        case State::StreamPosition::AwaitingValue:
+            if(t.type == Token::Type::Literal) 
             {
                 #define CDLCAST(T, A) (dynamic_cast<CDLVariable<T>*>(state.currentVariable))->data.push_back(A)
                 #define CDLCAST_SIGN_EX(T, A1, A2) state.currentVariable->isUnsigned? CDLCAST(u##T, A1): CDLCAST(T, A2)
@@ -318,8 +318,8 @@ void CDLStreamParser::processDataToken(Token t)
                     throw runtime_error(ss.str()); 
                 }
             }
-            else if(t.type == TokenType::Seperator) state.subPosition = StreamPosition::Start;
-            else if(t.type != TokenType::DataSeperator) throw runtime_error("Expected literal for data value");
+            else if(t.type == Token::Type::Seperator) state.subPosition = State::StreamPosition::Start;
+            else if(t.type != Token::Type::DataSeperator) throw runtime_error("Expected literal for data value");
             break;
 
         default: break;

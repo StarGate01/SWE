@@ -101,9 +101,11 @@ namespace parser
             if (!(equal(begin(variables), end(variables), begin(b.variables),
                 [] (const pair<string, ICDLVariable*> lhs, const pair<string, ICDLVariable*> rhs)
                 { 
+                    /// @cond CASTING_MACROS
                     #define CDL_EQ(T) (*(dynamic_cast<CDLVariable<T>*>(lhs.second))) == (*(dynamic_cast<CDLVariable<T>*>(rhs.second)))
                     #define CDL_NEQ_RET(T) { if(!(CDL_EQ(T))) return false; }
                     #define CDL_NEQ_RET_SIGN(T) { if(!((!lhs.second->isUnsigned && (CDL_EQ(T))) || (lhs.second->isUnsigned && (CDL_EQ(u##T))))) return false; }
+                    /// @endcond
                     string& ct = lhs.second->type;
                     if(ct == "char") CDL_NEQ_RET(int8_t)
                     else if(ct == "byte") CDL_NEQ_RET_SIGN(int8_t)
