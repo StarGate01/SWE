@@ -1,6 +1,7 @@
 #include <cxxtest/TestSuite.h>
 #include "../parser/CDLStreamParser.hh"
 #include "../parser/CDLData.hh"
+#include <fstream>
 
 #include <string>
 
@@ -16,7 +17,6 @@ class swe_tests::SWECDLTestsSuite : public CxxTest::TestSuite
 {
    
     public:
-
         void testStringParse()
         {
             string cdltext = R"(
@@ -68,7 +68,22 @@ class swe_tests::SWECDLTestsSuite : public CxxTest::TestSuite
                      }}
                  }
              };
+
+             // ## Test 1 (Parse string) ##
              TS_ASSERT(CDLStreamParser::CDLStringToData(cdltext) == cdldata);
+
+             // ## Test 2 (Parse file) ##
+             std::ifstream file;
+             file.open("testfile.cdl", std::ifstream::in);
+
+             //Print warning if file could not be openend and fail
+             if(!file.is_open())
+                 TS_WARN("Stream could not read file in TestStringParse: Test 2: \t");
+             TS_ASSERT(file.is_open());
+
+             //Compare
+             //TS_ASSERT(CDLStreamParser::CDLStringToData(file) == cdldata);
+             file.close();
         }
 
 };
