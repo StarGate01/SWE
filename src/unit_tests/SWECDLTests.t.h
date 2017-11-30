@@ -6,7 +6,6 @@
 #include <cxxtest/TestSuite.h>
 #include "../parser/CDLStreamParser.hh"
 #include "../parser/CDLData.hh"
-#include <fstream>
 
 #include <string>
 
@@ -83,52 +82,14 @@ class swe_tests::SWECDLTestsSuite : public CxxTest::TestSuite
                     { "lat", { name: "lat", length: 10, unlimited: false }},
                     { "lon", { name: "lon", length: 5, unlimited: false }},
                     { "time", { name: "time", length: 0, unlimited: true }}
-                 },
-                 variables: {
-                     { "lat", { 
-                         name: "lat", type: "int", components: { "lat" }, 
-                         attributes: { { "units", { name: "units", values: { "degrees_north" }  } } },
-                         data: { "0", "10", "20", "30", "40", "50", "60", "70", "80", "90" }
-                     }},
-                     { "lon", { 
-                         name: "lon", type: "int", components: { "lon" }, 
-                         attributes: { { "units", { name: "units", values: { "degrees_east" } } } }, data: {}
-                     }},
-                     { "time", { 
-                         name: "time", type: "int", components: { "time" }, 
-                         attributes: { { "units", { name: "units", values: { "seconds" } } } }, data: {}
-                     }},
-                     { "z", { 
-                         name: "z", type: "float", components: { "time", "lat", "lon" }, 
-                         attributes: { { "valid_range", { name: "valid_range", values: { "0.", "5000." } } } }, data: {}
-                     }},
-                     { "t", { 
-                         name: "t", type: "float", components: { "lat", "lon" }, attributes: {}, data: {}
-                     }}
-                 }
-             };
+                },
+                variables: vars
+            };
 
-             // ## Test 1 (Parse string) ##
-             TS_ASSERT(CDLStreamParser::CDLStringToData(cdltext) == cdldata);
+            CDLData newdata;
+            CDLStreamParser::CDLStringToData(cdltext, newdata);
 
-             // ## Test 2 (Parse valid file) ##
-             std::ifstream file;
-             file.open("testfile.cdl", std::ifstream::in);
-
-             //Print warning if file could not be openend and fail
-             if(!file.is_open())
-                 TS_WARN("Stream could not read file in TestStringParse: Test 2: \t");
-             TS_ASSERT(file.is_open());
-
-             //Compare
-             //TODO: Check interface between Parser and Test
-             CDLData newdata;
-             //TODO: Parse data
-             //TODO: Assert data against reference
-             file.close();
-
-             // ## Test 3 (Parse invalid file) ##
-             //TODO: Implement
+            TS_ASSERT(newdata == cdldata);
         }
 
 };
