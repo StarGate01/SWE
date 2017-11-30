@@ -1,3 +1,8 @@
+/**
+ * @file CDLStreamTokenizer.cpp
+ * @brief Implementation of CDLStreamTokenizer.hh
+ */
+
 #include <stdexcept>
 
 #include "CDLStreamTokenizer.hh"

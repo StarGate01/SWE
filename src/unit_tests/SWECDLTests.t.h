@@ -1,3 +1,8 @@
+/**
+ * @file SWECDLTests.t.h
+ * @brief Unit tests for the CDL parser
+ */
+
 #include <cxxtest/TestSuite.h>
 #include "../parser/CDLStreamParser.hh"
 #include "../parser/CDLData.hh"
@@ -7,16 +12,25 @@
 using namespace std;
 using namespace parser;
 
+/**
+ * @brief Unit tests for SWE and the CDL parser
+ */
 namespace swe_tests
 {
     class SWECDLTestsSuite;
 }
 
+/**
+ * @brief Implements several tests for the CDL parser
+ */
 class swe_tests::SWECDLTestsSuite : public CxxTest::TestSuite
 {
    
     public:
 
+        /**
+         * @test Verify parsed CDL string equals a NetCDF data object in memory
+         */
         void testStringParse()
         {
            string cdltext = R"(

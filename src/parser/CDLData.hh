@@ -1,3 +1,8 @@
+/**
+ * @file CDLData.hh
+ * @brief Data structures which represent a CDL file
+ */
+
 #ifndef SWE_CDLDATA_HH
 #define SWE_CDLDATA_HH
 
@@ -10,12 +15,15 @@ using namespace std;
 namespace parser
 {
 
+    /**
+     * @brief Represents a NetCDF dimension
+     */
     struct CDLDimension
     {
 
-        string name;
-        int length;
-        bool unlimited;
+        string name; /**< The name */
+        int length; /**< The length of the corresponding data array */
+        bool unlimited; /**< Whether the length of the corresponding data array is fixed or not */
 
         bool operator== (const CDLDimension &b) const
         {
@@ -24,11 +32,14 @@ namespace parser
 
     };
 
+    /**
+     * @brief Represents an attribute of a NetCDF variable
+     */
     struct CDLAttribute
     {
 
-        string name;
-        vector<string> values;
+        string name; /**< The name */
+        vector<string> values; /**< The values, left to right */
 
         bool operator== (const CDLAttribute &b) const
         {
@@ -37,22 +48,36 @@ namespace parser
 
     };
     
+    /**
+     * @brief Represents a generic (not typed) NetCDF variable
+     */
     struct ICDLVariable 
     { 
 
-        string type;
-        bool isUnsigned;
-        string name;
-        vector<string> components;
-        map<string, CDLAttribute> attributes;
+        string type; /**< The data type */
+        bool isUnsigned; /**< Whether the type is unsigned or signed */
+        string name; /**< The name */
+        vector<string> components; /**< The dimensional components */
+        map<string, CDLAttribute> attributes; /**< The attributes attached to this variable */
 
-        void assign(string t, bool u, string n, vector<string> c, map<string, CDLAttribute> a)
+        /**
+         * @brief Re-assigns all member values
+         * 
+         * @param type ICDLVariable::type
+         * @param isUnsigned ICDLVariable::isUnsigned
+         * @param name ICDLVariable::name
+         * @param components ICDLVariable::components
+         * @param attributes ICDLVariable::attributes
+         * 
+         * This method is uses as a deferred constructor
+         */
+        void assign(string type, bool isUnsigned, string name, vector<string> components, map<string, CDLAttribute> attributes)
         {
-            type = t;
-            isUnsigned = u;
-            name = n;
-            components = c;
-            attributes = a;
+            this->type = type;
+            this->isUnsigned = isUnsigned;
+            this->name = name;
+            this->components = components;
+            this->attributes = attributes;
         };
 
         bool operator== (const ICDLVariable &b) const
@@ -66,17 +91,25 @@ namespace parser
 
     };
 
+    /**
+     * @brief Represents a strongly typed variable
+     */
     template<typename T> struct CDLVariable : public ICDLVariable
     {
 
-        vector<T> data;
+        vector<T> data; /**< The actual data array */
 
         CDLVariable<T>()
         {};
 
-        CDLVariable<T>(vector<T> d)
+        /**
+         * @brief Constructs a variable with initial data
+         * 
+         * @param data the initial data
+         */
+        CDLVariable<T>(vector<T> data)
             : ICDLVariable(), 
-              data(d)
+              data(data)
         {};
 
         bool operator== (const CDLVariable<T> &b) const
@@ -86,12 +119,22 @@ namespace parser
 
     };
 
+    /**
+     * @brief Represents the data inside a NetCDF file
+     */
     struct CDLData
     {
 
-        string name;
-        map<string, CDLAttribute> globalAttributes;
-        map<string, CDLDimension> dimensions;
+        string name; /**< The name **/
+        map<string, CDLAttribute> globalAttributes; /**< The global attributes */
+        map<string, CDLDimension> dimensions; /**< The available dimensions */
+
+        /**
+         * @brief The defined variables
+         * 
+         * This map only stores pointers to generic variables, which have to be cast to a fitting type
+         *  (depending on ICDLVariable::type) using std::dynamic_cast<CDLVariable<T>*>
+         */
         map<string, ICDLVariable*> variables;
 
         bool operator== (const CDLData &b) const
@@ -101,11 +144,9 @@ namespace parser
             if (!(equal(begin(variables), end(variables), begin(b.variables),
                 [] (const pair<string, ICDLVariable*> lhs, const pair<string, ICDLVariable*> rhs)
                 { 
-                    /// @cond CASTING_MACROS
                     #define CDL_EQ(T) (*(dynamic_cast<CDLVariable<T>*>(lhs.second))) == (*(dynamic_cast<CDLVariable<T>*>(rhs.second)))
                     #define CDL_NEQ_RET(T) { if(!(CDL_EQ(T))) return false; }
                     #define CDL_NEQ_RET_SIGN(T) { if(!((!lhs.second->isUnsigned && (CDL_EQ(T))) || (lhs.second->isUnsigned && (CDL_EQ(u##T))))) return false; }
-                    /// @endcond
                     string& ct = lhs.second->type;
                     if(ct == "char") CDL_NEQ_RET(int8_t)
                     else if(ct == "byte") CDL_NEQ_RET_SIGN(int8_t)

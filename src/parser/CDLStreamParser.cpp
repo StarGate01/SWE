@@ -1,3 +1,8 @@
+/**
+ * @file CDLStreamParser.cpp
+ * @brief Implementation of CDLStreamParser.hh
+ */
+
 #include <stdexcept>
 #include <sstream>
 #include <iostream>
