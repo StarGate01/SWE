@@ -33,6 +33,7 @@ class swe_tests::SWECDLTestsSuite : public CxxTest::TestSuite
          */
         void testStringParse()
         {
+            // ## Test 1 (valid string) ##
            string cdltext = R"(
                 netcdf foo { // example netCDF specification in CDL
                 dimensions:
@@ -87,9 +88,36 @@ class swe_tests::SWECDLTestsSuite : public CxxTest::TestSuite
             };
 
             CDLData newdata;
+
             CDLStreamParser::CDLStringToData(cdltext, newdata);
 
             TS_ASSERT(newdata == cdldata);
-        }
 
+            // ## Test 2 (invalid string) ##
+            cdltext = R"(
+                netcdf foo { // example netCDF specification in CDL
+                dimensions:
+                    lat = 10, lon = 5, time = unlimited;
+                variables:
+                    int lat(lat), lon(lon), time(time);
+                    float z(time,lat,lon), t(lat,lon);
+                    lat:units = "degrees_north";
+                    lon:units = "degrees_east";
+                    time:units = "seconds";
+                    z:valid_range = 0., 5000.;
+                    :test = "global value";
+                data:
+                    lat = 0, 10, 20, 30, 40, 50, 60, 70, 80, 90;
+                invalid token
+            )";
+
+            bool exceptionCatched = false;
+            try{
+                CDLStreamParser::CDLStringToData(cdltext, newdata);
+            }catch(exception& e)
+            {
+                exceptionCatched = true;
+            }
+            TS_ASSERT(exceptionCatched);
+        }
 };
