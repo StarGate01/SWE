@@ -72,7 +72,7 @@ class swe_tests::SWECDLTestsSuite : public CxxTest::TestSuite
              // ## Test 1 (Parse string) ##
              TS_ASSERT(CDLStreamParser::CDLStringToData(cdltext) == cdldata);
 
-             // ## Test 2 (Parse file) ##
+             // ## Test 2 (Parse valid file) ##
              std::ifstream file;
              file.open("testfile.cdl", std::ifstream::in);
 
@@ -83,8 +83,13 @@ class swe_tests::SWECDLTestsSuite : public CxxTest::TestSuite
 
              //Compare
              //TODO: Check interface between Parser and Test
-             //TS_ASSERT(CDLStreamParser::CDLStringToData(file) == cdldata);
+             CDLData newdata;
+             //TODO: Parse data
+             //TODO: Assert data against reference
              file.close();
+
+             // ## Test 3 (Parse invalid file) ##
+             //TODO: Implement
         }
 
 };
