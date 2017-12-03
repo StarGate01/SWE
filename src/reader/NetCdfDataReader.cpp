@@ -33,7 +33,10 @@ io::NetCdfDataReader::~NetCdfDataReader()
 	nc_close(dataFile);
 }
 
-void getZValues(const Float2D &i_z)
+Float2D io::NetCdfDataReader::getZValues()
 {
-	float zdata[xLength][yLength];
+	float* zdata = new float[xLength * yLength];
+	nc_get_var_float(dataFile, zVar, zdata);
+	Float2D fData(xLength, yLength, zdata);
+	return fData;
 };
