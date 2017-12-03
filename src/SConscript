@@ -98,6 +98,7 @@ else:
 
 # netCDF reader
 if env['readNetCDF'] == True:
+  sourceFiles.append( ['reader/NetCdfDataReader.cpp'] )
   sourceFiles.append( ['reader/NetCdfReader.cpp'] )
 
 # CDL parser
