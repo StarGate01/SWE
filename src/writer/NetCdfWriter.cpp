@@ -27,11 +27,11 @@
  */
 
 #include "NetCdfWriter.hh"
-#include <stdlib>
 #include <string>
 #include <vector>
 #include <iostream>
 #include <cassert>
+#include <sstream>
 
 /**
  * Create a netCdf-file
@@ -202,10 +202,9 @@ void io::NetCdfWriter::writeTimeStep( const Float2D &i_h,
                                       const Float2D &i_hu,
                                       const Float2D &i_hv,
                                       float i_time) {
-
-	char* time;
-	std::itoa(timeStep, *time, 10);				
-	ncPutAttText(NC_GLOBAL, "Conventions", time);
+	std::stringstream ts;
+	ts << timeStep;			
+	ncPutAttText(NC_GLOBAL, "Timestep", ts.str().c_str());
 
 	if (timeStep == 0)
 		// Write bathymetry
