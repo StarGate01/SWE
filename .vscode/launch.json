@@ -7,11 +7,11 @@
             "request": "launch",
             "program": "${workspaceRoot}/build/SWE_gnu_debug_none_fwave",
             "args": [
-                "-x", "50", "-y", "50", 
+                "-x", "100", "-y", "100", 
                 "-a", "../input/artificial/artificialtsunami_bathymetry_1000.cdl",
                 "-c", "../input/artificial/artificialtsunami_displ_1000.cdl",
                 "-d", "80", "-p", "40", 
-                "-l", "1", "-r", "1", "-t", "1", "-b", "1",
+                "-l", "0", "-r", "0", "-t", "0", "-b", "0",
                 "-o", "swe"
             ],
             "stopAtEntry": false,
@@ -34,11 +34,11 @@
             "request": "launch",
             "program": "/mnt/c/Users/Christoph/Documents/Studium/5_WS1718/TSISIM/Tutorium/SWE/build/SWE_gnu_debug_none_fwave",
             "args": [
-                "-x", "50", "-y", "50", 
+                "-x", "100", "-y", "100", 
                 "-a", "../input/artificial/artificialtsunami_bathymetry_1000.nc",
                 "-c", "../input/artificial/artificialtsunami_displ_1000.nc",
                 "-d", "80", "-p", "40", 
-                "-l", "1", "-r", "1", "-t", "1", "-b", "1",
+                "-l", "0", "-r", "0", "-t", "0", "-b", "0",
                 "-o", "swe"
             ],
             "stopAtEntry": false,

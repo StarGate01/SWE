@@ -184,8 +184,9 @@ int main(int argc, char** argv)
     (float) 28800., simulationArea);
 #else
   // create a scenario
-  SWE_TsunamiScenario l_scenario(l_ifile_disp, l_ifile_baty, l_bound_types, l_time_dur);
-  // SWE_ArtificialTsunamiScenario l_scenario;
+  //SWE_TsunamiScenario l_scenario(l_ifile_disp, l_ifile_baty, l_bound_types, l_time_dur);
+  //SWE_RadialDamBreakScenario l_scenario;
+   SWE_ArtificialTsunamiScenario l_scenario;
 #endif
 
   //! size of a single cell in x- and y-direction

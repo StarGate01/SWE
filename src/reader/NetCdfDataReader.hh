@@ -3,7 +3,6 @@
 
 #include <cstring>
 #include <string>
-#include <vector>
 #ifdef USEMPI
 #include <mpi.h>
 #ifndef MPI_INCLUDED
@@ -33,15 +32,15 @@ private:
 
     int dataFile;
     int xVar, yVar, zVar, xDim, yDim;
-    float* zData;
 
   public:
 
     size_t xLength, yLength;
     float xMin, xMax, yMin, yMax;
-    Float2D* zData2D;
+    float* zData;
 
     NetCdfDataReader(const std::string &i_fileName);
+    float sample(float x, float y, bool extend = false, float fallback = 0);
     ~NetCdfDataReader();
 
 };

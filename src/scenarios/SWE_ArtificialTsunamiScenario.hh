@@ -43,31 +43,27 @@
 class SWE_ArtificialTsunamiScenario : public SWE_Scenario 
 {
 
+  private:
+
+    float getDisp(float x, float y)
+    {
+        if (std::abs(x-5000) <= 500 && std::abs(y-5000) <= 500)
+        {
+          return (float) (5 * (sin((((x-5000)/500)+1)*M_PI)) * (-((((y-5000)/500)*((y-5000)/500)))+1));
+        }
+        else return 0;
+    }
+
   public:
 
     float getBathymetry(float x, float y) 
     { 
-
-      if (std::abs(x-5000) <= 500 && std::abs(y-5000) <= 500)
-      {
-        return (float) (-100 + (5 * (sin((((x-5000)/500)+1)*M_PI)) * (-((((y-5000)/500)*((y-5000)/500)))+1)));
-      }
-       else
-       {
-          return (float) -100;
-       }
+      return -100 + getDisp(x, y);
     };
 
     float getWaterHeight(float x, float y)
     {
-      if (std::abs(x-5000) <= 500 && std::abs(y-5000) <= 500)
-      {
-        return (float) (-(5 * (sin((((x-5000)/500)+1)*M_PI)) * (-((((y-5000)/500)*((y-5000)/500)))+1)));
-      }
-       else
-       {
-          return (float) 0;
-       }
+      return 100;
     };
     
     virtual float endSimulation()

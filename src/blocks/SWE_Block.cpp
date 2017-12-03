@@ -109,7 +109,7 @@ void SWE_Block::initScenario( float _offsetX, float _offsetY, SWE_Scenario &i_sc
     {
       float x = offsetX + (i-0.5f)*dx;
       float y = offsetY + (j-0.5f)*dy;
-      h[i][j] =  i_scenario.getWaterHeight(x,y) - b[i][j];
+      h[i][j] =  i_scenario.getWaterHeight(x,y); // - b[i][j];
       hu[i][j] = i_scenario.getVeloc_u(x,y) * h[i][j];
       hv[i][j] = i_scenario.getVeloc_v(x,y) * h[i][j]; 
     }
