@@ -35,7 +35,7 @@ private:
     int dataFile;
 
     /** Variable ids */
-    int timeVar, hVar, huVar, hvVar, bVar;
+    int timeVar, hVar, huVar, hvVar;
 
   public:
 

@@ -23,7 +23,6 @@ io::NetCdfReader::NetCdfReader(const std::string &i_fileName,
 	nc_inq_varid(dataFile, "h", &hVar);
 	nc_inq_varid(dataFile, "hu", &huVar);
 	nc_inq_varid(dataFile, "hv", &hvVar);
-	nc_inq_varid(dataFile, "b", &bVar);
 }
 
 /**
@@ -37,5 +36,8 @@ io::NetCdfReader::~NetCdfReader()
 void io::NetCdfReader::getLatestTimeStep(const Float2D &i_h,
 	const Float2D &i_hu, const Float2D &i_hv) 
 {
+	//länge = nX * nY
+	//anzahl = datenanzahl / länge
+	//start = (anzahl - 1) * länge
 	// nc_get_var_float , besser nc_get_vara_float
 }
