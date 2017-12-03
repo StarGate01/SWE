@@ -57,6 +57,12 @@ typedef enum BoundaryEdge {
 class SWE_Scenario {
 
  public:
+ 
+    virtual bool providesRawData() { return false; };
+    virtual float getB(int x, int y) { return 0.0f; };
+    virtual float getH(int x, int y) { return 0.0f; };
+    virtual float getHu(int x, int y) { return 0.0f; };
+    virtual float getHv(int x, int y) { return 0.0f; };
 
     virtual float getWaterHeight(float x, float y) { return 10.0f; };
     virtual float getVeloc_u(float x, float y) { return 0.0f; };

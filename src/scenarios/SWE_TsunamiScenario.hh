@@ -3,6 +3,7 @@
 
 #include <string>
 
+#include "reader/NetCdfReader.hh"
 #include "reader/NetCdfDataReader.hh"
 #include "SWE_Scenario.hh"
 
@@ -13,37 +14,94 @@ class SWE_TsunamiScenario : public SWE_Scenario
 
     BoundaryType* outflowConditions;
     int simulationTime;
+    bool isCheckpoint = false;
     io::NetCdfDataReader* bathyReader = nullptr;
     io::NetCdfDataReader* dispReader = nullptr;
+    io::NetCdfReader* checkpReader = nullptr;
 
   public:
+
     SWE_TsunamiScenario(std::string dispFilePath, std::string bathyFilePath, BoundaryType* outConditions, int time)
       : outflowConditions(outConditions), 
         simulationTime(time)
     {
       bathyReader = new io::NetCdfDataReader(bathyFilePath);
       dispReader = new io::NetCdfDataReader(dispFilePath);
+      isCheckpoint = false;
+    };
+
+    SWE_TsunamiScenario(std::string checkpFilePath)
+    {
+      checkpReader = new io::NetCdfReader(checkpFilePath);
+      //TODO sanity check nx == dalatenth
+      isCheckpoint = true;
+    };
+
+    bool providesRawData() 
+    {
+#if !defined(NDEBUG) || defined(DEBUG)
+      assert(isCheckpoint);
+#endif
+      return isCheckpoint; 
+    };
+
+    float getB(int x, int y) 
+    {
+#if !defined(NDEBUG) || defined(DEBUG)
+      assert(isCheckpoint);
+#endif
+      return checkpReader->bData[(y * nx) + x];
+    };
+
+    float getH(int x, int y) 
+    {
+#if !defined(NDEBUG) || defined(DEBUG)
+      assert(isCheckpoint);
+#endif
+      return checkpReader->hData[(y * nx) + x];
+    };
+
+    float getHu(int x, int y) 
+    {
+#if !defined(NDEBUG) || defined(DEBUG)
+      assert(isCheckpoint);
+#endif
+      return checkpReader->huData[(y * nx) + x];
+    };
+
+    float getHv(int x, int y)
+    { 
+#if !defined(NDEBUG) || defined(DEBUG)
+      assert(isCheckpoint);
+#endif
+      return checkpReader->hvData[(y * nx) + x];
     };
 
     float getBathymetry(float x, float y)
     {
-        float bathy = bathyReader->sample(x, y, true);
-        if(bathy <= 0 && bathy >= -20) bathy = -20;
-        if(bathy >= 0 && bathy <= 20) bathy = 20;
-        return bathy;
+#if !defined(NDEBUG) || defined(DEBUG)
+      assert(!isCheckpoint);
+#endif
+      float bathy = bathyReader->sample(x, y, true);
+      if(bathy <= 0 && bathy >= -20) bathy = -20;
+      if(bathy >= 0 && bathy <= 20) bathy = 20;
+      return bathy;
     };
 
     float getWaterHeight(float x, float y)
     { 
+#if !defined(NDEBUG) || defined(DEBUG)
+      assert(!isCheckpoint);
+#endif
       return -min(bathyReader->sample(x, y), 0.0F) + dispReader->sample(x, y);
     };
 
-	  virtual float endSimulation()
+	  float endSimulation()
     { 
         return simulationTime;
     };
 
-    virtual BoundaryType getBoundaryType(BoundaryEdge edge) 
+    BoundaryType getBoundaryType(BoundaryEdge edge) 
     {
         switch(edge)
         {
@@ -69,9 +127,10 @@ class SWE_TsunamiScenario : public SWE_Scenario
 
     ~SWE_TsunamiScenario()
     {
-      delete bathyReader;
-      delete dispReader;
-    }
+      if(bathyReader != nullptr) delete bathyReader;
+      if(dispReader != nullptr) delete dispReader;
+      if(checkpReader != nullptr) delete checkpReader;
+    };
 
 };
 

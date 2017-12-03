@@ -116,7 +116,7 @@ class SWE_Block {
   // object methods
     /// initialise unknowns to a specific scenario:
     void initScenario(float _offsetX, float _offsetY,
-    		SWE_Scenario &i_scenario, const bool i_multipleBlocks = false );
+    		SWE_Scenario &i_scenario, const bool i_multipleBlocks = false);
     // set unknowns
     /// set the water height according to a given function
     void setWaterHeight(float (*_h)(float, float));

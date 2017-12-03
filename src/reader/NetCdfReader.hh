@@ -31,23 +31,16 @@ class io::NetCdfReader
 
 private:
 
-    /** netCDF file id*/
     int dataFile;
-
-    /** Variable ids */
-    int timeVar, hVar, huVar, hvVar;
+    int timeVar, xVar, yVar, bVar, hVar, huVar, hvVar, timeDim, xDim, yDim;
 
   public:
 
-    NetCdfReader(const std::string &i_fileName,
-                 const BoundarySize &i_boundarySize,
-                 int i_nX, int i_nY);
+    size_t timeLength, xLength, yLength;
+    float* bData, hData, huData, hvData;
 
+    NetCdfReader(const std::string &i_fileName);
     ~NetCdfReader();
-
-    void getLatestTimeStep(const Float2D &i_h,
-                        const Float2D &i_hu,
-                        const Float2D &i_hv);
 
 };
 

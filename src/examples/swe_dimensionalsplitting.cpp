@@ -71,6 +71,13 @@
 
 using namespace parser;
 
+void addArgument(tools::Args& args, string name, 
+  char shortOption, string description, bool required = true)
+{
+  if(required) args.addOption("grid-size-x", 'x', "Number of cells in x direction");
+  else args.addOption(name, shortOption, description, tools::Args::Optional, false);
+}
+
 /**
  * Main program for the simulation on a single SWE_DimensionalSplittingBlock.
  */
@@ -83,17 +90,17 @@ int main(int argc, char** argv)
   tools::Args args;
   
 #ifndef READXML
-  args.addOption("grid-size-x", 'x', "Number of cells in x direction");
-  args.addOption("grid-size-y", 'y', "Number of cells in y direction");
-  args.addOption("input-bathymetry", 'a', "Input bathymetry file name");
-  args.addOption("input-displacement", 'c', "Input displacement file name");
-  args.addOption("time-duration", 'd', "Time duration");
-  args.addOption("checkpoint-amount", 'p', "Amount of checkpoints");
-  args.addOption("boundary-condition-left", 'l', "Boundary condition left");
-  args.addOption("boundary-condition-right", 'r', "Boundary condition right");
-  args.addOption("boundary-condition-top", 't', "Boundary condition top");
-  args.addOption("boundary-condition-bottom", 'b', "Boundary condition bottom");
-  args.addOption("output-basepath", 'o', "Output base file name");
+  addArgument(args, "grid-size-x", 'x', "Number of cells in x direction");
+  addArgument(args, "grid-size-y", 'y', "Number of cells in y direction");
+  addArgument(args, "input-bathymetry", 'a', "Input bathymetry file name");
+  addArgument(args, "input-displacement", 'c', "Input displacement file name");
+  addArgument(args, "time-duration", 'd', "Time duration");
+  addArgument(args, "checkpoint-amount", 'p', "Amount of checkpoints");
+  addArgument(args, "boundary-condition-left", 'l', "Boundary condition left");
+  addArgument(args, "boundary-condition-right", 'r', "Boundary condition right");
+  addArgument(args, "boundary-condition-top", 't', "Boundary condition top");
+  addArgument(args, "boundary-condition-bottom", 'b', "Boundary condition bottom");
+  addArgument(args, "output-basepath", 'o', "Output base file name");
 #endif
   tools::Args::Result ret = args.parse(argc, argv);
 

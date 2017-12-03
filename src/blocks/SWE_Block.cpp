@@ -88,17 +88,19 @@ SWE_Block::~SWE_Block() {
  * @param i_multipleBlocks are the multiple SWE_blocks?
  */
 void SWE_Block::initScenario( float _offsetX, float _offsetY, SWE_Scenario &i_scenario,
-  const bool i_multipleBlocks ) 
+  const bool i_multipleBlocks) 
 {
 	offsetX = _offsetX;
 	offsetY = _offsetY;
-  
+  bool useData = i_scenario.providesRawData();
+
+
   // initialize bathymetry
   for(int i=0; i<=nx+1; i++) 
   {
     for(int j=0; j<=ny+1; j++) 
     {
-      b[i][j] = i_scenario.getBathymetry( offsetX + (i-0.5f)*dx, offsetY + (j-0.5f)*dy );
+      b[i][j] = useData? i_scenario.getB(i, j) : i_scenario.getBathymetry( offsetX + (i-0.5f)*dx, offsetY + (j-0.5f)*dy );
     }
   }
 
@@ -109,9 +111,9 @@ void SWE_Block::initScenario( float _offsetX, float _offsetY, SWE_Scenario &i_sc
     {
       float x = offsetX + (i-0.5f)*dx;
       float y = offsetY + (j-0.5f)*dy;
-      h[i][j] =  i_scenario.getWaterHeight(x,y); // - b[i][j];
-      hu[i][j] = i_scenario.getVeloc_u(x,y) * h[i][j];
-      hv[i][j] = i_scenario.getVeloc_v(x,y) * h[i][j]; 
+      h[i][j] =  useData? i_scenario.getH(i, j) : i_scenario.getWaterHeight(x,y); // - b[i][j];
+      hu[i][j] = useData? i_scenario.getHu(i, j) : i_scenario.getVeloc_u(x,y) * h[i][j];
+      hv[i][j] = useData? i_scenario.getHv(i, j) : i_scenario.getVeloc_v(x,y) * h[i][j]; 
     }
   }
 

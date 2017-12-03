@@ -18,12 +18,14 @@ io::NetCdfDataReader::NetCdfDataReader(const std::string& i_fileName)
 	}
 
 	nc_inq_varid(dataFile, "x", &xVar);
-	nc_inq_varid(dataFile, "y", &yVar);
-	nc_inq_varid(dataFile, "z", &zVar);
 	nc_inq_dimid(dataFile, "x", &xDim);
 	nc_inq_dimlen(dataFile, xDim, &xLength);
+
+	nc_inq_varid(dataFile, "y", &yVar);
 	nc_inq_dimid(dataFile, "y", &yDim);
 	nc_inq_dimlen(dataFile, yDim, &yLength);
+
+	nc_inq_varid(dataFile, "z", &zVar);
 
 	float xdata[xLength];
 	nc_get_var_float(dataFile, xVar, xdata);
