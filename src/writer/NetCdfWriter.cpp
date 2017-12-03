@@ -205,7 +205,7 @@ void io::NetCdfWriter::writeTimeStep( const Float2D &i_h,
 
 	char* time;
 	std::itoa(timeStep, *time, 10);				
-	ncPutAttText(NC_GLOBAL, "Conventions", time);
+	ncPutAttText(NC_GLOBAL, "timestep", time);
 
 	if (timeStep == 0)
 		// Write bathymetry
