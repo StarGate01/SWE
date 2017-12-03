@@ -53,6 +53,7 @@
 #ifdef ASAGI
 #include "scenarios/SWE_AsagiScenario.hh"
 #else
+#include "parser/CDLStreamParser.hh"
 #include "scenarios/SWE_simple_scenarios.hh"
 #include "scenarios/SWE_TsunamiScenario.hh"
 #include "scenarios/SWE_ArtificialTsunamiScenario.hh"
@@ -67,7 +68,6 @@
 #include "tools/Logger.hh"
 #include "tools/ProgressBar.hh"
 
-#include "parser/CDLStreamParser.hh"
 
 using namespace parser;
 
@@ -76,11 +76,6 @@ using namespace parser;
  */
 int main(int argc, char** argv) 
 {
-  // ifstream file("../input/artificial/artificialtsunami_displ_1000.cdl");
-  // CDLData testdata;
-  // CDLStreamParser::CDLStreamToData(file, testdata);
-
-  // vector<float>& zvalues = ((dynamic_cast<CDLVariable<float>*>(testdata.variables["z"]))->data);
 
   tools::Logger::logger.printString("\nThis is swe_dimensionalsplitting, using SWE_DimensionalSplittingBlock\n");
 
@@ -189,8 +184,8 @@ int main(int argc, char** argv)
     (float) 28800., simulationArea);
 #else
   // create a scenario
-  // SWE_TsunamiScenario l_scenario(l_ifile_baty, l_ifile_disp, l_bound_types, l_time_dur);
-  SWE_ArtificialTsunamiScenario l_scenario;
+  SWE_TsunamiScenario l_scenario(l_ifile_disp, l_ifile_baty, l_bound_types, l_time_dur);
+  // SWE_ArtificialTsunamiScenario l_scenario;
 #endif
 
   //! size of a single cell in x- and y-direction
