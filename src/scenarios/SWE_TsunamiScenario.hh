@@ -59,10 +59,10 @@ class SWE_TsunamiScenario : public SWE_Scenario
       bathyFile(bathyFilePath),
       dispFile(dispFilePath)
       {
-        ifstream filebathy("../input/artificial/test.cdl");
+        ifstream filebathy(bathyFile);
         parser::CDLStreamParser::CDLStreamToData(filebathy, bathydata);
-        ybathyvalues = ((dynamic_cast<parser::CDLVariable<float>*>(bathydata.variables["y"]))->data);
-        xbathyvalues = ((dynamic_cast<parser::CDLVariable<float>*>(bathydata.variables["x"]))->data);
+        vector<float>& ybathyvaluestest = ((dynamic_cast<parser::CDLVariable<float>*>(bathydata.variables["y"]))->data);
+        vector<float>& xbathyvaluestest = ((dynamic_cast<parser::CDLVariable<float>*>(bathydata.variables["x"]))->data);
         zbathyvalues = ((dynamic_cast<parser::CDLVariable<float>*>(bathydata.variables["z"]))->data);
 
         ifstream filedisp(dispFile);
@@ -94,7 +94,7 @@ class SWE_TsunamiScenario : public SWE_Scenario
             }
           }
         }
-        // change bathymetry values from 20 to -20
+        // change bathymetry values from 20 and -20
         for(unsigned int yb = 0; yb<ybathyvalues.size() ; yb++){
           for(unsigned int xb = 0; xb<xbathyvalues.size() ; xb++){
             if(zbathyvalues.at(yb*ybathyvalues.size()+xb)<20 && zbathyvalues.at(yb*ybathyvalues.size()+xb)>=0)
