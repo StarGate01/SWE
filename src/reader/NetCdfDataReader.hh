@@ -45,7 +45,7 @@ private:
 
     ~NetCdfDataReader();
 
-    void getZValues(const Float2D &i_z);
+    Float2D getZValues();
 
 };
 
