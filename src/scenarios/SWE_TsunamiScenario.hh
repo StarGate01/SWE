@@ -44,13 +44,14 @@ class SWE_TsunamiScenario : public SWE_Scenario
     parser::CDLData dispdata;
     std::string bathyFile;
     std::string dispFile;
-    vector<float> ybathyvalues {0};
-    vector<float> xbathyvalues {0};
-    vector<float> zbathyvalues {0};
+    int i = 1;
+    vector<float> ybathyvalues;
+    vector<float> xbathyvalues;
+    vector<float> zbathyvalues;
 
-    vector<float> ydispvalues {0};
-    vector<float> xdispvalues {0};
-    vector<float> zdispvalues {0};
+    vector<float> ydispvalues;
+    vector<float> xdispvalues;
+    vector<float> zdispvalues;
 
   public:
     SWE_TsunamiScenario(std::string dispFilePath, std::string bathyFilePath, BoundaryType* outConditions, int time)
@@ -61,8 +62,8 @@ class SWE_TsunamiScenario : public SWE_Scenario
       {
         ifstream filebathy(bathyFile);
         parser::CDLStreamParser::CDLStreamToData(filebathy, bathydata);
-        vector<float>& ybathyvaluestest = ((dynamic_cast<parser::CDLVariable<float>*>(bathydata.variables["y"]))->data);
-        vector<float>& xbathyvaluestest = ((dynamic_cast<parser::CDLVariable<float>*>(bathydata.variables["x"]))->data);
+        ybathyvalues = ((dynamic_cast<parser::CDLVariable<float>*>(bathydata.variables["y"]))->data);
+        xbathyvalues = ((dynamic_cast<parser::CDLVariable<float>*>(bathydata.variables["x"]))->data);
         zbathyvalues = ((dynamic_cast<parser::CDLVariable<float>*>(bathydata.variables["z"]))->data);
 
         ifstream filedisp(dispFile);
