@@ -41,7 +41,8 @@
         "memory": "cpp",
         "any": "cpp",
         "algorithm": "cpp",
-        "queue": "cpp"
+        "queue": "cpp",
+        "vector": "cpp"
     },
     "spellright.language": "en",
     "spellright.documentTypes": [
