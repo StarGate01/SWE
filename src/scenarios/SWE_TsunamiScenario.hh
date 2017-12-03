@@ -44,7 +44,6 @@ class SWE_TsunamiScenario : public SWE_Scenario
     parser::CDLData dispdata;
     std::string bathyFile;
     std::string dispFile;
-    int i = 1;
     vector<float> ybathyvalues;
     vector<float> xbathyvalues;
     vector<float> zbathyvalues;
@@ -80,7 +79,7 @@ class SWE_TsunamiScenario : public SWE_Scenario
         { // iterate first dimension of displacement
           for(unsigned int x = 0; x<xdispvalues.size() ; y++)
           { // iterate second dimension of displacement
-            // find the displacement
+            // get the displacement
             float displacement = zdispvalues.at((y*ydispvalues.size())+x);
             // find the position in bathymetry as displacement only contains fields with offset
             for(unsigned int yb = 0; yb<ybathyvalues.size() ; yb++){
