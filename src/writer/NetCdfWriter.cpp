@@ -27,6 +27,7 @@
  */
 
 #include "NetCdfWriter.hh"
+#include <stdlib>
 #include <string>
 #include <vector>
 #include <iostream>
@@ -201,6 +202,11 @@ void io::NetCdfWriter::writeTimeStep( const Float2D &i_h,
                                       const Float2D &i_hu,
                                       const Float2D &i_hv,
                                       float i_time) {
+
+	char* time;
+	std::itoa(timeStep, *time, 10);				
+	ncPutAttText(NC_GLOBAL, "Conventions", time);
+
 	if (timeStep == 0)
 		// Write bathymetry
 		writeVarTimeIndependent(b, bVar);
