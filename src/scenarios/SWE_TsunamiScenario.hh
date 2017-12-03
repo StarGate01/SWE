@@ -82,7 +82,7 @@ class SWE_TsunamiScenario : public SWE_Scenario
 #if !defined(NDEBUG) || defined(DEBUG)
       assert(!isCheckpoint);
 #endif
-      float bathy = bathyReader->sample(x, y, true);
+      float bathy = bathyReader->sample(x, y, true) + dispReader->sample(x, y);
       if(bathy <= 0 && bathy >= -20) bathy = -20;
       if(bathy >= 0 && bathy <= 20) bathy = 20;
       return bathy;
@@ -93,7 +93,7 @@ class SWE_TsunamiScenario : public SWE_Scenario
 #if !defined(NDEBUG) || defined(DEBUG)
       assert(!isCheckpoint);
 #endif
-      return -min(bathyReader->sample(x, y), 0.0F) + dispReader->sample(x, y);
+      return -min(bathyReader->sample(x, y), 0.0F);
     };
 
 	  float endSimulation()
