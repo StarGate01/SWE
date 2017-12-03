@@ -37,5 +37,5 @@ io::NetCdfReader::~NetCdfReader()
 void io::NetCdfReader::getLatestTimeStep(const Float2D &i_h,
 	const Float2D &i_hu, const Float2D &i_hv) 
 {
-
+	// nc_get_var_float , besser nc_get_vara_float
 }
