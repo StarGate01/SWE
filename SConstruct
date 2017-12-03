@@ -92,6 +92,8 @@ vars.AddVariables(
 
   BoolVariable( 'writeNetCDF', 'write output in the netCDF-format', False ),
 
+  BoolVariable( 'readeNetCDF', 'read from file in the netCDF-format', True ),
+
   BoolVariable( 'parseCDL', 'support reading of CDL files', True ),
 
   BoolVariable( 'asagi', 'use ASAGI', False ),
