@@ -4,7 +4,7 @@
 #include <iostream>
 #include <cassert>
 
-io::NetCdfDataReader::NetCdfDataReader(const std::string &i_fileName)
+io::NetCdfDataReader::NetCdfDataReader(const std::string& i_fileName)
 {
 	int status;
 
@@ -18,25 +18,33 @@ io::NetCdfDataReader::NetCdfDataReader(const std::string &i_fileName)
 		return;
 	}
 
+	nc_inq_varid(dataFile, "x", &xVar);
+	nc_inq_varid(dataFile, "y", &yVar);
 	nc_inq_varid(dataFile, "z", &zVar);
 	nc_inq_dimid(dataFile, "x", &xDim);
 	nc_inq_dimlen(dataFile, xDim, &xLength);
 	nc_inq_dimid(dataFile, "y", &yDim);
 	nc_inq_dimlen(dataFile, yDim, &yLength);
-}
 
-/**
- * Destructor of a netCDFdata-reader.
- */
-io::NetCdfDataReader::~NetCdfDataReader() 
-{
+	float xdata[xLength];
+	nc_get_var_float(dataFile, xVar, xdata);
+	xMin = xdata[0];
+	xMax = xdata[xLength - 1];
+
+	float ydata[yLength];
+	nc_get_var_float(dataFile, yVar, ydata);
+	yMin = ydata[0];
+	yMax = ydata[yLength - 1];
+
+	zData = new float[xLength * yLength];
+	nc_get_var_float(dataFile, zVar, zData);
+	zData2D = new Float2D(xLength, yLength, zData);
+
 	nc_close(dataFile);
 }
 
-Float2D io::NetCdfDataReader::getZValues()
+io::NetCdfDataReader::~NetCdfDataReader() 
 {
-	float* zdata = new float[xLength * yLength];
-	nc_get_var_float(dataFile, zVar, zdata);
-	Float2D fData(xLength, yLength, zdata);
-	return fData;
-};
+	delete zData2D;
+	delete[] zData;
+}

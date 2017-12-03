@@ -31,21 +31,18 @@ class io::NetCdfDataReader
 
 private:
 
-    /** netCDF file id*/
     int dataFile;
-
-    /** Variable ids */
-    int zVar, xDim, yDim;
+    int xVar, yVar, zVar, xDim, yDim;
+    float* zData;
 
   public:
 
     size_t xLength, yLength;
+    float xMin, xMax, yMin, yMax;
+    Float2D* zData2D;
 
     NetCdfDataReader(const std::string &i_fileName);
-
     ~NetCdfDataReader();
-
-    Float2D getZValues();
 
 };
 

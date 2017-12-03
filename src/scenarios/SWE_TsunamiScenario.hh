@@ -1,141 +1,56 @@
-/**
- * @file
- * This file is part of SWE.
- *
- * @author Michael Bader, Kaveh Rahnema, Tobias Schnabel
- * @author Sebastian Rettenberger (rettenbs AT in.tum.de, http://www5.in.tum.de/wiki/index.php/Sebastian_Rettenberger,_M.Sc.)
- *
- * @section LICENSE
- *
- * SWE is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * SWE is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with SWE.  If not, see <http://www.gnu.org/licenses/>.
- *
- *
- * @section DESCRIPTION
- *
- */
-
 #ifndef __SWE_TSUNAMI_SCENARIO_H
 #define __SWE_TSUNAMI_SCENARIO_H
 
 #include <string>
 
 
-#include "parser/CDLStreamParser.hh"
-#include "parser/CDLData.hh"
+#include "reader/NetCdfDataReader.hh"
 #include "SWE_Scenario.hh"
 
 class SWE_TsunamiScenario : public SWE_Scenario 
 {
+
   private:
+
     BoundaryType* outflowConditions;
     int simulationTime;
-    Float2D& baytyData;
-    Float2D& dispData;
-    std::string bathyFile;
-    std::string dispFile;
+    io::NetCdfDataReader* bathyReader = nullptr;
+    io::NetCdfDataReader* dispReader = nullptr;
+
+    float getDisplacement(float x, float y)
+    {
+      int xindex = round(((x - dispReader->xMin) / (dispReader->xMax - dispReader->xMin)) * dispReader->xLength);
+      int yindex = round(((y - dispReader->yMin) / (dispReader->yMax - dispReader->yMin)) * dispReader->yLength);
+      if(xindex < 0 || xindex > dispReader->xLength - 1 || yindex < 0 || yindex > dispReader->yLength - 1) return 0;
+      return (*(dispReader->zData2D))[xindex][yindex];
+    };
 
   public:
     SWE_TsunamiScenario(std::string dispFilePath, std::string bathyFilePath, BoundaryType* outConditions, int time)
-      :outflowConditions(outConditions),
-      simulationTime(time),
-      bathyFile(bathyFilePath),
-      dispFile(dispFilePath)
+      : outflowConditions(outConditions), 
+        simulationTime(time)
       {
-        // ifstream filebathy(bathyFile);
-        // parser::CDLStreamParser::CDLStreamToData(filebathy, bathydata);
-        // ybathyvalues = ((dynamic_cast<parser::CDLVariable<float>*>(bathydata.variables["y"]))->data);
-        // xbathyvalues = ((dynamic_cast<parser::CDLVariable<float>*>(bathydata.variables["x"]))->data);
-        // zbathyvalues = ((dynamic_cast<parser::CDLVariable<float>*>(bathydata.variables["z"]))->data);
-
-        // ifstream filedisp(dispFile);
-        // parser::CDLStreamParser::CDLStreamToData(filedisp, dispdata);
-        // ydispvalues = ((dynamic_cast<parser::CDLVariable<float>*>(dispdata.variables["y"]))->data);
-        // xdispvalues = ((dynamic_cast<parser::CDLVariable<float>*>(dispdata.variables["x"]))->data);
-        // zdispvalues = ((dynamic_cast<parser::CDLVariable<float>*>(dispdata.variables["z"]))->data);
-
+        bathyReader = new io::NetCdfDataReader(bathyFilePath);
+        dispReader = new io::NetCdfDataReader(dispFilePath);
       };
 
     float getBathymetry(float xpos, float ypos)
     {
-        // for(unsigned int y = 0; y<ydispvalues.size() ; y++)
-        // { // iterate first dimension of displacement
-        //   for(unsigned int x = 0; x<xdispvalues.size() ; y++)
-        //   { // iterate second dimension of displacement
-        //     // get the displacement
-        //     float displacement = zdispvalues.at((y*ydispvalues.size())+x);
-        //     // find the position in bathymetry as displacement only contains fields with offset
-        //     for(unsigned int yb = 0; yb<ybathyvalues.size() ; yb++){
-        //       for(unsigned int xb = 0; xb<xbathyvalues.size() ; xb++){
-        //         if (abs(ybathyvalues.at(yb)-ydispvalues.at(y))<ZERO_PRECISION && abs(xbathyvalues.at(xb)-xdispvalues.at(x))<ZERO_PRECISION)
-        //         { // same field, add displacement
-        //           float tempbathy = zbathyvalues.at(yb*ybathyvalues.size()+xb);
-        //           zbathyvalues.erase(zbathyvalues.begin()+(yb*ybathyvalues.size()+xb));
-        //           zbathyvalues.insert(zbathyvalues.begin()+(yb*ybathyvalues.size()+xb), tempbathy + displacement);
-        //         }
-        //       }
-        //     }
-        //   }
-        // }
-        // // change bathymetry values from 20 and -20
-        // for(unsigned int yb = 0; yb<ybathyvalues.size() ; yb++){
-        //   for(unsigned int xb = 0; xb<xbathyvalues.size() ; xb++){
-        //     if(zbathyvalues.at(yb*ybathyvalues.size()+xb)<20 && zbathyvalues.at(yb*ybathyvalues.size()+xb)>=0)
-        //     {
-        //       zbathyvalues.erase(zbathyvalues.begin()+(yb*ybathyvalues.size()+xb));
-        //       zbathyvalues.insert(zbathyvalues.begin()+(yb*ybathyvalues.size()+xb), 20);
-        //     }
-        //     else if(zbathyvalues.at(yb*ybathyvalues.size()+xb)<0 && zbathyvalues.at(yb*ybathyvalues.size()+xb)>-20)
-        //     {
-        //       zbathyvalues.erase(zbathyvalues.begin()+(yb*ybathyvalues.size()+xb));
-        //       zbathyvalues.insert(zbathyvalues.begin()+(yb*ybathyvalues.size()+xb), -20);
-        //     }
-        //   }
-        // }
-        // // search for the position in bathymetry and get the closest value
-        // float distancex = 10000 ;
-        // unsigned int xpoint;
-        // float distancey = 10000;
-        // unsigned int ypoint;
-        // for(unsigned int yb = 0; yb<ybathyvalues.size() ; yb++){
-        //   for(unsigned int xb = 0; xb<xbathyvalues.size() ; xb++){
-        //     if (abs(ybathyvalues.at(yb)-ypos) < distancey)
-        //     {
-        //       distancey = abs(ybathyvalues.at(yb)-ypos);
-        //       ypoint = yb;
-        //     }
-        //     if (abs(xbathyvalues.at(xb)-xpos) < distancex)
-        //     {
-        //       distancey = abs(xbathyvalues.at(xb)-xpos);
-        //       xpoint = xb;
-        //     }
-        //   }
-        // }
-        // // finally return closest bathymetry
-        // return zbathyvalues.at(ypoint*ybathyvalues.size()+xpoint);
-
+        int xindex = round(((xpos - bathyReader->xMin) / (bathyReader->xMax - bathyReader->xMin)) * bathyReader->xLength);
+        int yindex = round(((ypos - bathyReader->yMin) / (bathyReader->yMax - bathyReader->yMin)) * bathyReader->yLength);
+        if(xindex < 0) xindex = 0;
+        if(xindex > bathyReader->xLength - 1) xindex = bathyReader->xLength - 1;
+        if(yindex < 0) xindex = 0;
+        if(yindex > bathyReader->yLength - 1) yindex = bathyReader->yLength - 1;
+        float bathy = (*(bathyReader->zData2D))[xindex][yindex] + getDisplacement(xpos, ypos);
+        if(bathy <= 0 && bathy >= -20) bathy = -20;
+        if(bathy >= 0 && bathy <= 20) bathy = 20;
+        return bathy;
     };
 
     float getWaterHeight(float x, float y)
     { 
-      // float minbathy = 0;
-      // for(int i = zbathyvalues.size(); i>0 ; i--)
-      // {
-      //   if(zbathyvalues.at(i) < minbathy){
-      //     minbathy = zbathyvalues.at(i);
-      //   }
-      // }
-      //  return -minbathy;
+      return getDisplacement(x, y);
     };
 
 	  virtual float endSimulation()
@@ -162,11 +77,17 @@ class SWE_TsunamiScenario : public SWE_Scenario
 
     float getBoundaryPos(BoundaryEdge i_edge) 
     {
-      //  if (i_edge == BND_LEFT) return xbathyvalues.front();
-      //  else if (i_edge == BND_RIGHT) return xbathyvalues.back();
-      //  else if (i_edge == BND_BOTTOM) xbathyvalues.back();
-      //  else return xbathyvalues.front();
+       if (i_edge == BND_LEFT) return bathyReader->xMin;
+       else if (i_edge == BND_RIGHT) return bathyReader->xMax;
+       else if (i_edge == BND_BOTTOM) return bathyReader->yMax;
+       else return bathyReader->yMin;
     };
+
+    ~SWE_TsunamiScenario()
+    {
+      delete bathyReader;
+      delete dispReader;
+    }
 
 };
 #endif
