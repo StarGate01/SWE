@@ -66,10 +66,10 @@ class SWE_TsunamiScenario : public SWE_Scenario
         zbathyvalues = ((dynamic_cast<parser::CDLVariable<float>*>(bathydata.variables["z"]))->data);
 
         ifstream filedisp(dispFile);
-        parser::CDLStreamParser::CDLStreamToData(filedisp, bathydata);
-        ydispvalues = ((dynamic_cast<parser::CDLVariable<float>*>(bathydata.variables["y"]))->data);
-        xdispvalues = ((dynamic_cast<parser::CDLVariable<float>*>(bathydata.variables["x"]))->data);
-        zdispvalues = ((dynamic_cast<parser::CDLVariable<float>*>(bathydata.variables["z"]))->data);
+        parser::CDLStreamParser::CDLStreamToData(filedisp, dispdata);
+        ydispvalues = ((dynamic_cast<parser::CDLVariable<float>*>(dispdata.variables["y"]))->data);
+        xdispvalues = ((dynamic_cast<parser::CDLVariable<float>*>(dispdata.variables["x"]))->data);
+        zdispvalues = ((dynamic_cast<parser::CDLVariable<float>*>(dispdata.variables["z"]))->data);
 
       };
 
@@ -84,7 +84,7 @@ class SWE_TsunamiScenario : public SWE_Scenario
             // find the position in bathymetry as displacement only contains fields with offset
             for(unsigned int yb = 0; yb<ybathyvalues.size() ; yb++){
               for(unsigned int xb = 0; xb<xbathyvalues.size() ; xb++){
-                if (ybathyvalues.at(yb)-ydispvalues.at(y)<ZERO_PRECISION && xbathyvalues.at(xb)-xdispvalues.at(x)<ZERO_PRECISION)
+                if (abs(ybathyvalues.at(yb)-ydispvalues.at(y))<ZERO_PRECISION && abs(xbathyvalues.at(xb)-xdispvalues.at(x))<ZERO_PRECISION)
                 { // same field, add displacement
                   float tempbathy = zbathyvalues.at(yb*ybathyvalues.size()+xb);
                   zbathyvalues.erase(zbathyvalues.begin()+(yb*ybathyvalues.size()+xb));
