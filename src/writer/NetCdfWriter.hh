@@ -95,7 +95,6 @@ private:
     {
     	nc_put_att_text(dataFile, varid, name, strlen(value), value);
     }
-
 };
 
 #endif /* NETCDFWRITER_HH_ */

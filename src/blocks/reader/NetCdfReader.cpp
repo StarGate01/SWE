@@ -36,8 +36,12 @@ io::NetCdfReader::~NetCdfReader()
 void io::NetCdfReader::getLatestTimeStep(const Float2D &i_h,
 	const Float2D &i_hu, const Float2D &i_hv) 
 {
+	int timeVarId;
 	//länge = nX * nY
-	//anzahl = datenanzahl / länge
+	int last_timestep;
+	nc_get_att_int(dataFile, timeVarId, "timestep", &last_timestep);
+
+	
 	//start = (anzahl - 1) * länge
 	// nc_get_var_float , besser nc_get_vara_float
 }
