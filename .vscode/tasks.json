@@ -98,6 +98,19 @@
             "problemMatcher": []
         },
         {
+            "label": "Run Tsunami Script",
+            "type": "shell",
+            "command": "bash",
+            "options": {
+                "cwd": "${workspaceRoot}/.vscode"
+            },
+            "args": [
+               "-c",
+               "\"./simulate_tsunamis.sh\""
+            ],
+            "problemMatcher": []
+        },
+        {
             "label": "Build Solver Documentation",
             "type": "shell",
             "command": "bash",

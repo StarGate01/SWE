@@ -47,6 +47,10 @@ class SWE_TsunamiScenario : public SWE_Scenario
     float getB(int x, int y) 
     {
       assert(isCheckpoint);
+      if(x < 0) x = 0;
+      if(x >= nx) x = nx-1;
+      if(y < 0) y = 0;
+      if(y >= ny) y = ny -1;
       return checkpReader->bData[(y * nx) + x];
     };
 
@@ -80,7 +84,10 @@ class SWE_TsunamiScenario : public SWE_Scenario
     float getWaterHeight(float x, float y)
     { 
       assert(!isCheckpoint);
-      return -min(bathyReader->sample(x, y), 0.0F);
+      float bathy = bathyReader->sample(x, y, true);
+      if(bathy <= 0 && bathy >= -20) bathy = -20;
+      if(bathy >= 0 && bathy <= 20) bathy = 20;
+      return -min(bathy, 0.0F);
     };
 
 	  float endSimulation()

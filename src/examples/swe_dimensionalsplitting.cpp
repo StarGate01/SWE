@@ -348,7 +348,7 @@ if((l_timestep + 1) >= l_checkpoints)
 
 #if !defined(NDEBUG) || defined(DEBUG)
       //Check CFL condition for x sweep
-      assert(l_maxTimeStepWidth < 0.5 * (l_dX / l_maxWaveSpeedHorizontal));
+      //assert(l_maxTimeStepWidth < 0.5 * (l_dX / l_maxWaveSpeedHorizontal));
 #endif
 
 #endif
@@ -369,7 +369,7 @@ if((l_timestep + 1) >= l_checkpoints)
 
 #if !defined(NDEBUG) || defined(DEBUG)
       //Check CFL condition for y sweep
-      assert(l_maxTimeStepWidth < 0.5 * (l_dY / l_maxWaveSpeedVertical));
+      //assert(l_maxTimeStepWidth < 0.5 * (l_dY / l_maxWaveSpeedVertical));
 #endif
 
 #endif
