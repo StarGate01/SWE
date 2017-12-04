@@ -233,8 +233,8 @@ if((l_timestep + 1) >= l_checkpoints)
   SWE_TsunamiScenario* l_scenario;
   if(!isCheckpoint) l_scenario =  new SWE_TsunamiScenario(l_ifile_disp, l_ifile_baty, l_bound_types, l_time_dur);
   else l_scenario = new SWE_TsunamiScenario(checkp_reader, l_nX, l_nY, l_time_dur);
-  //SWE_RadialDamBreakScenario l_scenario;
-   //SWE_ArtificialTsunamiScenario l_scenario;
+  //SWE_RadialDamBreakScenario* l_scenario = new SWE_RadialDamBreakScenario(l_bound_types);
+   //SWE_ArtificialTsunamiScenario* l_scenario = new SWE_ArtificialTsunamiScenario(l_bound_types);
 #endif
 
   //! size of a single cell in x- and y-direction

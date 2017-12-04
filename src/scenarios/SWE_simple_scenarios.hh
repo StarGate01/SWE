@@ -36,7 +36,7 @@
 
 #define SIMULATION_TIME 80
 
-// #define BATHY_OBSTACLE
+#define BATHY_OBSTACLE
 
 /**
  * Scenario "Radial Dam Break":
@@ -45,13 +45,21 @@
 class SWE_RadialDamBreakScenario : public SWE_Scenario 
 {
 
+  private:
+
+     BoundaryType* outflowConditions;
+
   public:
+
+    SWE_RadialDamBreakScenario(BoundaryType* outConditions)
+      : outflowConditions(outConditions)
+    {};
 
     float getBathymetry(float x, float y)
     {
 #ifdef BATHY_OBSTACLE
-      return ((x > 300 && x < 500 && y > 200 && y < 400) ? -10.f : 0.f)
-        + ((x > 400 && x < 700 && y > 600 && y < 800) ? 20.f : 0.f);
+      return -20.f + ((x > 300 && x < 500 && y > 200 && y < 400) ? -10.f : -0.f)
+        + ((x > 400 && x < 700 && y > 600 && y < 800) ? 25.f : -0.f);
 #else
       return 0;
 #endif
@@ -59,17 +67,18 @@ class SWE_RadialDamBreakScenario : public SWE_Scenario
 
     float getWaterHeight(float x, float y)
     { 
-      return ((sqrt((x - 500.f) * (x - 500.f) + (y - 500.f) * (y - 500.f)) < 100.f) ? 25.f : 10.0f);
+      float bathy = getBathymetry(x, y);
+      return -min(bathy, 0.0F) + (bathy < 0 && (sqrt((x - 500.f) * (x - 500.f) + (y - 500.f) * (y - 500.f)) < 100.f) ? 10.f : 0.0f);
     };
 
-	  virtual float endSimulation() 
+	  float endSimulation() 
     { 
       return (float) SIMULATION_TIME; 
     };
 
-    virtual BoundaryType getBoundaryType(BoundaryEdge edge) 
+    BoundaryType getBoundaryType(BoundaryEdge edge) 
     {
-       return OUTFLOW; 
+      return outflowConditions[(int)edge];
     };
 
     /** Get the boundary positions

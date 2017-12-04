@@ -45,6 +45,8 @@ class SWE_ArtificialTsunamiScenario : public SWE_Scenario
 
   private:
 
+    BoundaryType* outflowConditions;
+
     float getDisp(float x, float y)
     {
         if (std::abs(x-5000) <= 500 && std::abs(y-5000) <= 500)
@@ -56,6 +58,11 @@ class SWE_ArtificialTsunamiScenario : public SWE_Scenario
 
   public:
 
+    SWE_ArtificialTsunamiScenario(BoundaryType* outConditions)
+      : outflowConditions(outConditions)
+    {};
+
+
     float getBathymetry(float x, float y) 
     { 
       return -100 + getDisp(x, y);
@@ -66,21 +73,16 @@ class SWE_ArtificialTsunamiScenario : public SWE_Scenario
       return 100;
     };
     
-    virtual float endSimulation()
+    float endSimulation()
     {
        return (float) SIMULATION_TIME; 
     };
 
-    virtual BoundaryType getBoundaryType(BoundaryEdge edge)
+    BoundaryType getBoundaryType(BoundaryEdge edge) 
     {
-       return WALL; 
+      return outflowConditions[(int)edge];
     };
 
-    /** Get the boundary positions
-     *
-     * @param i_edge which edge
-     * @return value in the corresponding dimension
-     */
     float getBoundaryPos(BoundaryEdge i_edge) 
     {
        if (i_edge == BND_LEFT) return (float)0;
