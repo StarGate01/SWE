@@ -1,29 +1,6 @@
 /**
- * @file
- * This file is part of SWE.
- *
- * @author Alexander Breuer (breuera AT in.tum.de, http://www5.in.tum.de/wiki/index.php/Dipl.-Math._Alexander_Breuer)
- * @author Sebastian Rettenberger (rettenbs AT in.tum.de, http://www5.in.tum.de/wiki/index.php/Sebastian_Rettenberger,_M.Sc.)
- *
- * @section LICENSE
- *
- * SWE is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * SWE is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with SWE.  If not, see <http://www.gnu.org/licenses/>.
- *
- *
- * @section DESCRIPTION
- *
- * A writer for the netCDF-format: http://www.unidata.ucar.edu/software/netcdf/
+ * @file NetCdfWriter.cpp
+ * @brief Implements the functionality from NetCdfWriter.hh
  */
 
 #include "NetCdfWriter.hh"
@@ -33,34 +10,20 @@
 #include <cassert>
 #include <sstream>
 
-/**
- * Create a netCdf-file
- * Any existing file will be replaced.
- *
- * @param i_baseName base name of the netCDF-file to which the data will be written to.
- * @param i_nX number of cells in the horizontal direction.
- * @param i_nY number of cells in the vertical direction.
- * @param i_dX cell size in x-direction.
- * @param i_dY cell size in y-direction.
- * @param i_originX
- * @param i_originY
- * @param i_flush If > 0, flush data to disk every i_flush write operation
- * @param i_dynamicBathymetry
- */
 io::NetCdfWriter::NetCdfWriter(const std::string &i_baseName,
-		const std::string &i_filebaseName,
-		const Float2D &i_b,
-		const BoundarySize &i_boundarySize,
-		int i_nX, int i_nY,
-		float i_dX, float i_dY,
-		int* i_outConditions,
-		float i_timeDuration,
-		int i_checkpoints,
-		float i_originX, float i_originY,
-		size_t timestep,
-		const bool append,
-		const unsigned int i_flush) :
-		//const bool  &i_dynamicBathymetry : //!TODO
+	const std::string &i_filebaseName,
+	const Float2D &i_b,
+	const BoundarySize &i_boundarySize,
+	int i_nX, int i_nY,
+	float i_dX, float i_dY,
+	int* i_outConditions,
+	float i_timeDuration,
+	int i_checkpoints,
+	float i_originX, float i_originY,
+	size_t timestep,
+	const bool append,
+	const unsigned int i_flush) :
+	//const bool  &i_dynamicBathymetry : //!TODO
   io::Writer(i_baseName + ".nc", i_b, i_boundarySize, i_nX, i_nY, timestep),
   flush(i_flush)
 {
@@ -183,27 +146,13 @@ io::NetCdfWriter::NetCdfWriter(const std::string &i_baseName,
 	nc_sync(dataFile);
 }
 
-/**
- * Destructor of a netCDF-writer.
- */
-io::NetCdfWriter::~NetCdfWriter() {
+io::NetCdfWriter::~NetCdfWriter() 
+{
 	nc_close(dataFile);
 }
 
-/**
- * Writes time dependent data to a netCDF-file (-> constructor) with respect to the boundary sizes.
- *
- * boundarySize[0] == left
- * boundarySize[1] == right
- * boundarySize[2] == bottom
- * boundarySize[3] == top
- *
- * @param i_matrix array which contains time dependent data.
- * @param i_boundarySize size of the boundaries.
- * @param i_ncVariable time dependent netCDF-variable to which the output is written to.
- */
-void io::NetCdfWriter::writeVarTimeDependent( const Float2D &i_matrix,
-                                              int i_ncVariable ) {
+void io::NetCdfWriter::writeVarTimeDependent( const Float2D &i_matrix, int i_ncVariable ) 
+{
 	//write col wise, necessary to get rid of the boundary
 	//storage in Float2D is col wise
 	//read carefully, the dimensions are confusing
@@ -216,20 +165,9 @@ void io::NetCdfWriter::writeVarTimeDependent( const Float2D &i_matrix,
   }
 }
 
-/**
- * Write time independent data to a netCDF-file (-> constructor) with respect to the boundary sizes.
- * Variable is time-independent
- * boundarySize[0] == left
- * boundarySize[1] == right
- * boundarySize[2] == bottom
- * boundarySize[3] == top
- *
- * @param i_matrix array which contains time independent data.
- * @param i_boundarySize size of the boundaries.
- * @param i_ncVariable time independent netCDF-variable to which the output is written to.
- */
-void io::NetCdfWriter::writeVarTimeIndependent( const Float2D &i_matrix,
-                                                int i_ncVariable ) {
+
+void io::NetCdfWriter::writeVarTimeIndependent(const Float2D &i_matrix, int i_ncVariable )
+{
 	//write col wise, necessary to get rid of the boundary
 	//storage in Float2D is col wise
 	//read carefully, the dimensions are confusing
@@ -242,25 +180,10 @@ void io::NetCdfWriter::writeVarTimeIndependent( const Float2D &i_matrix,
   }
 }
 
-/**
- * Writes the unknwons to a netCDF-file (-> constructor) with respect to the boundary sizes.
- *
- * boundarySize[0] == left
- * boundarySize[1] == right
- * boundarySize[2] == bottom
- * boundarySize[3] == top
- *
- * @param i_h water heights at a given time step.
- * @param i_hu momentums in x-direction at a given time step.
- * @param i_hv momentums in y-direction at a given time step.
- * @param i_boundarySize size of the boundaries.
- * @param i_time simulation time of the time step.
- */
-void io::NetCdfWriter::writeTimeStep( const Float2D &i_h,
-                                      const Float2D &i_hu,
-                                      const Float2D &i_hv,
-                                      float i_time) {
 
+void io::NetCdfWriter::writeTimeStep(const Float2D &i_h, const Float2D &i_hu,
+	const Float2D &i_hv, float i_time) 
+{
 	if (timeStep == 0)
 		// Write bathymetry
 		writeVarTimeIndependent(b, bVar);
@@ -280,6 +203,5 @@ void io::NetCdfWriter::writeTimeStep( const Float2D &i_h,
 	// Increment timeStep for next call
 	timeStep++;
 
-	if (flush > 0 && timeStep % flush == 0)
-		nc_sync(dataFile);
+	if (flush > 0 && timeStep % flush == 0) nc_sync(dataFile);
 }

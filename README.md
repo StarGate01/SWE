@@ -6,9 +6,11 @@ The Shallow Water Equations teaching code.
 Documentation
 -------------
 
-The documentation is available in the [Wiki](https://github.com/TUM-I5/SWE/wiki)
+Additional documentation is available in the [Wiki](https://github.com/TUM-I5/SWE/wiki)
+
+Please also read the documentation of the used submodule (the F-Wave solver)
 
 License
 -------
 
-SWE is release unter GPLv3 (see [gpl.txt](gpl.txt))
+SWE is released unter GPLv3 (see [gpl.txt](gpl.txt))

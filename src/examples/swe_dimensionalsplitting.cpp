@@ -1,29 +1,6 @@
 /**
- * @file
- * This file is part of SWE.
- *
- * @author Alexander Breuer (breuera AT in.tum.de, http://www5.in.tum.de/wiki/index.php/Dipl.-Math._Alexander_Breuer)
- *         Michael Bader (bader AT in.tum.de, http://www5.in.tum.de/wiki/index.php/Univ.-Prof._Dr._Michael_Bader)
- *
- * @section LICENSE
- *
- * SWE is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * SWE is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with SWE.  If not, see <http://www.gnu.org/licenses/>.
- *
- *
- * @section DESCRIPTION
- *
- * Basic setting of SWE, which uses a dimensional splitting solver and an artificial or ASAGI scenario on a single block.
+ * @file swe_dimensionalsplitting.cpp
+ * @brief Main entry point for our version of SWE
  */
 
 #include <cassert>
@@ -71,6 +48,15 @@
 
 using namespace parser;
 
+/**
+ * @brief Adds an argument to the list of possible command line arguments
+ * 
+ * @param args The argument list
+ * @param name The name
+ * @param shortOption The flag name
+ * @param description The long name
+ * @param required Wether  this argument is required
+ */
 void addArgument(tools::Args& args, string name, 
   char shortOption, string description, bool required = false)
 {
@@ -79,7 +65,12 @@ void addArgument(tools::Args& args, string name,
 }
 
 /**
- * Main program for the simulation on a single SWE_DimensionalSplittingBlock.
+ * @brief Main program for the simulation on a single SWE_DimensionalSplittingBlock
+ * 
+ * @param argc Argument count
+ * @param argv Argument buffer
+ * 
+ * @return The exit code
  */
 int main(int argc, char** argv) 
 {

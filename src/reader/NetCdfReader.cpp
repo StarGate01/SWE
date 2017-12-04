@@ -1,3 +1,8 @@
+/**
+ * @file NetCdfReader.cpp
+ * @brief Implements the functionality defined in NetCdfReader.hh
+ */
+
 #include "NetCdfReader.hh"
 #include <string>
 #include <vector>

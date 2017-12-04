@@ -1,3 +1,8 @@
+/**
+ * @file SWE_TsunamiScenario.hh
+ * @brief Implements a data file driven scenario
+ */
+
 #ifndef __SWE_TSUNAMI_SCENARIO_H
 #define __SWE_TSUNAMI_SCENARIO_H
 
@@ -7,21 +12,48 @@
 #include "reader/NetCdfDataReader.hh"
 #include "SWE_Scenario.hh"
 
+/**
+ * @brief A Scenario which loads bathymatry and displacement from files, or restarts from a checkpoint file.
+ */
 class SWE_TsunamiScenario : public SWE_Scenario 
 {
 
   private:
 
+    //! The outflow conditions
     BoundaryType* outflowConditions;
+
+    //! Wether this scenario is run from a checkpoint
     bool isCheckpoint = false;
+
+    //! Data reader for the bathymetry
     io::NetCdfDataReader* bathyReader = nullptr;
+
+    //! Data reader for the disposition
     io::NetCdfDataReader* dispReader = nullptr;
+
+    //! Reader for the checkpoint data
     io::NetCdfReader* checkpReader = nullptr;
-    int nx, ny;
+
+    //! Amount of cells in x dimension
+    int nx;
+    
+    //! Amount of cells in y dimension
+    int ny;
+
+    //! Total simulation time
     int simulationTime;
 
   public:
 
+    /**
+     * @brief Constructor
+     * 
+     * @param dispFilePath File path to the disposition data
+     * @param bathyFilePath File path to the bathymetry data
+     * @param outConditions The outflow conditions
+     * @param time The total simulation time
+     */
     SWE_TsunamiScenario(std::string dispFilePath, std::string bathyFilePath, BoundaryType* outConditions, int time)
       : outflowConditions(outConditions), 
         simulationTime(time)
@@ -31,6 +63,14 @@ class SWE_TsunamiScenario : public SWE_Scenario
       isCheckpoint = false;
     };
 
+    /**
+     * @brief Constructor
+     * 
+     * @param checkpReader A reader for a checkpoint file
+     * @param nx Amount of cells in x dimension
+     * @param ny Amount of cells in y dimension
+     * @param time The total simulation time
+     */
     SWE_TsunamiScenario(io::NetCdfReader* checkpReader, int nx, int ny, int time)
       : checkpReader(checkpReader),
         nx(nx), ny(ny),
@@ -39,11 +79,24 @@ class SWE_TsunamiScenario : public SWE_Scenario
       isCheckpoint = true;
     };
 
+    /**
+     * @brief Wether this scenario is run from a checkpoint
+     * 
+     * @return Wether this scenario can privide values for the data buffers directly
+     */
     bool providesRawData() 
     {
       return isCheckpoint; 
     };
 
+    /**
+     * @brief Get a bathymetry value a indices
+     * 
+     * @param x Index for x
+     * @param y Index for y
+     * 
+     * @return The bathymetry value at this index
+     */
     float getB(int x, int y) 
     {
       assert(isCheckpoint);
@@ -54,24 +107,56 @@ class SWE_TsunamiScenario : public SWE_Scenario
       return checkpReader->bData[(y * nx) + x];
     };
 
+     /**
+     * @brief Get a water height value a indices
+     * 
+     * @param x Index for x
+     * @param y Index for y
+     * 
+     * @return The water height value at this index
+     */
     float getH(int x, int y) 
     {
       assert(isCheckpoint);
       return checkpReader->hData[(y * nx) + x];
     };
 
+    /**
+     * @brief Get a horizontal flux value a indices
+     * 
+     * @param x Index for x
+     * @param y Index for y
+     * 
+     * @return The horizontal flux value at this index
+     */
     float getHu(int x, int y) 
     {
       assert(isCheckpoint);
       return checkpReader->huData[(y * nx) + x];
     };
 
+    /**
+     * @brief Get a vertical flux value a indices
+     * 
+     * @param x Index for x
+     * @param y Index for y
+     * 
+     * @return The vertical flux value at this index
+     */
     float getHv(int x, int y)
     { 
       assert(isCheckpoint);
       return checkpReader->hvData[(y * nx) + x];
     };
 
+     /**
+     * @brief Get the bathymetry at a position
+     *      
+     * @param x X position
+     * @param y Y position
+     * 
+     * @return The bathymetry
+     */
     float getBathymetry(float x, float y)
     {
       assert(!isCheckpoint);
@@ -81,6 +166,14 @@ class SWE_TsunamiScenario : public SWE_Scenario
       return bathy;
     };
 
+    /**
+     * @brief Get water height at a position
+     *      
+     * @param x X position
+     * @param y Y position
+     * 
+     * @return The water height
+     */
     float getWaterHeight(float x, float y)
     { 
       assert(!isCheckpoint);
@@ -90,11 +183,23 @@ class SWE_TsunamiScenario : public SWE_Scenario
       return -min(bathy, 0.0F);
     };
 
+    /**
+     * @brief Get the maximum simulation time
+     * 
+     * @return the maximum scenario time
+     */
 	  float endSimulation()
     { 
         return simulationTime;
     };
 
+    /** 
+     * @brief Get the boundary type
+     * 
+     * @param edge Which edge
+     * 
+     * @return The boundary type for this edge
+     */
     BoundaryType getBoundaryType(BoundaryEdge edge) 
     {
       if(isCheckpoint) 
@@ -105,6 +210,13 @@ class SWE_TsunamiScenario : public SWE_Scenario
       else return outflowConditions[(int)edge];
     };
 
+    /**
+     * @brief Get the domain size
+     * 
+     * @param i_edge Which edge
+     * 
+     * @return The size in this direction
+     */
     float getBoundaryPos(BoundaryEdge i_edge) 
     {
       if(isCheckpoint)
@@ -123,6 +235,11 @@ class SWE_TsunamiScenario : public SWE_Scenario
       }
     };
 
+    /**
+     * @brief Destructor
+     * 
+     * Cleans up the data readers
+     */
     ~SWE_TsunamiScenario()
     {
       if(bathyReader != nullptr) delete bathyReader;

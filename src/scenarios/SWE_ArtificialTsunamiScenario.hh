@@ -1,31 +1,7 @@
 /**
- * @file
- * This file is part of SWE.
- *
- * @author Michael Bader, Kaveh Rahnema, Tobias Schnabel
- * @author Sebastian Rettenberger (rettenbs AT in.tum.de, http://www5.in.tum.de/wiki/index.php/Sebastian_Rettenberger,_M.Sc.)
- *
- * @section LICENSE
- *
- * SWE is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * SWE is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with SWE.  If not, see <http://www.gnu.org/licenses/>.
- *
- *
- * @section DESCRIPTION
- *
- * TODO
+ * @file SWE_ArtificialTsunamiScenario.hh
+ * @brief Implements an artificial scenario
  */
-
 #ifndef __SWE_ARTIFICIAL_TSUNAMI_SCENARIO_H
 #define __SWE_ARTIFICIAL_TSUNAMI_SCENARIO_H
 
@@ -37,16 +13,25 @@
 #define SIMULATION_TIME 80
 
 /**
- * Scenario "Sine wave artifical tusnami:
- * uniform water and bathymetry level with a sine wave shaped elevation in the middle
+ * @brief Scenario "Sine wave" artifical tsunami:
+ *  uniform water and bathymetry level with a sine wave shaped elevation in the middle
  */
 class SWE_ArtificialTsunamiScenario : public SWE_Scenario 
 {
 
   private:
 
+    //! The outflow conditions
     BoundaryType* outflowConditions;
 
+    /**
+     * @brief Get displacement data at a position
+     * 
+     * @param x X position
+     * @param y Y position
+     * 
+     * @return The displacement
+     */
     float getDisp(float x, float y)
     {
         if (std::abs(x-5000) <= 500 && std::abs(y-5000) <= 500)
@@ -58,31 +43,70 @@ class SWE_ArtificialTsunamiScenario : public SWE_Scenario
 
   public:
 
+    /**
+     * @brief Constructor
+     * 
+     * @param outConditions The outflow conditions
+     */
     SWE_ArtificialTsunamiScenario(BoundaryType* outConditions)
       : outflowConditions(outConditions)
     {};
 
-
+    /**
+     * @brief Get the bathymetry at a position
+     *      
+     * @param x X position
+     * @param y Y position
+     * 
+     * @return The bathymetry
+     */
     float getBathymetry(float x, float y) 
     { 
       return -100 + getDisp(x, y);
     };
 
+    /**
+     * @brief Get water height at a position
+     *      
+     * @param x X position
+     * @param y Y position
+     * 
+     * @return The water height
+     */
     float getWaterHeight(float x, float y)
     {
       return 100;
     };
     
+    /**
+     * @brief Get the maximum simulation time
+     * 
+     * @return the maximum scenario time
+     */
     float endSimulation()
     {
        return (float) SIMULATION_TIME; 
     };
 
+    /** 
+     * @brief Get the boundary type
+     * 
+     * @param edge Which edge
+     * 
+     * @return The boundary type for this edge
+     */
     BoundaryType getBoundaryType(BoundaryEdge edge) 
     {
       return outflowConditions[(int)edge];
     };
 
+    /**
+     * @brief Get the domain size
+     * 
+     * @param i_edge Which edge
+     * 
+     * @return The size in this direction
+     */
     float getBoundaryPos(BoundaryEdge i_edge) 
     {
        if (i_edge == BND_LEFT) return (float)0;

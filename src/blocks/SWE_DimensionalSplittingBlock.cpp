@@ -1,3 +1,8 @@
+/**
+ * @file SWE_DimensionalSplittingBlock.cpp
+ * @brief Implements the functionality defined in DimensionalSplittingBlock.hh
+ */
+
 #include "SWE_DimensionalSplittingBlock.hh"
 
 #include <cassert>
@@ -19,9 +24,6 @@ SWE_DimensionalSplittingBlock::SWE_DimensionalSplittingBlock (int l_nx, int l_ny
 {
 }
 
-/**
- * Compute vertical net updates for the block.
- */
 float SWE_DimensionalSplittingBlock::computeNumericalFluxesVertical()
 {
 	float maxWaveSpeed = (float) 0.;
@@ -42,9 +44,6 @@ float SWE_DimensionalSplittingBlock::computeNumericalFluxesVertical()
 	return maxWaveSpeed;
 }
 
-/**
- * Compute horizontal net updates for the block.
- */
 float SWE_DimensionalSplittingBlock::computeNumericalFluxesHorizontal()
 {
 	float maxWaveSpeed = (float) 0.;
@@ -65,11 +64,6 @@ float SWE_DimensionalSplittingBlock::computeNumericalFluxesHorizontal()
 	return maxWaveSpeed;
 }
 
-/**
- * Compute net updates for the block.
- * The member variable #maxTimestep will be updated with the 
- * maximum allowed time step size
- */
 void SWE_DimensionalSplittingBlock::computeNumericalFluxes()
 {
 	float maxWaveSpeedHorizontal = computeNumericalFluxesHorizontal();
@@ -77,9 +71,6 @@ void SWE_DimensionalSplittingBlock::computeNumericalFluxes()
 	computeMaxTimestep(std::max(maxWaveSpeedVertical, maxWaveSpeedHorizontal), dx < dy);
 }
 
-/*
- * The member variable #maxTimestep will be updated with the approxmated maximum allowed time step size
- */
 void SWE_DimensionalSplittingBlock::computeMaxTimestep(float max, bool is_horizontal)
 {
 	if (max > 0.00001)
@@ -107,11 +98,6 @@ void SWE_DimensionalSplittingBlock::computeMaxTimestep(float max, bool is_horizo
 	}
 }
 
-/**
- * Updates the unknowns horizontally with the already computed net-updates.
- *
- * @param dt time step width used in the update.
- */
 void SWE_DimensionalSplittingBlock::updateUnknownsHorizontal(float dt)
 {
 	//update cell averages with the net-updates
@@ -126,11 +112,6 @@ void SWE_DimensionalSplittingBlock::updateUnknownsHorizontal(float dt)
 	//zeroSmallValues();
 }
 
-/**
- * Updates the unknowns vertically with the already computed net-updates.
- *
- * @param dt time step width used in the update.
- */
 void SWE_DimensionalSplittingBlock::updateUnknownsVertical(float dt)
 {
 	//update cell averages with the net-updates
@@ -145,11 +126,6 @@ void SWE_DimensionalSplittingBlock::updateUnknownsVertical(float dt)
 	//zeroSmallValues();
 }
 
-/**
- * Updates the unknowns with the already computed net-updates.
- *
- * @param dt time step width used in the update.
- */
 void SWE_DimensionalSplittingBlock::updateUnknowns(float dt)
 {
 	//update cell averages with the net-updates
@@ -165,9 +141,6 @@ void SWE_DimensionalSplittingBlock::updateUnknowns(float dt)
 	//zeroSmallValues();
 }
 
-/**
- * Sets small values of h, hv and hu to zero
- */
 void SWE_DimensionalSplittingBlock::zeroSmallValues()
 {
 	for (int i = 1; i < nx + 1; i++)
