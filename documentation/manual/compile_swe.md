@@ -1,4 +1,4 @@
-# Compilation {#compilepage2}
+# Compilation {#compilepageswe}
 
 ### Required packages:
  - `g++`

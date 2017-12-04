@@ -1,4 +1,4 @@
-# Command Line Parameters {#paramspage}
+# Command Line Parameters {#paramspageswe}
 
 The following command line parameters are available for SWE (when used with `swe_dimensionalsplitting.cpp`)
 
@@ -9,7 +9,7 @@ The following command line parameters are available for SWE (when used with `swe
 - `-d, --time-duration [TIME_DURATION]` Time duration
 - `-p, --checkpoint-amount [CHECKPOINT_AMOUNT]` Amount of checkpoints
 - `-l, --boundary-condition-left [BOUNDARY_CONDITION_LEFT]` Boundary condition left
-- `-r, --boundary-condition-right [BOUNDARY_CONDITION_RIGHT]` Boundary condition right##
+- `-r, --boundary-condition-right [BOUNDARY_CONDITION_RIGHT]` Boundary condition right
 - `-t, --boundary-condition-top [BOUNDARY_CONDITION_TOP]` Boundary condition top
 - `-b, --boundary-condition-bottom [BOUNDARY_CONDITION_BOTTOM]` Boundary condition bottom
 - `-o, --output-basepath [OUTPUT_BASEPATH]` Output base file name
