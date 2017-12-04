@@ -18,6 +18,8 @@
 
 #include "writer/Writer.hh"
 
+using namespace std;
+
 namespace io 
 {
 
@@ -39,7 +41,7 @@ private:
     float xMin, xMax, yMin, yMax;
     float* zData;
 
-    NetCdfDataReader(const std::string &i_fileName);
+    NetCdfDataReader(const string &i_fileName);
     float sample(float x, float y, bool extend = false, float fallback = 0);
     ~NetCdfDataReader();
 

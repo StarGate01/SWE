@@ -3,7 +3,9 @@
 #include <cassert>
 #include <cmath>
 
-io::NetCdfDataReader::NetCdfDataReader(const std::string& i_fileName)
+using namespace std;
+
+io::NetCdfDataReader::NetCdfDataReader(const string& i_fileName)
 {
 	int status;
 

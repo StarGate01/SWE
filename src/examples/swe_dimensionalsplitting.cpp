@@ -72,10 +72,10 @@
 using namespace parser;
 
 void addArgument(tools::Args& args, string name, 
-  char shortOption, string description, bool required = true)
+  char shortOption, string description, bool required = false)
 {
-  if(required) args.addOption("grid-size-x", 'x', "Number of cells in x direction");
-  else args.addOption(name, shortOption, description, tools::Args::Optional, false);
+  if(required) args.addOption(name, shortOption, description);
+  else args.addOption(name, shortOption, description, tools::Args::Argument::Optional, false);
 }
 
 /**
@@ -101,6 +101,8 @@ int main(int argc, char** argv)
   addArgument(args, "boundary-condition-top", 't', "Boundary condition top");
   addArgument(args, "boundary-condition-bottom", 'b', "Boundary condition bottom");
   addArgument(args, "output-basepath", 'o', "Output base file name");
+  addArgument(args, "input-checkpoint", 'm', "Input checkpoint file name");
+  addArgument(args, "simulate-failure", 'f', "Simulate failure after n timesteps");
 #endif
   tools::Args::Result ret = args.parse(argc, argv);
 
@@ -108,49 +110,86 @@ int main(int argc, char** argv)
   {
     case tools::Args::Error: return 1;
     case tools::Args::Help: return 0;
+    default: break;
   }
 
+  bool isCheckpoint = false; 
   //number of grid cells in x- and y-direction.
   int l_nX, l_nY;
   //input file paths
-  std::string l_ifile_baty, l_ifile_disp;
+  std::string l_ifile_baty, l_ifile_disp, l_ifile_checkp;
   //other parameters
-  int l_time_dur, l_time;
+  int l_time_dur;
   //number of checkpoints for visualization (at each checkpoint in time, an output file is written).
   int l_checkpoints;
+  int l_timestep = 0;
+  float l_timepos = 0.0;
+  int l_failure = -1;
   //boundary conditions
-  BoundaryType l_bound_types[4]; 
+  BoundaryType* l_bound_types = new BoundaryType[4]; 
   //l_baseName of the plots.
   std::string l_baseName;
+
+  //netcdf checkpoint reader
+  io::NetCdfReader* checkp_reader;
 
   //read command line parameters
 #ifndef READXML
   std::stringstream sstm;
-  sstm << "\nGot command line parameters: \n";
-  l_nX = args.getArgument<int>("grid-size-x");
-  sstm << "Number of cells in x direction:\t" << l_nX << "\n";
-  l_nY = args.getArgument<int>("grid-size-y");
-  sstm << "Number of cells in y direction:\t" << l_nY << "\n";
-  l_ifile_baty = args.getArgument<std::string>("input-bathymetry");
+  sstm << "\nGot parameters ";
+  if(args.isSet("input-checkpoint"))
+  {
+    sstm << "from the checkpoint file:\n";
+    l_ifile_checkp = args.getArgument<std::string>("input-checkpoint");
+    sstm << "Input checkpoint file name:\t" << l_ifile_checkp << "\n";
+    isCheckpoint = true;
+    checkp_reader = new io::NetCdfReader(l_ifile_checkp);
+    l_nX = checkp_reader->getGlobalIntAttribute("nx");
+    l_nY = checkp_reader->getGlobalIntAttribute("ny");
+    l_time_dur = checkp_reader->getGlobalFloatAttribute("timeduration");
+    l_checkpoints = checkp_reader->getGlobalIntAttribute("checkpoints");
+    l_bound_types = (BoundaryType*)checkp_reader->getGlobalIntPtrAttribute("outconditions", 4);
+    l_baseName = checkp_reader->getGlobalTextAttribute("basename");
+    l_timestep = checkp_reader->timeLength - 2;
+    sstm << "Existing checkpoints:\t\t" << l_timestep << "\n";
+    l_timepos = checkp_reader->timeMax;
+    sstm << "Existing time:\t\t\t" << l_timepos << "\n\n";
+  }
+  else
+  {
+    sstm << "from the command line:\n";
+    l_nX = args.getArgument<int>("grid-size-x");
+    l_nY = args.getArgument<int>("grid-size-y");
+    l_ifile_baty = args.getArgument<std::string>("input-bathymetry");
+    l_ifile_disp = args.getArgument<std::string>("input-displacement");
+    l_time_dur = args.getArgument<int>("time-duration");
+    l_checkpoints = args.getArgument<int>("checkpoint-amount");
+    l_bound_types[0] = static_cast<BoundaryType>(args.getArgument<int>("boundary-condition-left"));
+    l_bound_types[1] = static_cast<BoundaryType>(args.getArgument<int>("boundary-condition-right"));
+    l_bound_types[2] = static_cast<BoundaryType>(args.getArgument<int>("boundary-condition-bottom"));
+    l_bound_types[3] = static_cast<BoundaryType>(args.getArgument<int>("boundary-condition-top"));
+    l_baseName = args.getArgument<std::string>("output-basepath");
+  }
+  if(args.isSet("simulate-failure")) l_failure = args.getArgument<int>("simulate-failure");
+  sstm << "Number of cells in x direction:\t" << l_nX << "\n"; 
+  sstm << "Number of cells in y direction:\t" << l_nY << "\n";   
   sstm << "Input bathymetry file name:\t" << l_ifile_baty << "\n";
-  l_ifile_disp = args.getArgument<std::string>("input-displacement");
   sstm << "Input displacement file name:\t" << l_ifile_disp << "\n";
-  l_time_dur = args.getArgument<int>("time-duration");
   sstm << "Time duration:\t\t\t" << l_time_dur << "\n";
-  l_checkpoints = args.getArgument<int>("checkpoint-amount");
   sstm << "Amount of checkpoints:\t\t" << l_checkpoints << "\n";
-  l_bound_types[0] = static_cast<BoundaryType>(args.getArgument<int>("boundary-condition-left"));
   sstm << "Boundary condition left:\t" << l_bound_types[0] << "\n";
-  l_bound_types[1] = static_cast<BoundaryType>(args.getArgument<int>("boundary-condition-right"));
   sstm << "Boundary condition right:\t" << l_bound_types[1] << "\n";
-  l_bound_types[2] = static_cast<BoundaryType>(args.getArgument<int>("boundary-condition-bottom"));
   sstm << "Boundary condition top:\t\t" << l_bound_types[2] << "\n";
-  l_bound_types[3] = static_cast<BoundaryType>(args.getArgument<int>("boundary-condition-top"));
   sstm << "Boundary condition bottom:\t" << l_bound_types[3] << "\n";
-  l_baseName = args.getArgument<std::string>("output-basepath");
   sstm << "Output base file name:\t\t" << l_baseName << "\n";
   tools::Logger::logger.printString(sstm.str());
 #endif
+
+if((l_timestep + 1) >= l_checkpoints)
+{
+  tools::Logger::logger.printString("This checkpoint file already has all its checkpoints computed!\n");
+  return 0;
+}
 
   // read xml file
 #ifdef READXML
@@ -191,18 +230,26 @@ int main(int argc, char** argv)
     (float) 28800., simulationArea);
 #else
   // create a scenario
-  //SWE_TsunamiScenario l_scenario(l_ifile_disp, l_ifile_baty, l_bound_types, l_time_dur);
+  SWE_TsunamiScenario* l_scenario;
+  if(!isCheckpoint) l_scenario =  new SWE_TsunamiScenario(l_ifile_disp, l_ifile_baty, l_bound_types, l_time_dur);
+  else l_scenario = new SWE_TsunamiScenario(checkp_reader, l_nX, l_nY, l_time_dur);
   //SWE_RadialDamBreakScenario l_scenario;
-   SWE_ArtificialTsunamiScenario l_scenario;
+   //SWE_ArtificialTsunamiScenario l_scenario;
 #endif
 
   //! size of a single cell in x- and y-direction
   float l_dX, l_dY;
-
-  // compute the size of a single cell
-  l_dX = (l_scenario.getBoundaryPos(BND_RIGHT) - l_scenario.getBoundaryPos(BND_LEFT) )/l_nX;
-  l_dY = (l_scenario.getBoundaryPos(BND_TOP) - l_scenario.getBoundaryPos(BND_BOTTOM) )/l_nY;
-
+  if(isCheckpoint)
+  {
+    l_dX = checkp_reader->getGlobalFloatAttribute("dx");
+    l_dY = checkp_reader->getGlobalFloatAttribute("dy");
+  }
+  else
+  {
+    // compute the size of a single cell
+    l_dX = (l_scenario->getBoundaryPos(BND_RIGHT) - l_scenario->getBoundaryPos(BND_LEFT))/l_nX;
+    l_dY = (l_scenario->getBoundaryPos(BND_TOP) - l_scenario->getBoundaryPos(BND_BOTTOM))/l_nY;
+  }
   // create a single dimensional splitting block
 #ifndef CUDA
   SWE_DimensionalSplittingBlock l_dimensionalSplittingBlock(l_nX,l_nY,l_dX,l_dY);
@@ -212,14 +259,22 @@ int main(int argc, char** argv)
 
   //origin of the simulation domain in x- and y-direction
   float l_originX, l_originY;
-  // get the origin from the scenario
-  l_originX = l_scenario.getBoundaryPos(BND_LEFT);
-  l_originY = l_scenario.getBoundaryPos(BND_BOTTOM);
+  if(isCheckpoint)
+  {
+    l_originX = checkp_reader->getGlobalFloatAttribute("originx");
+    l_originY = checkp_reader->getGlobalFloatAttribute("originy");
+  }
+  else
+  {
+    // get the origin from the scenario
+    l_originX = l_scenario->getBoundaryPos(BND_LEFT);
+    l_originY = l_scenario->getBoundaryPos(BND_BOTTOM);
+  }
   // initialize the dimensional splitting block
-  l_dimensionalSplittingBlock.initScenario(l_originX, l_originY, l_scenario);
+  l_dimensionalSplittingBlock.initScenario(l_originX, l_originY, *l_scenario);
 
   //time when the simulation ends.
-  float l_endSimulation = l_scenario.endSimulation();
+  float l_endSimulation = l_scenario->endSimulation();
   //checkpoints when output files are written.
   float* l_checkPoints = new float[l_checkpoints+1];
   // compute the checkpoints in time
@@ -234,18 +289,25 @@ int main(int argc, char** argv)
 
   //boundary size of the ghost layers
   io::BoundarySize l_boundarySize = {{1, 1, 1, 1}};
+  if(isCheckpoint) for(int i=0; i<4; i++) l_boundarySize.boundarySize[i] = (checkp_reader->getGlobalIntPtrAttribute("boundarysize", 4))[i];
+
+  if(isCheckpoint) delete checkp_reader;
+
 #ifdef WRITENETCDF
   //construct a NetCdfWriter
-  io::NetCdfWriter l_writer(l_fileName, l_dimensionalSplittingBlock.getBathymetry(),
-    l_boundarySize, l_nX, l_nY, l_dX, l_dY, l_originX, l_originY);
+  io::NetCdfWriter l_writer(l_fileName, l_baseName, l_dimensionalSplittingBlock.getBathymetry(),
+    l_boundarySize, l_nX, l_nY, l_dX, l_dY, (int*)l_bound_types, l_time_dur, l_checkpoints, l_originX, l_originY, l_timestep, isCheckpoint, 1);
 #else
   // consturct a VtkWriter
   io::VtkWriter l_writer(l_fileName, l_dimensionalSplittingBlock.getBathymetry(),
     l_boundarySize, l_nX, l_nY, l_dX, l_dY );
 #endif
-  // Write zero time step
-  l_writer.writeTimeStep( l_dimensionalSplittingBlock.getWaterHeight(),
-    l_dimensionalSplittingBlock.getDischarge_hu(), l_dimensionalSplittingBlock.getDischarge_hv(), (float) 0.);
+  if(!isCheckpoint)
+  {
+    // Write zero time step
+    l_writer.writeTimeStep(l_dimensionalSplittingBlock.getWaterHeight(),
+      l_dimensionalSplittingBlock.getDischarge_hu(), l_dimensionalSplittingBlock.getDischarge_hv(), (float) 0.);
+  }
 
 
   // print the start message and reset the wall clock time
@@ -254,13 +316,18 @@ int main(int argc, char** argv)
   tools::Logger::logger.initWallClockTime(time(NULL));
 
   //! simulation time.
-  float l_t = 0.0;
+  float l_t = l_timepos;
   progressBar.update(l_t);
   unsigned int l_iterations = 0;
 
   // loop over checkpoints
-  for(int c=1; c<=l_checkpoints; c++) 
+  for(int c=l_timestep; c<=l_checkpoints; c++) 
   {
+    if(l_failure > 0 && c >= l_failure)
+    {
+       tools::Logger::logger.printString("Simulating catastrophic failure\n");
+       abort(); //rough termination, no cleanup, no io flushing
+    }
     // do time steps until next checkpoint is reached
     while( l_t < l_checkPoints[c] )
     {
@@ -336,6 +403,9 @@ int main(int argc, char** argv)
   tools::Logger::logger.printWallClockTime(time(NULL));
   // printer iteration counter
   tools::Logger::logger.printIterationsDone(l_iterations);
+
+  delete l_scenario;
+  delete l_bound_types;
 
   return 0;
 }

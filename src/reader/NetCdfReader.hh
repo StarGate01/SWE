@@ -19,6 +19,8 @@
 
 #include "writer/Writer.hh"
 
+using namespace std;
+
 namespace io 
 {
 
@@ -37,9 +39,14 @@ private:
   public:
 
     size_t timeLength, xLength, yLength;
-    float* bData, hData, huData, hvData;
+    float* bData; float* hData; float* huData; float* hvData;
+    float xMin, xMax, yMin, yMax, timeMax;
 
-    NetCdfReader(const std::string &i_fileName);
+    NetCdfReader(const string &i_fileName);
+    string getGlobalTextAttribute(const string& name);
+    int getGlobalIntAttribute(const string& name);
+    int* getGlobalIntPtrAttribute(const string& name, int length);
+    float getGlobalFloatAttribute(const string& name);
     ~NetCdfReader();
 
 };

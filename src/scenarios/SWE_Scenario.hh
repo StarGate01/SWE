@@ -32,7 +32,7 @@
 /**
  * enum type: available types of boundary conditions
  */
-typedef enum BoundaryType {
+typedef enum BoundaryType : int {
    OUTFLOW, WALL, INFLOW, CONNECT, PASSIVE
 } BoundaryType;
 
@@ -57,7 +57,7 @@ typedef enum BoundaryEdge {
 class SWE_Scenario {
 
  public:
- 
+
     virtual bool providesRawData() { return false; };
     virtual float getB(int x, int y) { return 0.0f; };
     virtual float getH(int x, int y) { return 0.0f; };

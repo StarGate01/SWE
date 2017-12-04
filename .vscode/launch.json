@@ -2,17 +2,22 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "GDB Linux Native",
+            "name": "GDB Linux Native - Regenerate",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceRoot}/build/SWE_gnu_debug_none_fwave",
             "args": [
-                "-x", "100", "-y", "100", 
-                "-a", "../input/artificial/artificialtsunami_bathymetry_1000.cdl",
-                "-c", "../input/artificial/artificialtsunami_displ_1000.cdl",
-                "-d", "80", "-p", "40", 
-                "-l", "0", "-r", "0", "-t", "0", "-b", "0",
-                "-o", "swe"
+                "--grid-size-x=100",
+                "--grid-size-y=100",
+                "--input-bathymetry=../input/artificial/artificialtsunami_bathymetry_1000.nc",
+                "--input-displacement=../input/artificial/artificialtsunami_displ_1000.nc",
+                "--time-duration=80",
+                "--checkpoint-amount=40",
+                "--boundary-condition-left=0",
+                "--boundary-condition-right=0",
+                "--boundary-condition-top=0",
+                "--boundary-condition-bottom=0",
+                "--output-basepath=swe"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceRoot}/build/data",
@@ -29,17 +34,76 @@
             ]
         },
         {
-            "name": "GDB WSL",
+            "name": "GDB WSL - Regenerate",
             "type": "cppdbg",
             "request": "launch",
             "program": "/mnt/c/Users/Christoph/Documents/Studium/5_WS1718/TSISIM/Tutorium/SWE/build/SWE_gnu_debug_none_fwave",
             "args": [
-                "-x", "100", "-y", "100", 
-                "-a", "../input/artificial/artificialtsunami_bathymetry_1000.nc",
-                "-c", "../input/artificial/artificialtsunami_displ_1000.nc",
-                "-d", "80", "-p", "40", 
-                "-l", "0", "-r", "0", "-t", "0", "-b", "0",
-                "-o", "swe"
+                "--grid-size-x=100",
+                "--grid-size-y=100",
+                "--input-bathymetry=../input/artificial/artificialtsunami_bathymetry_1000.nc",
+                "--input-displacement=../input/artificial/artificialtsunami_displ_1000.nc",
+                "--time-duration=80",
+                "--checkpoint-amount=40",
+                "--boundary-condition-left=0",
+                "--boundary-condition-right=0",
+                "--boundary-condition-top=0",
+                "--boundary-condition-bottom=0",
+                "--output-basepath=swe"
+            ],
+            "stopAtEntry": false,
+            "cwd": "/mnt/c/Users/Christoph/Documents/Studium/5_WS1718/TSISIM/Tutorium/SWE/build/data",
+            "environment": [],
+            "externalConsole": true,
+            "windows": {
+                "MIMode": "gdb",
+                "setupCommands": [
+                    {
+                        "description": "Enable pretty-printing for gdb",
+                        "text": "-enable-pretty-printing",
+                        "ignoreFailures": true
+                    }
+                ]
+            }, 
+            "pipeTransport": {
+                "pipeCwd": "",
+                "pipeProgram": "c:/windows/sysnative/bash.exe",
+                "pipeArgs": ["-c"],
+                "debuggerPath": "/usr/bin/gdb"
+            },
+            "sourceFileMap": {
+                "/mnt/c": "c:/"
+            }
+        },
+        {
+            "name": "GDB Linux Native - Continue",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/build/SWE_gnu_debug_none_fwave",
+            "args": [
+                "--input-checkpoint=swe_00.nc"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceRoot}/build/data",
+            "environment": [],
+            "externalConsole": true,
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "GDB WSL - Continue",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "/mnt/c/Users/Christoph/Documents/Studium/5_WS1718/TSISIM/Tutorium/SWE/build/SWE_gnu_debug_none_fwave",
+            "args": [
+                "--input-checkpoint=swe_00.nc"
             ],
             "stopAtEntry": false,
             "cwd": "/mnt/c/Users/Christoph/Documents/Studium/5_WS1718/TSISIM/Tutorium/SWE/build/data",
