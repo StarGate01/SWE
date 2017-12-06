@@ -96,7 +96,9 @@ int main(int argc, char** argv)
   addArgument(args, "output-basepath", 'o', "Output base file name");
   addArgument(args, "input-checkpoint", 'm', "Input checkpoint file name");
   addArgument(args, "simulate-failure", 'f', "Simulate failure after n timesteps");
+#ifdef USE_OMP
   addArgument(args, "limit-cores", 'z', "Maximum number of CPU cores used");
+#endif
 #endif
   tools::Args::Result ret = args.parse(argc, argv);
 
@@ -165,10 +167,6 @@ int main(int argc, char** argv)
     l_baseName = args.getArgument<std::string>("output-basepath");
   }
   if(args.isSet("simulate-failure")) l_failure = args.getArgument<int>("simulate-failure");
-  
-  int l_limit_cpu = thread::hardware_concurrency();
-  if(args.isSet("limit-cores")) l_limit_cpu = min(args.getArgument<int>("limit-cores"), l_limit_cpu);
-  omp_set_num_threads(l_limit_cpu);
 
   sstm << "Number of cells in x direction:\t" << l_nX << "\n"; 
   sstm << "Number of cells in y direction:\t" << l_nY << "\n";   
@@ -181,7 +179,14 @@ int main(int argc, char** argv)
   sstm << "Boundary condition top:\t\t" << l_bound_types[2] << "\n";
   sstm << "Boundary condition bottom:\t" << l_bound_types[3] << "\n";
   sstm << "Output base file name:\t\t" << l_baseName << "\n";
+
+  #ifdef USE_OMP
+  int l_limit_cpu = thread::hardware_concurrency();
+  if(args.isSet("limit-cores")) l_limit_cpu = min(args.getArgument<int>("limit-cores"), l_limit_cpu);
+  omp_set_num_threads(l_limit_cpu);
   sstm << "Number of CPU cores used:\t" << l_limit_cpu << "\n";
+  #endif
+
   tools::Logger::logger.printString(sstm.str());
 #endif
 

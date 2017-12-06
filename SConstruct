@@ -247,6 +247,7 @@ if env['compiler'] == 'intel' and env['showVectorization']:
 
 # OpenMP parallelism
 if env['openmp']:
+  env.Append(CPPDEFINES=['USE_OMP'])
   if env['compiler'] == 'intel':
     env.Append(CCFLAGS=['-openmp'])
     env.Append(LINKFLAGS=['-openmp'])
