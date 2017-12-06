@@ -49,7 +49,7 @@ private:
   public:
 
     //! Length of the time values buffer
-    size_t timeLength
+    size_t timeLength;
 
     //! Length of the x values buffer
     size_t xLength;

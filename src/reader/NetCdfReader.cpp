@@ -57,7 +57,7 @@ io::NetCdfReader::NetCdfReader(const string &i_fileName)
 
 	nc_inq_varid(dataFile, "h", &hVar);
 	hData = new float[xLength * yLength];
-	int state = nc_get_vara_float(dataFile, hVar, hs_indices, hs_counts, hData);
+	nc_get_vara_float(dataFile, hVar, hs_indices, hs_counts, hData);
 
 	nc_inq_varid(dataFile, "hu", &huVar);
 	huData = new float[xLength * yLength];

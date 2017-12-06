@@ -252,6 +252,7 @@ if env['openmp']:
     env.Append(LINKFLAGS=['-openmp'])
   if env['compiler'] == 'gnu':
     env.Append(CCFLAGS=['-fopenmp'])
+    env.Append(LINKFLAGS=['-fopenmp'])
   # cray: OpenMP turned on by default
   
 # Platform
