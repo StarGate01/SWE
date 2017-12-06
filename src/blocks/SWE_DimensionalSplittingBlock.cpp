@@ -8,7 +8,10 @@
 #include <cassert>
 #include <string>
 #include <limits>
+
+#ifdef USE_OMP
 #include <omp.h>
+#endif
 
 
 SWE_DimensionalSplittingBlock::SWE_DimensionalSplittingBlock (int l_nx, int l_ny, float l_dx, float l_dy) :
@@ -28,7 +31,9 @@ SWE_DimensionalSplittingBlock::SWE_DimensionalSplittingBlock (int l_nx, int l_ny
 float SWE_DimensionalSplittingBlock::computeNumericalFluxesVertical()
 {
 	float maxWaveSpeed = (float) 0.;
+#ifdef USE_OMP
 	#pragma omp parallel for reduction(max: maxWaveSpeed)
+#endif
 	for (int i = 1; i < nx + 1; i++) 
 	{
 		for (int j = 1; j < ny + 2; j++) 
@@ -49,7 +54,9 @@ float SWE_DimensionalSplittingBlock::computeNumericalFluxesVertical()
 float SWE_DimensionalSplittingBlock::computeNumericalFluxesHorizontal()
 {
 	float maxWaveSpeed = (float) 0.;
+#ifdef USE_OMP
 	#pragma omp parallel for reduction(max: maxWaveSpeed)
+#endif
 	for (int i = 1; i < nx + 2; i++) 
 	{
 		for (int j = 1; j < ny + 1; ++j) 

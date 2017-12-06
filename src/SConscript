@@ -133,6 +133,7 @@ else:
 for i in sourceFiles:
   env.src_files.append(env.Object(i))
 
-env.CxxTest('SWECDLTests', ['unit_tests/SWECDLTests.t.h', 'parser/CDLStreamTokenizer.cpp', 'parser/CDLStreamParser.cpp'])
+if env['parseCDL'] == True:
+  env.CxxTest('SWECDLTests', ['unit_tests/SWECDLTests.t.h', 'parser/CDLStreamTokenizer.cpp', 'parser/CDLStreamParser.cpp'])
 
 Export('env')

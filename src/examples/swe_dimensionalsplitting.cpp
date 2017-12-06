@@ -8,7 +8,10 @@
 #include <string>
 #include <iostream>
 #include <thread>
+
+#ifdef USE_OMP
 #include <omp.h>
+#endif
 
 //Use these macros to select x, y or both dimensions for splitting
 //USeful for demonstating the individual dimensions
@@ -180,12 +183,12 @@ int main(int argc, char** argv)
   sstm << "Boundary condition bottom:\t" << l_bound_types[3] << "\n";
   sstm << "Output base file name:\t\t" << l_baseName << "\n";
 
-  #ifdef USE_OMP
+#ifdef USE_OMP
   int l_limit_cpu = thread::hardware_concurrency();
   if(args.isSet("limit-cores")) l_limit_cpu = min(args.getArgument<int>("limit-cores"), l_limit_cpu);
   omp_set_num_threads(l_limit_cpu);
   sstm << "Number of CPU cores used:\t" << l_limit_cpu << "\n";
-  #endif
+#endif
 
   tools::Logger::logger.printString(sstm.str());
 #endif
