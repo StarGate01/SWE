@@ -112,7 +112,8 @@ private:
       float i_originX = 0, float i_originY = 0,
       size_t timestep = 0,
       bool append = false,
-      unsigned int i_flush = 0);
+      unsigned int i_flush = 0,
+      int output_scale = 1);
 
     virtual ~NetCdfWriter();
 
