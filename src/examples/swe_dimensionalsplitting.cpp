@@ -307,7 +307,7 @@ if((l_timestep + 1) >= l_checkpoints)
 #ifdef WRITENETCDF
   //construct a NetCdfWriter
   io::NetCdfWriter l_writer(l_fileName, l_baseName, l_dimensionalSplittingBlock.getBathymetry(),
-    l_boundarySize, l_nX, l_nY, l_dX, l_dY, (int*)l_bound_types, l_time_dur, l_checkpoints, l_originX, l_originY, l_timestep, isCheckpoint, 1);
+    l_boundarySize, l_nX, l_nY, l_dX, l_dY, (int*)l_bound_types, l_time_dur, l_checkpoints, l_originX, l_originY, l_timestep, isCheckpoint, 1, l_output_scale);
 #else
   // consturct a VtkWriter
   io::VtkWriter l_writer(l_fileName, l_dimensionalSplittingBlock.getBathymetry(),
