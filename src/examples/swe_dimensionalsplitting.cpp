@@ -125,7 +125,7 @@ int main(int argc, char** argv)
   int l_timestep = 0;
   float l_timepos = 0.0;
   int l_failure = -1;
-  int l_output_scale = 1;
+  float l_output_scale = 1;
   //boundary conditions
   BoundaryType* l_bound_types = new BoundaryType[4]; 
   //l_baseName of the plots.
@@ -170,7 +170,7 @@ int main(int argc, char** argv)
     l_bound_types[2] = static_cast<BoundaryType>(args.getArgument<int>("boundary-condition-bottom"));
     l_bound_types[3] = static_cast<BoundaryType>(args.getArgument<int>("boundary-condition-top"));
     l_baseName = args.getArgument<std::string>("output-basepath");
-    l_output_scale = args.getArgument<int>("output-scale");
+    l_output_scale = args.getArgument<float>("output-scale");
   }
   if(args.isSet("simulate-failure")) l_failure = args.getArgument<int>("simulate-failure");
 
