@@ -113,7 +113,7 @@ private:
       size_t timestep = 0,
       bool append = false,
       unsigned int i_flush = 0,
-      int output_scale = 1);
+      float output_scale = 1);
 
     virtual ~NetCdfWriter();
 
