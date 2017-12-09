@@ -278,24 +278,23 @@
                 "cwd": "${workspaceRoot}/submodules/solvers/documentation/presentation3"
             },
             "problemMatcher": []
-        },
-        {
-            "label": "Deploy Binaries to HPC",
-            "type": "shell",
-            "command": "scp",
-            "args": [
-                "-F",
-                "~/.ssh/config",
-                "-r",
-                "SWE_gnu_debug_none_fwave",
-                "hpc",
-                "lrzhpc:~/swe"
-            ],
-            "options": {
-                "cwd": "${workspaceRoot}/build"
-            },
-            "problemMatcher": []
-        },
-
+        }
+        // {
+        //     "label": "Deploy Binaries to HPC",
+        //     "type": "shell",
+        //     "command": "scp",
+        //     "args": [
+        //         "-F",
+        //         "~/.ssh/config",
+        //         "-r",
+        //         "SWE_gnu_debug_none_fwave",
+        //         "hpc",
+        //         "lrzhpc:~/swe"
+        //     ],
+        //     "options": {
+        //         "cwd": "${workspaceRoot}/build"
+        //     },
+        //     "problemMatcher": []
+        // },
     ]
 }
