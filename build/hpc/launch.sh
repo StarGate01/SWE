@@ -1,7 +1,7 @@
 #!/bin/sh
 
-INPUTDIR=$HOME/swe
-DATADIR=$SCRATCH/di57yec/swe_data
+INPUTDIR=$HOME/SWE/build
+DATADIR=$SCRATCH/$USER/swe_data
 echo INPUTDIR: $INPUTDIR
 echo DATADIR: $DATADIR
 
