@@ -67,7 +67,7 @@
             },
             "args": [
                "-c",
-               "\"rm -rf data && mkdir data && cd data && ../SWE_gnu_debug_none_fwave --grid-size-x=100 --grid-size-y=100 --input-bathymetry=../input/artificial/artificialtsunami_bathymetry_1000.nc --input-displacement=../input/artificial/artificialtsunami_displ_1000.nc --time-duration=80 --checkpoint-amount=40 --boundary-condition-left=0 --boundary-condition-right=0 --boundary-condition-top=0 --boundary-condition-bottom=0 --output-basepath=swe\""
+               "\"rm -rf data && mkdir data && cd data && ../SWE_gnu_debug_none_fwave --grid-size-x=100 --grid-size-y=100 --input-bathymetry=../input/artificial/artificialtsunami_bathymetry_1000.nc --input-displacement=../input/artificial/artificialtsunami_displ_1000.nc --time-duration=80 --checkpoint-amount=40 --boundary-condition-left=0 --boundary-condition-right=0 --boundary-condition-top=0 --boundary-condition-bottom=0 --output-basepath=swe --output-scale=1\""
             ],
             "problemMatcher": []
         },
@@ -80,7 +80,7 @@
             },
             "args": [
                "-c",
-               "\"rm -rf data && mkdir data && cd data && ../SWE_gnu_debug_none_fwave --grid-size-x=100 --grid-size-y=100 --input-bathymetry=../input/artificial/artificialtsunami_bathymetry_1000.nc --input-displacement=../input/artificial/artificialtsunami_displ_1000.nc --time-duration=80 --checkpoint-amount=40 --boundary-condition-left=0 --boundary-condition-right=0 --boundary-condition-top=0 --boundary-condition-bottom=0 --output-basepath=swe --simulate-failure=20\""
+               "\"rm -rf data && mkdir data && cd data && ../SWE_gnu_debug_none_fwave --grid-size-x=100 --grid-size-y=100 --input-bathymetry=../input/artificial/artificialtsunami_bathymetry_1000.nc --input-displacement=../input/artificial/artificialtsunami_displ_1000.nc --time-duration=80 --checkpoint-amount=40 --boundary-condition-left=0 --boundary-condition-right=0 --boundary-condition-top=0 --boundary-condition-bottom=0 --output-basepath=swe --simulate-failure=20 --output-scale=1\""
             ],
             "problemMatcher": []
         },

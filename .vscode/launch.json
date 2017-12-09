@@ -17,7 +17,8 @@
                 "--boundary-condition-right=0",
                 "--boundary-condition-top=0",
                 "--boundary-condition-bottom=0",
-                "--output-basepath=swe"
+                "--output-basepath=swe",
+                "--output-scale=1"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceRoot}/build/data",
@@ -49,7 +50,8 @@
                 "--boundary-condition-right=0",
                 "--boundary-condition-top=0",
                 "--boundary-condition-bottom=0",
-                "--output-basepath=swe"
+                "--output-basepath=swe",
+                "--output-scale=1"
             ],
             "stopAtEntry": false,
             "cwd": "/mnt/c/Users/Christoph/Documents/Studium/5_WS1718/TSISIM/Tutorium/SWE/build/data",
