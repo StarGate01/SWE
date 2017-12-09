@@ -29,5 +29,4 @@
 # Build options
 solver='fwave'
 writeNetCDF='yes'
-writeNetCDF='yes'
 openmp='yes'

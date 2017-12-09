@@ -368,6 +368,10 @@ if env['xmlRuntime'] == True: #TODO
     env.Append(CPPPATH=[env['libxmlDir']+'/include/libxml2'])
     env.Append(LIBPATH=[env['libxmlDir']+'/lib'])
 
+
+env.Append(LDFLAGS=['-v'])
+env.Append(CPPFLAGS=['-v'])
+
 #
 # setup the program name and the build directory
 #
