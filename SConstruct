@@ -133,6 +133,12 @@ vars.AddVariables(
 
 # set environment
 env = Environment(ENV = {'PATH': os.environ['PATH']}, variables=vars, tools = ['default', 'cxxtest'])
+if 'LIBPATH' in os.environ:
+  env.Append(LIBPATH=os.environ['LD_LIBRARY_PATH'])
+print env.Dump()
+exit(1)
+
+
 env.Append(CXXFLAGS="-std=c++11")
 
 
@@ -369,8 +375,8 @@ if env['xmlRuntime'] == True: #TODO
     env.Append(LIBPATH=[env['libxmlDir']+'/lib'])
 
 
-env.Append(LDFLAGS=['-v'])
-env.Append(CPPFLAGS=['-v'])
+# env.Append(LDFLAGS=['-v'])
+# env.Append(CPPFLAGS=['-v'])
 
 #
 # setup the program name and the build directory
