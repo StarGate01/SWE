@@ -1,6 +1,8 @@
 #!/bin/sh
 
 module load git
-module load gcc/7
+module load nano
+module load gcc
+module load intel
 module load netcdf
 module load scons
