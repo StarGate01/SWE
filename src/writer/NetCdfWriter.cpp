@@ -22,7 +22,8 @@ io::NetCdfWriter::NetCdfWriter(const std::string &i_baseName,
 	float i_originX, float i_originY,
 	size_t timestep,
 	const bool append,
-	const unsigned int i_flush) :
+	const unsigned int i_flush
+	int output_scale) :
 	//const bool  &i_dynamicBathymetry : //!TODO
   io::Writer(i_baseName + ".nc", i_b, i_boundarySize, i_nX, i_nY, timestep),
   flush(i_flush)
@@ -194,7 +195,7 @@ void io::NetCdfWriter::writeTimeStep(const Float2D &i_h, const Float2D &i_hu,
 	//write water height
 	writeVarTimeDependent(i_h, hVar);
 
-	//write momentum in x-direction
+	//write momentum in x-directionl_writer
 	writeVarTimeDependent(i_hu, huVar);
 
 	//write momentum in y-direction
