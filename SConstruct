@@ -133,11 +133,9 @@ vars.AddVariables(
 
 # set environment
 env = Environment(ENV = {'PATH': os.environ['PATH']}, variables=vars, tools = ['default', 'cxxtest'])
+
 if 'LD_LIBRARY_PATH' in os.environ:
   env.Append(LIBPATH=os.environ['LD_LIBRARY_PATH'])
-print env.Dump()
-exit(1)
-
 
 env.Append(CXXFLAGS="-std=c++11")
 
