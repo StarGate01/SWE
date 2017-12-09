@@ -22,7 +22,7 @@ io::NetCdfWriter::NetCdfWriter(const std::string &i_baseName,
 	float i_originX, float i_originY,
 	size_t timestep,
 	const bool append,
-	const unsigned int i_flush
+	const unsigned int i_flush,
 	int output_scale) :
 	//const bool  &i_dynamicBathymetry : //!TODO
   io::Writer(i_baseName + ".nc", i_b, i_boundarySize, i_nX, i_nY, timestep),
