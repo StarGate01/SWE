@@ -2,7 +2,7 @@
 
 double CoarseComputation::buildAverage(Float1D line, int startIndex, int endIndex, int excludeIndex)
 {
-    assert(startIndex > 0 && startIndex <= endIndex && excludeIndex <= endIndex);
+    assert(startIndex >= 0 && startIndex <= endIndex && excludeIndex <= endIndex);
 
     double average = 0;
     for(int i = startIndex; i <= endIndex; i++)
@@ -46,7 +46,7 @@ Float2D CoarseComputation::processField(Float2D field, int scale)
         {
             int targetIndex = y + (int) ceil((float) scale / 2.0);
             result[x][new_y] = buildAverage(result_x.getColProxy(x), y, fmin(y + scale, result_x.getRows()), targetIndex);
-            new_y++;
+            new_y++;result
         }
     }
 

@@ -157,7 +157,7 @@ io::NetCdfWriter::~NetCdfWriter()
 	nc_close(dataFile);
 }
 
-void io::NetCdfWriter::writeVarTimeDependent( const Float2D &i_matrix, int i_ncVariable ) 
+void io::NetCdfWriter::writeVarTimeDependent( const Float2D i_matrix, int i_ncVariable ) 
 {
 	//write col wise, necessary to get rid of the boundary
 	//storage in Float2D is col wise
@@ -190,14 +190,12 @@ void io::NetCdfWriter::writeVarTimeIndependent(const Float2D &i_matrix, int i_nc
 void io::NetCdfWriter::writeTimeStep(const Float2D &i_h, const Float2D &i_hu,
 	const Float2D &i_hv, float i_time) 
 {
-	
+	Float2D h = i_h;
+	Float2D hu = i_hu;
+	Float2D hv = i_hv;
 	// scale the output
 	if (is_checkpoint == false && scale > 1)
 	{
-		Float2D h = i_h;
-		Float2D hu = i_hu;
-		Float2D hv = i_hv;
-
 		CoarseComputation scaler;
 		h = scaler.processField(h, scale);
 		hu = scaler.processField(hu, scale);
@@ -212,13 +210,13 @@ void io::NetCdfWriter::writeTimeStep(const Float2D &i_h, const Float2D &i_hu,
 	nc_put_var1_float(dataFile, timeVar, &timeStep, &i_time);
 
 	//write water height
-	writeVarTimeDependent(i_h, hVar);
+	writeVarTimeDependent(h, hVar);
 
 	//write momentum in x-directionl_writer
-	writeVarTimeDependent(i_hu, huVar);
+	writeVarTimeDependent(hu, huVar);
 
 	//write momentum in y-direction
-	writeVarTimeDependent(i_hv, hvVar);
+	writeVarTimeDependent(hv, hvVar);
 
 	// Increment timeStep for next call
 	timeStep++;

@@ -66,7 +66,7 @@ private:
      * @param i_boundarySize Size of the boundaries.
      * @param i_ncVariable Time dependent netCDF-variable to which the output is written to.
      */
-    void writeVarTimeDependent(const Float2D &i_matrix, int i_ncVariable);
+    void writeVarTimeDependent(const Float2D i_matrix, int i_ncVariable);
 
     /**
      * @brief Write time independent data to a netCDF-file (-> constructor) with respect to the boundary sizes.
