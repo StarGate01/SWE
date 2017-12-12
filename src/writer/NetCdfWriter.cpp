@@ -192,20 +192,18 @@ void io::NetCdfWriter::writeTimeStep(const Float2D &i_h, const Float2D &i_hu,
 {
 	
 	// scale the output
-	/*
-	if (is_checkpoint == false && output_scale > 1)
+	if (is_checkpoint == false && scale > 1)
 	{
 		Float2D h = i_h;
 		Float2D hu = i_hu;
 		Float2D hv = i_hv;
 
 		CoarseComputation scaler;
-		h = scaler.processField(h, output_scale);
-		hu = scaler.processField(hu, output_scale);
-		hv = scaler.processField(hv, output_scale);
+		h = scaler.processField(h, scale);
+		hu = scaler.processField(hu, scale);
+		hv = scaler.processField(hv, scale);
 		
 	}
-*/
 	if (timeStep == 0)
 		// Write bathymetry
 		writeVarTimeIndependent(b, bVar);

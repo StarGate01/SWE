@@ -12,7 +12,7 @@
 #ifdef USEMPI
 #include <mpi.h>
 #ifndef MPI_INCLUDED
-#define MPI_INCLUDED
+#define MPI_INCLUDEDh
 #define MPI_INCLUDED_NETCDF
 #endif
 #endif
