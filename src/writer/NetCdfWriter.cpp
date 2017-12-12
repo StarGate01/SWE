@@ -10,6 +10,8 @@
 #include <cassert>
 #include <sstream>
 
+
+
 io::NetCdfWriter::NetCdfWriter(const std::string &i_baseName,
 	const std::string &i_filebaseName,
 	const Float2D &i_b,
@@ -23,14 +25,16 @@ io::NetCdfWriter::NetCdfWriter(const std::string &i_baseName,
 	size_t timestep,
 	const bool append,
 	const unsigned int i_flush,
-	int output_scale,
-	bool is_checkpoint) :
+	const bool ischeckpoint,
+	const int outscale) :
+	is_checkpoint(ischeckpoint),
+	scale(outscale),
 	//const bool  &i_dynamicBathymetry : //!TODO
   io::Writer(i_baseName + ".nc", i_b, i_boundarySize, i_nX, i_nY, timestep),
   flush(i_flush)
 {
 	int status;
-
+	
 	if(append)
 	{
 		//open an existing file
@@ -186,6 +190,22 @@ void io::NetCdfWriter::writeVarTimeIndependent(const Float2D &i_matrix, int i_nc
 void io::NetCdfWriter::writeTimeStep(const Float2D &i_h, const Float2D &i_hu,
 	const Float2D &i_hv, float i_time) 
 {
+	
+	// scale the output
+	/*
+	if (is_checkpoint == false && output_scale > 1)
+	{
+		Float2D h = i_h;
+		Float2D hu = i_hu;
+		Float2D hv = i_hv;
+
+		CoarseComputation scaler;
+		h = scaler.processField(h, output_scale);
+		hu = scaler.processField(hu, output_scale);
+		hv = scaler.processField(hv, output_scale);
+		
+	}
+*/
 	if (timeStep == 0)
 		// Write bathymetry
 		writeVarTimeIndependent(b, bVar);
