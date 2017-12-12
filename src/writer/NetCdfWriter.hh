@@ -113,7 +113,8 @@ private:
       size_t timestep = 0,
       bool append = false,
       unsigned int i_flush = 0,
-      int output_scale = 1);
+      int output_scale = 1,
+      bool is_checkpoint = false);
 
     virtual ~NetCdfWriter();
 

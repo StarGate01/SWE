@@ -23,7 +23,8 @@ io::NetCdfWriter::NetCdfWriter(const std::string &i_baseName,
 	size_t timestep,
 	const bool append,
 	const unsigned int i_flush,
-	int output_scale):
+	int output_scale,
+	bool is_checkpoint) :
 	//const bool  &i_dynamicBathymetry : //!TODO
   io::Writer(i_baseName + ".nc", i_b, i_boundarySize, i_nX, i_nY, timestep),
   flush(i_flush)

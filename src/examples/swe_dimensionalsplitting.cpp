@@ -307,10 +307,15 @@ if((l_timestep + 1) >= l_checkpoints)
 #ifdef WRITENETCDF
   //construct a NetCdfWriter
   io::NetCdfWriter l_writer(l_fileName, l_baseName, l_dimensionalSplittingBlock.getBathymetry(),
-    l_boundarySize, l_nX, l_nY, l_dX, l_dY, (int*)l_bound_types, l_time_dur, l_checkpoints, l_originX, l_originY, l_timestep, isCheckpoint, 1, l_output_scale);
+    l_boundarySize, l_nX, l_nY, l_dX, l_dY, (int*)l_bound_types, l_time_dur, l_checkpoints, l_originX, l_originY, l_timestep, isCheckpoint, 1, l_output_scale, false);
+  //construct a checkpoint writer
+  io::NetCdfWriter l_cp_writer(l_fileName + "_cp", l_baseName, l_dimensionalSplittingBlock.getBathymetry(),
+    l_boundarySize, l_nX, l_nY, l_dX, l_dY, (int*)l_bound_types, l_time_dur, l_checkpoints, l_originX, l_originY, l_timestep, isCheckpoint, 1, l_output_scale, true);
 #else
   // consturct a VtkWriter
   io::VtkWriter l_writer(l_fileName, l_dimensionalSplittingBlock.getBathymetry(),
+    l_boundarySize, l_nX, l_nY, l_dX, l_dY );
+  io::VtkWriter l_cp_writer(l_fileName, l_dimensionalSplittingBlock.getBathymetry(),
     l_boundarySize, l_nX, l_nY, l_dX, l_dY );
 #endif
   if(!isCheckpoint)
@@ -333,7 +338,8 @@ if((l_timestep + 1) >= l_checkpoints)
 
   // loop over checkpoints
   for(int c=l_timestep; c<=l_checkpoints; c++) 
-  {
+  { 
+    // Write a checkpoint 
     if(l_failure > 0 && c >= l_failure)
     {
        tools::Logger::logger.printString("Simulating catastrophic failure\n");
@@ -403,6 +409,12 @@ if((l_timestep + 1) >= l_checkpoints)
     // write output
     l_writer.writeTimeStep( l_dimensionalSplittingBlock.getWaterHeight(),
       l_dimensionalSplittingBlock.getDischarge_hu(), l_dimensionalSplittingBlock.getDischarge_hv(), l_t);
+    // if we are in a step that requires a chekpoint we write this too
+    if ( l_t >= l_checkPoints[c])
+    {
+      l_cp_writer.writeTimeStep( l_dimensionalSplittingBlock.getWaterHeight(),
+      l_dimensionalSplittingBlock.getDischarge_hu(), l_dimensionalSplittingBlock.getDischarge_hv(), l_t);
+    }
   }
 
   // write the statistics message
