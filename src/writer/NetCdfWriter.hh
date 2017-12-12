@@ -23,7 +23,7 @@
 #endif
 
 #include "writer/Writer.hh"
-#include "SWE_CoarseComputation.hh"
+#include "CoarseComputation.hh"
 
 /**
  * @brief Provides data writers and readers

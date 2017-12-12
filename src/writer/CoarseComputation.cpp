@@ -1,4 +1,9 @@
-#include "SWE_CoarseComputation.hh"
+/**
+ * @file CoarseComputation.cpp
+ * @brief Implements the functionality defined in CoarseComputation.hh
+ */
+
+#include "CoarseComputation.hh"
 
 double CoarseComputation::buildAverage(Float1D line, int startIndex, int endIndex, int excludeIndex)
 {
@@ -7,8 +12,7 @@ double CoarseComputation::buildAverage(Float1D line, int startIndex, int endInde
     double average = 0;
     for(int i = startIndex; i <= endIndex; i++)
     {
-        if(i == excludeIndex)
-            continue;
+        if(i == excludeIndex) continue;
         average += line[i];
     }
     average /= line.getSize();
@@ -16,8 +20,7 @@ double CoarseComputation::buildAverage(Float1D line, int startIndex, int endInde
 
 Float2D CoarseComputation::processField(Float2D field, int scale)
 {
-    if(scale <= 1)
-        return field;
+    if(scale <= 1) return field;
 
     int remainder_x = field.getCols() % scale;
     int remainder_y = field.getRows() % scale;
@@ -46,7 +49,7 @@ Float2D CoarseComputation::processField(Float2D field, int scale)
         {
             int targetIndex = y + (int) ceil((float) scale / 2.0);
             result[x][new_y] = buildAverage(result_x.getColProxy(x), y, fmin(y + scale, result_x.getRows()), targetIndex);
-            new_y++;result
+            new_y++;
         }
     }
 
