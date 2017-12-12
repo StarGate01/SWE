@@ -125,7 +125,7 @@ int main(int argc, char** argv)
   int l_timestep = 0;
   float l_timepos = 0.0;
   int l_failure = -1;
-  float l_output_scale = 1;
+  int l_output_scale = 1;
   //boundary conditions
   BoundaryType* l_bound_types = new BoundaryType[4]; 
   //l_baseName of the plots.
@@ -170,7 +170,7 @@ int main(int argc, char** argv)
     l_bound_types[2] = static_cast<BoundaryType>(args.getArgument<int>("boundary-condition-bottom"));
     l_bound_types[3] = static_cast<BoundaryType>(args.getArgument<int>("boundary-condition-top"));
     l_baseName = args.getArgument<std::string>("output-basepath");
-    l_output_scale = args.getArgument<float>("output-scale");
+    l_output_scale = args.getArgument<int>("output-scale");
   }
   if(args.isSet("simulate-failure")) l_failure = args.getArgument<int>("simulate-failure");
 
@@ -307,10 +307,15 @@ if((l_timestep + 1) >= l_checkpoints)
 #ifdef WRITENETCDF
   //construct a NetCdfWriter
   io::NetCdfWriter l_writer(l_fileName, l_baseName, l_dimensionalSplittingBlock.getBathymetry(),
-    l_boundarySize, l_nX, l_nY, l_dX, l_dY, (int*)l_bound_types, l_time_dur, l_checkpoints, l_originX, l_originY, l_timestep, isCheckpoint, 1, l_output_scale);
+    l_boundarySize, l_nX, l_nY, l_dX, l_dY, (int*)l_bound_types, l_time_dur, l_checkpoints, l_originX, l_originY, l_timestep, isCheckpoint, 1, false, l_output_scale);
+  //construct a checkpoint writer
+  io::NetCdfWriter l_cp_writer(l_fileName + "_cp", l_baseName, l_dimensionalSplittingBlock.getBathymetry(),
+    l_boundarySize, l_nX, l_nY, l_dX, l_dY, (int*)l_bound_types, l_time_dur, l_checkpoints, l_originX, l_originY, l_timestep, isCheckpoint, 1, true, l_output_scale);
 #else
   // consturct a VtkWriter
   io::VtkWriter l_writer(l_fileName, l_dimensionalSplittingBlock.getBathymetry(),
+    l_boundarySize, l_nX, l_nY, l_dX, l_dY );
+  io::VtkWriter l_cp_writer(l_fileName, l_dimensionalSplittingBlock.getBathymetry(),
     l_boundarySize, l_nX, l_nY, l_dX, l_dY );
 #endif
   if(!isCheckpoint)
@@ -333,7 +338,8 @@ if((l_timestep + 1) >= l_checkpoints)
 
   // loop over checkpoints
   for(int c=l_timestep; c<=l_checkpoints; c++) 
-  {
+  { 
+    // Write a checkpoint 
     if(l_failure > 0 && c >= l_failure)
     {
        tools::Logger::logger.printString("Simulating catastrophic failure\n");
@@ -403,6 +409,12 @@ if((l_timestep + 1) >= l_checkpoints)
     // write output
     l_writer.writeTimeStep( l_dimensionalSplittingBlock.getWaterHeight(),
       l_dimensionalSplittingBlock.getDischarge_hu(), l_dimensionalSplittingBlock.getDischarge_hv(), l_t);
+    // if we are in a step that requires a chekpoint we write this too
+    if ( l_t >= l_checkPoints[c])
+    {
+      l_cp_writer.writeTimeStep( l_dimensionalSplittingBlock.getWaterHeight(),
+      l_dimensionalSplittingBlock.getDischarge_hu(), l_dimensionalSplittingBlock.getDischarge_hv(), l_t);
+    }
   }
 
   // write the statistics message

@@ -12,7 +12,7 @@
 #ifdef USEMPI
 #include <mpi.h>
 #ifndef MPI_INCLUDED
-#define MPI_INCLUDED
+#define MPI_INCLUDEDh
 #define MPI_INCLUDED_NETCDF
 #endif
 #endif
@@ -23,6 +23,7 @@
 #endif
 
 #include "writer/Writer.hh"
+#include "SWE_CoarseComputation.hh"
 
 /**
  * @brief Provides data writers and readers
@@ -50,6 +51,9 @@ private:
     //! Flush after every x write operation? 
     unsigned int flush;
 
+    const bool is_checkpoint = false;
+    const int scale = 1;
+
     /**
      * @brief Writes time dependent data to a netCDF-file (-> constructor) with respect to the boundary sizes.
      *
@@ -62,7 +66,7 @@ private:
      * @param i_boundarySize Size of the boundaries.
      * @param i_ncVariable Time dependent netCDF-variable to which the output is written to.
      */
-    void writeVarTimeDependent(const Float2D &i_matrix, int i_ncVariable);
+    void writeVarTimeDependent(const Float2D i_matrix, int i_ncVariable);
 
     /**
      * @brief Write time independent data to a netCDF-file (-> constructor) with respect to the boundary sizes.
@@ -99,6 +103,8 @@ private:
      * @param timestep Current timestep
      * @param append Wether to append to an existing file
      * @param i_flush If > 0, flush data to disk every i_flush write operation
+     * @param output_scale the output is averaged to comply with this cell amount multiplyer
+     * @param is_checkpoint if true output is not scaled, if false scale is aplied
      */
     NetCdfWriter(const std::string &i_fileName,
       const std::string &i_filebaseName,
@@ -113,7 +119,8 @@ private:
       size_t timestep = 0,
       bool append = false,
       unsigned int i_flush = 0,
-      float output_scale = 1);
+      const bool ischeckpoint = false,
+      const int outscale = 1);
 
     virtual ~NetCdfWriter();
 
@@ -131,7 +138,7 @@ private:
      * @param i_boundarySize Size of the boundaries.
      * @param i_time simulation Time of the time step.
      */
-    void writeTimeStep(const Float2D &i_h, const Float2D &i_hu,
+    void writeTimeStep(const Float2D &i_h,const Float2D &i_hu,
       const Float2D &i_hv, float i_time);
 
   private:

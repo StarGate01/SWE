@@ -18,7 +18,7 @@
                 "--boundary-condition-top=0",
                 "--boundary-condition-bottom=0",
                 "--output-basepath=swe",
-                "--output-scale=1"
+                "--output-scale=2"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceRoot}/build/data",
