@@ -16,6 +16,7 @@ double CoarseComputation::buildAverage(Float1D line, int startIndex, int endInde
         average += line[i];
     }
     average /= line.getSize();
+    return average;
 };
 
 Float2D CoarseComputation::processField(Float2D field, int scale)
