@@ -193,22 +193,8 @@ void io::NetCdfWriter::writeVarTimeIndependent(const Float2D& i_matrix, int i_nc
 void io::NetCdfWriter::writeTimeStep(const Float2D& i_h, const Float2D& i_hu,
 	const Float2D& i_hv, float i_time) 
 {
-	// Float2D h = i_h;
-	// Float2D hu = i_hu;
-	// Float2D hv = i_hv;
-	// scale the output
-	// if (is_checkpoint == false && scale > 1)
-	// {
-	// 	CoarseComputation scaler;
-	// 	h = scaler.processField(h, scale);
-	// 	hu = scaler.processField(hu, scale);
-	// 	hv = scaler.processField(hv, scale);
-		
-	// }
-
-	if (timeStep == 0)
-		// Write bathymetry
-		writeVarTimeIndependent(b, bVar);
+	// Write bathymetry
+	if (timeStep == 0) writeVarTimeIndependent(b, bVar);
 
 	//write i_time
 	nc_put_var1_float(dataFile, timeVar, &timeStep, &i_time);

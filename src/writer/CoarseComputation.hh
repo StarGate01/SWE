@@ -17,13 +17,6 @@ namespace io
     class CoarseComputation
     {
 
-        // private:
-
-        //     static double buildAverage(Float1D line, int startIndex, int endIndex, int excludeIndex);
-        // public:
-
-        //     static Float2D processField(Float2D field, int scale);
-
         public:
             
             int scale;
