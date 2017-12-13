@@ -10,8 +10,6 @@
 #include <cassert>
 #include <sstream>
 
-
-
 io::NetCdfWriter::NetCdfWriter(const std::string &i_baseName,
 	const std::string &i_filebaseName,
 	const Float2D &i_b,
@@ -26,12 +24,12 @@ io::NetCdfWriter::NetCdfWriter(const std::string &i_baseName,
 	const bool append,
 	const unsigned int i_flush,
 	const bool ischeckpoint,
-	const int outscale) :
-	is_checkpoint(ischeckpoint),
-	scale(outscale),
+	const int outscale) 
 	//const bool  &i_dynamicBathymetry : //!TODO
-  io::Writer(i_baseName + ".nc", i_b, i_boundarySize, i_nX, i_nY, timestep),
-  flush(i_flush)
+		: flush(i_flush),
+		  is_checkpoint(ischeckpoint),
+		  scale(outscale),
+  		  io::Writer(i_baseName + ".nc", i_b, i_boundarySize, i_nX, i_nY, timestep)
 {
 	int status;
 	
@@ -56,6 +54,13 @@ io::NetCdfWriter::NetCdfWriter(const std::string &i_baseName,
 		}
 	}
 
+	//initialize coarse computation
+	coarse = new CoarseComputation(scale, boundarySize, nX, nY);
+	nx_a = coarse->newWidth;
+	ny_a = coarse->newHeight;
+	dx_a = i_dX * scale;
+	dy_a = i_dY * scale;
+
 	//dimensions
 	int l_timeDim, l_xDim, l_yDim;
 	if(append)
@@ -67,8 +72,8 @@ io::NetCdfWriter::NetCdfWriter(const std::string &i_baseName,
 	else
 	{
 		nc_def_dim(dataFile, "time", NC_UNLIMITED, &l_timeDim);
-		nc_def_dim(dataFile, "x", nX, &l_xDim);
-		nc_def_dim(dataFile, "y", nY, &l_yDim);
+		nc_def_dim(dataFile, "x", nx_a, &l_xDim);
+		nc_def_dim(dataFile, "y", ny_a, &l_yDim);
 	}
 
 	//variables (TODO: add rest of CF-1.5)
@@ -120,32 +125,30 @@ io::NetCdfWriter::NetCdfWriter(const std::string &i_baseName,
 
 	//save checkpoint state
 	ncPutAttText(NC_GLOBAL, "basename", i_filebaseName.c_str());
-	nc_put_att_int(dataFile, NC_GLOBAL, "nx", NC_INT, 1, &i_nX);
-	nc_put_att_int(dataFile, NC_GLOBAL, "ny", NC_INT, 1, &i_nY);
+	nc_put_att_int(dataFile, NC_GLOBAL, "nx", NC_INT, 1, &nx_a);
+	nc_put_att_int(dataFile, NC_GLOBAL, "ny", NC_INT, 1, &ny_a);
 	nc_put_att_float(dataFile, NC_GLOBAL, "timeduration", NC_FLOAT, 1, &i_timeDuration);
 	nc_put_att_int(dataFile, NC_GLOBAL, "checkpoints", NC_INT, 1, &i_checkpoints);
-	nc_put_att_float(dataFile, NC_GLOBAL, "dx", NC_FLOAT, 1, &i_dX);
-	nc_put_att_float(dataFile, NC_GLOBAL, "dy", NC_FLOAT, 1, &i_dY);
+	nc_put_att_float(dataFile, NC_GLOBAL, "dx", NC_FLOAT, 1, &dx_a);
+	nc_put_att_float(dataFile, NC_GLOBAL, "dy", NC_FLOAT, 1, &dy_a);
 	nc_put_att_float(dataFile, NC_GLOBAL, "originx", NC_FLOAT, 1, &i_originX);
 	nc_put_att_float(dataFile, NC_GLOBAL, "originy", NC_FLOAT, 1, &i_originY);
-	nc_put_att_int(dataFile, NC_GLOBAL, "boundarysize", NC_INT, 4, i_boundarySize.boundarySize);
+	nc_put_att_int(dataFile, NC_GLOBAL, "boundarysize", NC_INT, 4, boundarySize.boundarySize);
 	nc_put_att_int(dataFile, NC_GLOBAL, "outconditions", NC_INT, 4, i_outConditions);
 
 	if(!append)
 	{
 		//setup grid size
-		float gridPosition = i_originX + (float).5 * i_dX;
-		for(size_t i = 0; i < nX; i++) {
+		float gridPosition = i_originX + (float).5 * dx_a;
+		for(size_t i = 0; i < (size_t)nx_a; i++) {
 			nc_put_var1_float(dataFile, l_xVar, &i, &gridPosition);
-
-			gridPosition += i_dX;
+			gridPosition += dx_a;
 		}
 
-		gridPosition = i_originY + (float).5 * i_dY;
-		for(size_t j = 0; j < nY; j++) {
+		gridPosition = i_originY + (float).5 * dy_a;
+		for(size_t j = 0; j < (size_t)ny_a; j++) {
 			nc_put_var1_float(dataFile, l_yVar, &j, &gridPosition);
-
-			gridPosition += i_dY;
+			gridPosition += dy_a;
 		}
 	}
 
@@ -157,51 +160,52 @@ io::NetCdfWriter::~NetCdfWriter()
 	nc_close(dataFile);
 }
 
-void io::NetCdfWriter::writeVarTimeDependent( const Float2D i_matrix, int i_ncVariable ) 
+void io::NetCdfWriter::writeVarTimeDependent(const Float2D i_matrix, int i_ncVariable) 
 {
-	//write col wise, necessary to get rid of the boundary
+	//boundary stripping is now done by coarse computer
 	//storage in Float2D is col wise
 	//read carefully, the dimensions are confusing
 	size_t start[] = {timeStep, 0, 0};
-	size_t count[] = {1, nY, 1};
-	for(unsigned int col = 0; col < nX; col++) {
+	size_t count[] = {1, (size_t)ny_a, 1};
+	for(unsigned int col = 0; col < (size_t)nx_a; col++) 
+	{
 		start[2] = col; //select col (dim "x")
-		nc_put_vara_float(dataFile, i_ncVariable, start, count,
-				&i_matrix[col+boundarySize[0]][boundarySize[2]]); //write col
-  }
+		nc_put_vara_float(dataFile, i_ncVariable, start, count, &i_matrix[col][0]); //write col
+  	}
 }
 
 
-void io::NetCdfWriter::writeVarTimeIndependent(const Float2D &i_matrix, int i_ncVariable )
+void io::NetCdfWriter::writeVarTimeIndependent(const Float2D& i_matrix, int i_ncVariable)
 {
-	//write col wise, necessary to get rid of the boundary
+	//boundary stripping is now done by coarse computer
 	//storage in Float2D is col wise
 	//read carefully, the dimensions are confusing
 	size_t start[] = {0, 0};
-	size_t count[] = {nY, 1};
-	for(unsigned int col = 0; col < nX; col++) {
+	size_t count[] = {(size_t)ny_a, 1};
+	for(unsigned int col = 0; col < (size_t)nx_a; col++) 
+	{
 		start[1] = col; //select col (dim "x")
-		nc_put_vara_float(dataFile, i_ncVariable, start, count,
-				&i_matrix[col+boundarySize[0]][boundarySize[2]]); //write col
-  }
+		nc_put_vara_float(dataFile, i_ncVariable, start, count, &i_matrix[col][0]); //write col
+  	}
 }
 
 
-void io::NetCdfWriter::writeTimeStep(const Float2D &i_h, const Float2D &i_hu,
-	const Float2D &i_hv, float i_time) 
+void io::NetCdfWriter::writeTimeStep(const Float2D& i_h, const Float2D& i_hu,
+	const Float2D& i_hv, float i_time) 
 {
-	Float2D h = i_h;
-	Float2D hu = i_hu;
-	Float2D hv = i_hv;
+	// Float2D h = i_h;
+	// Float2D hu = i_hu;
+	// Float2D hv = i_hv;
 	// scale the output
-	if (is_checkpoint == false && scale > 1)
-	{
-		CoarseComputation scaler;
-		h = scaler.processField(h, scale);
-		hu = scaler.processField(hu, scale);
-		hv = scaler.processField(hv, scale);
+	// if (is_checkpoint == false && scale > 1)
+	// {
+	// 	CoarseComputation scaler;
+	// 	h = scaler.processField(h, scale);
+	// 	hu = scaler.processField(hu, scale);
+	// 	hv = scaler.processField(hv, scale);
 		
-	}
+	// }
+
 	if (timeStep == 0)
 		// Write bathymetry
 		writeVarTimeIndependent(b, bVar);
@@ -210,13 +214,16 @@ void io::NetCdfWriter::writeTimeStep(const Float2D &i_h, const Float2D &i_hu,
 	nc_put_var1_float(dataFile, timeVar, &timeStep, &i_time);
 
 	//write water height
-	writeVarTimeDependent(h, hVar);
+	coarse->updateAverages(i_h);
+	writeVarTimeDependent(*(coarse->averages), hVar);
 
-	//write momentum in x-directionl_writer
-	writeVarTimeDependent(hu, huVar);
+	//write momentum in x-direction
+	coarse->updateAverages(i_hu);
+	writeVarTimeDependent(*(coarse->averages), huVar);
 
 	//write momentum in y-direction
-	writeVarTimeDependent(hv, hvVar);
+	coarse->updateAverages(i_hv);
+	writeVarTimeDependent(*(coarse->averages), hvVar);
 
 	// Increment timeStep for next call
 	timeStep++;

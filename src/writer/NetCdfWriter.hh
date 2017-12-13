@@ -51,8 +51,15 @@ private:
     //! Flush after every x write operation? 
     unsigned int flush;
 
-    const bool is_checkpoint = false;
-    const int scale = 1;
+    bool is_checkpoint;
+    int scale;
+
+    //! Computes the coarse output
+    CoarseComputation* coarse;
+
+    //! Actual amount and size of cells in the file after scaling
+    int nx_a, ny_a;
+    float dx_a, dy_a;
 
     /**
      * @brief Writes time dependent data to a netCDF-file (-> constructor) with respect to the boundary sizes.

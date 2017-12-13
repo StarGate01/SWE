@@ -15,7 +15,7 @@ The following command line parameters are available for SWE (when used with `swe
 - `-o, --output-basepath [OUTPUT_BASEPATH]` Output base file name
 - `-m, --input-checkpoint [INPUT_CHECKPOINT]` Input checkpoint file name
 - `-f, --simulate-failure [SIMULATE_FAILURE]` Simulate failure after n timesteps
-- `-z, --limit-cores [LIMIT_CORES]` Maximum number of CPU cores used (Only available when compiled with support for openMP)
+- `-z, --limit-threads [LIMIT_THREADS]` Maximum number of threads used (Only available when compiled with support for openMP)
 - `-h, --help` Show help
 
 ### Note: 
