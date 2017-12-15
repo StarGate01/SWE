@@ -96,6 +96,8 @@ vars.AddVariables(
 
   BoolVariable( 'parseCDL', 'support reading of CDL files', False ),
 
+  BoolVariable( 'customOpt', 'use optimisations', True ),
+
   BoolVariable( 'asagi', 'use ASAGI', False ),
 
   PathVariable( 'asagiInputDir', 'location of netcdf input files', '', PathVariable.PathAccept ),
@@ -319,6 +321,9 @@ if env['parallelization'] == 'mpi_with_cuda':
 # set the precompiler flags for MPI (C++)
 if env['parallelization'] in ['mpi_with_cuda', 'mpi']:
   env.Append(CPPDEFINES=['USEMPI'])
+
+if env['customOpt'] == True:
+  env.Append(CPPDEFINES=['CUSTOM_OPT'])
 
 if env['openGL'] == True:
   env.Append(LIBS=['SDL', 'GL', 'GLU'])
