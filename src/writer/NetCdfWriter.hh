@@ -55,7 +55,7 @@ private:
     int scale;
 
     //! Computes the coarse output
-    CoarseComputation* coarse;
+    CoarseComputation coarse;
 
     //! Actual amount and size of cells in the file after scaling
     int nx_a, ny_a;
@@ -73,7 +73,7 @@ private:
      * @param i_boundarySize Size of the boundaries.
      * @param i_ncVariable Time dependent netCDF-variable to which the output is written to.
      */
-    void writeVarTimeDependent(const Float2D i_matrix, int i_ncVariable);
+    void writeVarTimeDependent(const Float2D* i_matrix, int i_ncVariable);
 
     /**
      * @brief Write time independent data to a netCDF-file (-> constructor) with respect to the boundary sizes.
@@ -88,7 +88,7 @@ private:
      * @param i_boundarySize Size of the boundaries.
      * @param i_ncVariable time Independent netCDF-variable to which the output is written to.
      */
-    void writeVarTimeIndependent(const Float2D &i_matrix, int i_ncVariable);
+    void writeVarTimeIndependent(const Float2D* i_matrix, int i_ncVariable);
 
   public:
 

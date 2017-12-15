@@ -26,10 +26,11 @@ io::NetCdfWriter::NetCdfWriter(const std::string &i_baseName,
 	const bool ischeckpoint,
 	const int outscale) 
 	//const bool  &i_dynamicBathymetry : //!TODO
-		: flush(i_flush),
+		: io::Writer(i_baseName + ".nc", i_b, i_boundarySize, i_nX, i_nY, timestep),
+		  flush(i_flush),
 		  is_checkpoint(ischeckpoint),
 		  scale(outscale),
-  		  io::Writer(i_baseName + ".nc", i_b, i_boundarySize, i_nX, i_nY, timestep)
+		  coarse(CoarseComputation(scale, boundarySize, nX, nY))
 {
 	int status;
 	
@@ -55,9 +56,8 @@ io::NetCdfWriter::NetCdfWriter(const std::string &i_baseName,
 	}
 
 	//initialize coarse computation
-	coarse = new CoarseComputation(scale, boundarySize, nX, nY);
-	nx_a = coarse->newWidth;
-	ny_a = coarse->newHeight;
+	nx_a = coarse.newWidth;
+	ny_a = coarse.newHeight;
 	dx_a = i_dX * scale;
 	dy_a = i_dY * scale;
 
@@ -160,7 +160,7 @@ io::NetCdfWriter::~NetCdfWriter()
 	nc_close(dataFile);
 }
 
-void io::NetCdfWriter::writeVarTimeDependent(const Float2D i_matrix, int i_ncVariable) 
+void io::NetCdfWriter::writeVarTimeDependent(const Float2D* i_matrix, int i_ncVariable) 
 {
 	//boundary stripping is now done by coarse computer
 	//storage in Float2D is col wise
@@ -170,12 +170,12 @@ void io::NetCdfWriter::writeVarTimeDependent(const Float2D i_matrix, int i_ncVar
 	for(unsigned int col = 0; col < (size_t)nx_a; col++) 
 	{
 		start[2] = col; //select col (dim "x")
-		nc_put_vara_float(dataFile, i_ncVariable, start, count, &i_matrix[col][0]); //write col
+		nc_put_vara_float(dataFile, i_ncVariable, start, count, (*i_matrix)[col]); //write col
   	}
 }
 
 
-void io::NetCdfWriter::writeVarTimeIndependent(const Float2D& i_matrix, int i_ncVariable)
+void io::NetCdfWriter::writeVarTimeIndependent(const Float2D* i_matrix, int i_ncVariable)
 {
 	//boundary stripping is now done by coarse computer
 	//storage in Float2D is col wise
@@ -185,7 +185,7 @@ void io::NetCdfWriter::writeVarTimeIndependent(const Float2D& i_matrix, int i_nc
 	for(unsigned int col = 0; col < (size_t)nx_a; col++) 
 	{
 		start[1] = col; //select col (dim "x")
-		nc_put_vara_float(dataFile, i_ncVariable, start, count, &i_matrix[col][0]); //write col
+		nc_put_vara_float(dataFile, i_ncVariable, start, count, (*i_matrix)[col]); //write col
   	}
 }
 
@@ -194,22 +194,26 @@ void io::NetCdfWriter::writeTimeStep(const Float2D& i_h, const Float2D& i_hu,
 	const Float2D& i_hv, float i_time) 
 {
 	// Write bathymetry
-	if (timeStep == 0) writeVarTimeIndependent(b, bVar);
+	if (timeStep == 0)
+	{
+		coarse.updateAverages(b);
+		writeVarTimeIndependent(coarse.averages, bVar);
+	}
 
 	//write i_time
 	nc_put_var1_float(dataFile, timeVar, &timeStep, &i_time);
 
 	//write water height
-	coarse->updateAverages(i_h);
-	writeVarTimeDependent(*(coarse->averages), hVar);
+	coarse.updateAverages(i_h);
+	writeVarTimeDependent(coarse.averages, hVar);
 
 	//write momentum in x-direction
-	coarse->updateAverages(i_hu);
-	writeVarTimeDependent(*(coarse->averages), huVar);
+	coarse.updateAverages(i_hu);
+	writeVarTimeDependent(coarse.averages, huVar);
 
 	//write momentum in y-direction
-	coarse->updateAverages(i_hv);
-	writeVarTimeDependent(*(coarse->averages), hvVar);
+	coarse.updateAverages(i_hv);
+	writeVarTimeDependent(coarse.averages, hvVar);
 
 	// Increment timeStep for next call
 	timeStep++;

@@ -28,9 +28,13 @@
 
 #include "tools/help.hh"
 
-namespace io {
+namespace io 
+{
+
 	struct BoundarySize;
+	
 	class Writer;
+
 }
 
 /**
@@ -39,6 +43,7 @@ namespace io {
  */
 struct io::BoundarySize
 {
+
 	 /**
 	  * boundarySize[0] == left
 	  * boundarySize[1] == right
@@ -56,58 +61,61 @@ struct io::BoundarySize
 	{
 		return boundarySize[i];
 	}
+
 };
 
 class io::Writer
 {
-protected:
-	//! file name of the data file
-	const std::string fileName;
 
-    //! (Reference) to bathymetry data
-    const Float2D &b;
+	protected:
 
-	//! Boundary layer size
-	const BoundarySize boundarySize;
+		//! file name of the data file
+		const std::string fileName;
 
-    //! dimensions of the grid in x- and y-direction.
-    const unsigned int nX, nY;
+		//! (Reference) to bathymetry data
+		const Float2D &b;
 
-    //! current time step
-    size_t timeStep;
+		//! Boundary layer size
+		const BoundarySize boundarySize;
 
-public:
-    /**
-	 * @param i_boundarySize size of the boundaries.
-	 */
-	Writer(const std::string &i_fileName,
-		const Float2D &i_b,
-		const BoundarySize &i_boundarySize,
-		int i_nX, int i_nY,
-		size_t timeStep = 0)
-		: fileName(i_fileName),
-		  b(i_b),
-		  boundarySize(i_boundarySize),
-		  nX(i_nX), nY(i_nY),
-		  timeStep(timeStep)
-	{
-	};
+		//! dimensions of the grid in x- and y-direction.
+		const unsigned int nX, nY;
 
-	virtual ~Writer() {};
+		//! current time step
+		size_t timeStep;
 
-	/**
-	 * Writes one time step
-	 *
-	 * @param i_h water heights at a given time step.
-	 * @param i_hu momentums in x-direction at a given time step.
-	 * @param i_hv momentums in y-direction at a given time step.
-	 * @param i_time simulation time of the time step.
-	 */
-	virtual void writeTimeStep(
-			const Float2D &i_h,
-            const Float2D &i_hu,
-            const Float2D &i_hv,
-            float i_time) = 0;
+	public:
+
+		/**
+		 * @param i_boundarySize size of the boundaries.
+		 */
+		Writer(const std::string &i_fileName,
+			const Float2D &i_b,
+			const BoundarySize &i_boundarySize,
+			int i_nX, int i_nY,
+			size_t timeStep = 0)
+			: fileName(i_fileName),
+			b(i_b),
+			boundarySize(i_boundarySize),
+			nX(i_nX), nY(i_nY),
+			timeStep(timeStep)
+		{};
+
+		virtual ~Writer() {};
+
+		/**
+		 * Writes one time step
+		 *
+		 * @param i_h water heights at a given time step.
+		 * @param i_hu momentums in x-direction at a given time step.
+		 * @param i_hv momentums in y-direction at a given time step.
+		 * @param i_time simulation time of the time step.
+		 */
+		virtual void writeTimeStep(
+				const Float2D &i_h,
+				const Float2D &i_hu,
+				const Float2D &i_hv,
+				float i_time) = 0;
 };
 
 #endif // WRITER_HH_

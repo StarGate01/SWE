@@ -25,9 +25,10 @@ CoarseComputation::CoarseComputation(int s, const BoundarySize& bs, int ow, int 
     : scale(s), bsize(bs),
       oldWidth(ow), oldHeight(oh),
       newWidth(numCells(oldWidth)),
-      newHeight(numCells(oldHeight)),
-      averages(new Float2D(newWidth, newHeight))
-{}
+      newHeight(numCells(oldHeight))
+{
+    averages = new Float2D(newWidth, newHeight);
+}
 
 void CoarseComputation::updateAverages(const Float2D& data)
 {
