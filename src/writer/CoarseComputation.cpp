@@ -7,12 +7,6 @@
 
 using namespace io;
 
-/**
-* @brief Returns the number of cells in one dimension of the downscaled Float2D object
-* @param ny Number of cells of original field
-*
-* @return Number of cells of downscaled field
-*/
 int CoarseComputation::numCells(int ny)
 {
     return (int)ceil(((float)ny)/((float)scale));
