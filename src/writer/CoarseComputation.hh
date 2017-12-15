@@ -26,20 +26,12 @@ namespace io
             BoundarySize bsize;
 
             /**
-            * @brief Returns the number of rows of the downscaled Float2D object
-            * @param ny Number of original vertical cells
+            * @brief Returns the number of cells in one dimension of the downscaled Float2D object
+            * @param ny Number of cells of original field
             *
-            * @return Number of cells in downscaled field
+            * @return Number of cells of downscaled field
             */
-            int numCellsVertical(int ny);
-
-            /**
-            * @brief Returns the number of columns of the downscaled Float2D object
-            * @param nx Number of original horizontal cells
-            *
-            * @return Number of cells in downscaled field
-            */
-            int numCellsHorizontal(int nx);
+            int numCells(int ny);
 
             /**
             * @brief Calculates the average of a subfield within the \param data object from ( \param xmin, \param ymin ) to (\param xmin + scale, \param ymin + scale)
