@@ -8,69 +8,82 @@
 #include <cassert>
 #include <string>
 #include <limits>
-
-#ifdef USE_OMP
 #include <omp.h>
-#endif
 
 
-SWE_DimensionalSplittingBlock::SWE_DimensionalSplittingBlock (int l_nx, int l_ny, float l_dx, float l_dy) :
+SWE_DimensionalSplittingBlock::SWE_DimensionalSplittingBlock (int l_nx, int l_ny, float l_dx, float l_dy, int numthreads) :
 	SWE_Block (l_nx, l_ny, l_dx, l_dy),
 	hNetUpdatesLeft (nx + 1, ny),
 	hNetUpdatesRight (nx + 1, ny),
 	huNetUpdatesLeft (nx + 1, ny),
 	huNetUpdatesRight (nx + 1, ny),
-
 	hNetUpdatesBelow (nx, ny + 1),
 	hNetUpdatesAbove (nx, ny + 1),
 	hvNetUpdatesBelow (nx, ny + 1),
-	hvNetUpdatesAbove (nx, ny + 1)
+	hvNetUpdatesAbove (nx, ny + 1),
+	numThreads(numthreads)
 {
+	workPerThread_horizontal = (int)ceil((float)nx / (float)numThreads);
+	workPerThread_vertical = (int)ceil((float)ny / (float)numThreads);
 }
 
 float SWE_DimensionalSplittingBlock::computeNumericalFluxesVertical()
 {
 	float maxWaveSpeed = (float) 0.;
-#ifdef USE_OMP
 	#pragma omp parallel for reduction(max: maxWaveSpeed)
-#endif
-	for (int i = 1; i < nx + 1; i++) 
+#ifdef CUSTOM_OPT
+	for(int t = 0; t < numThreads; t++)
 	{
-		for (int j = 1; j < ny + 2; j++) 
+		for (int i = (t*workPerThread_vertical) + 1; i < ((t+1)*workPerThread_vertical) + 1 && i < nx + 1; i++) 
+#else
+	for (int i = 1; i < nx + 1; i++) 
+#endif
 		{
-			float maxEdgeSpeed;
-			wavePropagationSolver.computeNetUpdates(
-				h[i][j - 1], h[i][j], hv[i][j - 1], hv[i][j], b[i][j - 1], b[i][j],
-				hNetUpdatesBelow[i - 1][j - 1], hNetUpdatesAbove[i - 1][j - 1],
-				hvNetUpdatesBelow[i - 1][j - 1], hvNetUpdatesAbove[i - 1][j - 1],
-				maxEdgeSpeed
-			);
-			maxWaveSpeed = std::max (maxWaveSpeed, maxEdgeSpeed);
+			for (int j = 1; j < ny + 2; j++) 
+			{
+				float maxEdgeSpeed;
+				wavePropagationSolver.computeNetUpdates(
+					h[i][j - 1], h[i][j], hv[i][j - 1], hv[i][j], b[i][j - 1], b[i][j],
+					hNetUpdatesBelow[i - 1][j - 1], hNetUpdatesAbove[i - 1][j - 1],
+					hvNetUpdatesBelow[i - 1][j - 1], hvNetUpdatesAbove[i - 1][j - 1],
+					maxEdgeSpeed
+				);
+				maxWaveSpeed = std::max (maxWaveSpeed, maxEdgeSpeed);
+			}
 		}
+#ifdef CUSTOM_OPT
 	}
+#endif
 	return maxWaveSpeed;
 }
 
 float SWE_DimensionalSplittingBlock::computeNumericalFluxesHorizontal()
 {
 	float maxWaveSpeed = (float) 0.;
-#ifdef USE_OMP
 	#pragma omp parallel for reduction(max: maxWaveSpeed)
-#endif
-	for (int i = 1; i < nx + 2; i++) 
+#ifdef CUSTOM_OPT
+	for(int t = 0; t < numThreads; t++)
 	{
-		for (int j = 1; j < ny + 1; ++j) 
+		for (int j = (t*workPerThread_horizontal) + 1; j < ((t+1)*workPerThread_horizontal) + 1 && j < ny + 1; j++) 
+#else
+	for (int j = 1; j < ny + 1; ++j) 
+#endif
 		{
-			float maxEdgeSpeed;
-			wavePropagationSolver.computeNetUpdates(
-				h[i - 1][j], h[i][j], hu[i - 1][j], hu[i][j], b[i - 1][j], b[i][j],
-				hNetUpdatesLeft[i - 1][j - 1], hNetUpdatesRight[i - 1][j - 1],
-				huNetUpdatesLeft[i - 1][j - 1], huNetUpdatesRight[i - 1][j - 1],
-				maxEdgeSpeed
-			);
-			maxWaveSpeed = std::max(maxWaveSpeed, maxEdgeSpeed);
+			for (int i = 1; i < nx + 2; i++) 
+			{
+				float maxEdgeSpeed;
+				wavePropagationSolver.computeNetUpdates(
+					h[i - 1][j], h[i][j], hu[i - 1][j], hu[i][j], b[i - 1][j], b[i][j],
+					hNetUpdatesLeft[i - 1][j - 1], hNetUpdatesRight[i - 1][j - 1],
+					huNetUpdatesLeft[i - 1][j - 1], huNetUpdatesRight[i - 1][j - 1],
+					maxEdgeSpeed
+				);
+				maxWaveSpeed = std::max(maxWaveSpeed, maxEdgeSpeed);
+			}
 		}
+#ifdef CUSTOM_OPT
 	}
+#endif
 	return maxWaveSpeed;
 }
 

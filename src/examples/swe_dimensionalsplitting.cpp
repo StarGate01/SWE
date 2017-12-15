@@ -8,10 +8,7 @@
 #include <string>
 #include <iostream>
 #include <thread>
-
-#ifdef USE_OMP
 #include <omp.h>
-#endif
 
 //Use these macros to select x, y or both dimensions for splitting
 //USeful for demonstating the individual dimensions
@@ -100,9 +97,7 @@ int main(int argc, char** argv)
   addArgument(args, "input-checkpoint", 'm', "Input checkpoint file name");
   addArgument(args, "simulate-failure", 'f', "Simulate failure after n timesteps");
   addArgument(args, "output-scale", 's', "Scale for the output file cell sizes");
-#ifdef USE_OMP
   addArgument(args, "limit-threads", 'z', "Maximum number of threads used");
-#endif
 #endif
   tools::Args::Result ret = args.parse(argc, argv);
 
@@ -122,10 +117,12 @@ int main(int argc, char** argv)
   int l_time_dur;
   //number of checkpoints for visualization (at each checkpoint in time, an output file is written).
   int l_checkpoints;
+  //other values
   int l_timestep = 0;
   float l_timepos = 0.0;
   int l_failure = -1;
   int l_output_scale = 1;
+  int l_limit_cpu = 1;
   //boundary conditions
   BoundaryType* l_bound_types = new BoundaryType[4]; 
   //l_baseName of the plots.
@@ -187,11 +184,11 @@ int main(int argc, char** argv)
   sstm << "Output base file name:\t\t" << l_baseName << "\n";
 
 #ifdef USE_OMP
-  int l_limit_cpu = thread::hardware_concurrency();
+  l_limit_cpu = thread::hardware_concurrency();
   if(args.isSet("limit-threads")) l_limit_cpu = args.getArgument<int>("limit-threads");
   omp_set_num_threads(l_limit_cpu);
-  sstm << "Number of threads used:\t" << l_limit_cpu << "\n";
 #endif
+  sstm << "Number of threads used:\t\t" << l_limit_cpu << "\n";
 
   tools::Logger::logger.printString(sstm.str());
 #endif
@@ -263,7 +260,7 @@ if((l_timestep + 1) >= l_checkpoints)
   }
   // create a single dimensional splitting block
 #ifndef CUDA
-  SWE_DimensionalSplittingBlock l_dimensionalSplittingBlock(l_nX,l_nY,l_dX,l_dY);
+  SWE_DimensionalSplittingBlock l_dimensionalSplittingBlock(l_nX,l_nY,l_dX,l_dY, l_limit_cpu);
 #else
   SWE_DimensionalSplittingBlockCuda l_dimensionalSplittingBlock(l_nX,l_nY,l_dX,l_dY);
 #endif

@@ -61,7 +61,9 @@ void io::VtkWriter::writeTimeStep(
         float i_time)
 {
 	std::ofstream vtkFile(generateFileName().c_str());
-	assert(vtkFile.good());
+	#ifndef NDEBUG
+		assert(vtkFile.good());
+	#endif
 
 	// VTK header
 	vtkFile << "<?xml version=\"1.0\"?>" << std::endl
