@@ -60,7 +60,7 @@ namespace io
             /**
             * @brief Calculates the average values for the entire field
             *
-            * @param data Field to be downscaled
+            * @param[in] data Field to be downscaled
             */
             void updateAverages(const Float2D& data);
 
