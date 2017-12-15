@@ -389,12 +389,12 @@ program_name = 'SWE'
 # compiler
 program_name += '_'+env['compiler']
 
-# compile mode
-program_name += '_'+env['compileMode']
-
 # custom optimisation
 if env['customOpt'] == False:
   program_name += '_noopt'
+
+# compile mode
+program_name += '_'+env['compileMode']
 
 # parallelization
 program_name += '_'+env['parallelization']
