@@ -27,9 +27,7 @@
 #
 
 # Build options
-compiler='intel'
 solver='fwave'
 writeNetCDF='yes'
 openmp='yes'
 customOpt='no'
-showOptimization='yes'

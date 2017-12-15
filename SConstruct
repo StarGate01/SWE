@@ -113,6 +113,8 @@ vars.AddVariables(
                   
   BoolVariable( 'showVectorization', 'show loop vectorization (Intel compiler only)', False ),
 
+  BoolVariable( 'showOptimization', 'show optimization (Intel compiler only)', False ),
+
   EnumVariable( 'platform', 'compile for a specific platform (Intel compiler only)', 'default',
                 allowed_values=('default', 'mic' )
               ),
@@ -250,6 +252,9 @@ if env['compileMode'] == 'release' and env['vectorize']:
     env.Append(CCFLAGS=['-xHost'])
 if env['compiler'] == 'intel' and env['showVectorization']:
   env.Append(CCFLAGS=['-vec-report2','-opt-report'])
+
+if env['compiler'] == 'intel' and env['showOptimization']:
+  env.Append(CCFLAGS=['-qopt-report'])
 
 # OpenMP parallelism
 if env['openmp']:

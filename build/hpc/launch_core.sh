@@ -5,14 +5,6 @@ DATADIR="$SCRATCH/$USER/swe_data"
 echo INPUTDIR: $INPUTDIR
 echo DATADIR: $DATADIR
 
-SIZE=500
-BATHY="$INPUTDIR/input/tohoku_2011/tohoku_gebco_ucsb3_2000m_hawaii_bath.nc"
-DISPL="$INPUTDIR/input/tohoku_2011/tohoku_gebco_ucsb3_2000m_hawaii_displ.nc"
-TIME=1000
-CHECKP=300
-OUTPNAME=tohoku_2011
-NTHREADS=28
-
 AMP=/lrz/mnt/sys.x86_64/intel/studio2017_u5/vtune_amplifier_xe_2017.5.0.526192/bin64/amplxe-cl
 AMPPREFIX="$AMP -collect hotspots -knob enable-user-tasks=true -knob analyze-openmp=true -app-working-dir $INPUTDIR --"
 
@@ -54,14 +46,19 @@ run_swe () {
 
 echo Running optimized gcc release build
 run_swe gnu
+
 echo Running not optimized gcc release build
 run_swe gnu_noopt
+
 echo Running optimized intel release build
 run_swe intel
+
 echo Running not optimized intel release build
 run_swe intel_noopt
+
 echo Profiling optimized intel debug build
 run_swe intel amp
+
 echo Profiling not optimized intel debug build
 run_swe intel_noopt amp
 

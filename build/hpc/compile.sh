@@ -9,4 +9,3 @@ scons buildVariablesFile=build/options/SWE_intel.py compileMode=release netCDFDi
 scons buildVariablesFile=build/options/SWE_intel.py compileMode=debug netCDFDir=$NCDFDIR
 scons buildVariablesFile=build/options/SWE_intel_noopt.py compileMode=release netCDFDir=$NCDFDIR
 scons buildVariablesFile=build/options/SWE_intel_noopt.py compileMode=debug netCDFDir=$NCDFDIR
-
