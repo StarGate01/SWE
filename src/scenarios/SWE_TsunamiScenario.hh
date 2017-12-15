@@ -99,7 +99,10 @@ class SWE_TsunamiScenario : public SWE_Scenario
      */
     float getB(int x, int y) 
     {
-      assert(isCheckpoint);
+      #ifndef NDEBUG
+        assert(isCheckpoint);
+      #endif
+
       if(x < 0) x = 0;
       if(x >= nx) x = nx-1;
       if(y < 0) y = 0;
@@ -117,7 +120,9 @@ class SWE_TsunamiScenario : public SWE_Scenario
      */
     float getH(int x, int y) 
     {
-      assert(isCheckpoint);
+      #ifndef NDEBUG
+        assert(isCheckpoint);
+      #endif
       return checkpReader->hData[(y * nx) + x];
     };
 
@@ -131,7 +136,9 @@ class SWE_TsunamiScenario : public SWE_Scenario
      */
     float getHu(int x, int y) 
     {
-      assert(isCheckpoint);
+      #ifndef NDEBUG
+        assert(isCheckpoint);
+      #endif
       return checkpReader->huData[(y * nx) + x];
     };
 
@@ -145,7 +152,9 @@ class SWE_TsunamiScenario : public SWE_Scenario
      */
     float getHv(int x, int y)
     { 
-      assert(isCheckpoint);
+      #ifndef NDEBUG
+        assert(isCheckpoint);
+      #endif
       return checkpReader->hvData[(y * nx) + x];
     };
 
@@ -159,7 +168,9 @@ class SWE_TsunamiScenario : public SWE_Scenario
      */
     float getBathymetry(float x, float y)
     {
-      assert(!isCheckpoint);
+      #ifndef NDEBUG
+        assert(!isCheckpoint);
+      #endif
       float bathy = bathyReader->sample(x, y, true) + dispReader->sample(x, y);
       if(bathy <= 0 && bathy >= -20) bathy = -20;
       if(bathy >= 0 && bathy <= 20) bathy = 20;
@@ -176,7 +187,9 @@ class SWE_TsunamiScenario : public SWE_Scenario
      */
     float getWaterHeight(float x, float y)
     { 
-      assert(!isCheckpoint);
+      #ifndef NDEBUG
+        assert(!isCheckpoint);
+      #endif
       float bathy = bathyReader->sample(x, y, true);
       if(bathy <= 0 && bathy >= -20) bathy = -20;
       if(bathy >= 0 && bathy <= 20) bathy = 20;

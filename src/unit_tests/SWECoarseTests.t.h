@@ -1,9 +1,7 @@
 #include <cxxtest/TestSuite.h>
-#include "tools/help.hh"                            //Float1D, Float2D
-#include "../writer/CoarseComputation.hh"          //BoundarySize
-//#include "../../submodule/solver/src/solver/FConst.hpp"    //ZERO_PRECISION
-
-#define ZERO_PRECISION 0.0000001
+#include "tools/help.hh"                                        //Float1D, Float2D
+#include "../writer/CoarseComputation.hh"                       //BoundarySize
+#include "../../submodules/solvers/src/solver/FConst.hpp"       //ZERO_PRECISION
 
 using namespace std;
 using namespace io;
