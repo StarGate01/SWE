@@ -30,19 +30,22 @@ SWE_DimensionalSplittingBlock::SWE_DimensionalSplittingBlock (int l_nx, int l_ny
 float SWE_DimensionalSplittingBlock::computeNumericalFluxesVertical()
 {
 	float maxWaveSpeed = (float) 0.;
-	#pragma omp parallel for reduction(max: maxWaveSpeed), schedule(dynamic) 
-	for (int i = 1; i < nx + 1; i++) 
+	#pragma omp parallel for reduction(max: maxWaveSpeed)
+	for(int t = 0; t < numThreads; t++)
 	{
-		for (int j = 1; j < ny + 2; j++) 
+		for (int i = (t*workPerThread_vertical) + 1; i < ((t+1)*workPerThread_vertical) + 1 && i < nx + 1; i++) 
 		{
-			float maxEdgeSpeed;
-			wavePropagationSolver.computeNetUpdates(
-				h[i][j - 1], h[i][j], hv[i][j - 1], hv[i][j], b[i][j - 1], b[i][j],
-				hNetUpdatesBelow[i - 1][j - 1], hNetUpdatesAbove[i - 1][j - 1],
-				hvNetUpdatesBelow[i - 1][j - 1], hvNetUpdatesAbove[i - 1][j - 1],
-				maxEdgeSpeed
-			);
-			maxWaveSpeed = std::max (maxWaveSpeed, maxEdgeSpeed);
+			for (int j = 1; j < ny + 2; j++) 
+			{
+				float maxEdgeSpeed;
+				wavePropagationSolver.computeNetUpdates(
+					h[i][j - 1], h[i][j], hv[i][j - 1], hv[i][j], b[i][j - 1], b[i][j],
+					hNetUpdatesBelow[i - 1][j - 1], hNetUpdatesAbove[i - 1][j - 1],
+					hvNetUpdatesBelow[i - 1][j - 1], hvNetUpdatesAbove[i - 1][j - 1],
+					maxEdgeSpeed
+				);
+				maxWaveSpeed = std::max (maxWaveSpeed, maxEdgeSpeed);
+			}
 		}
 	}
 	return maxWaveSpeed;
@@ -51,19 +54,22 @@ float SWE_DimensionalSplittingBlock::computeNumericalFluxesVertical()
 float SWE_DimensionalSplittingBlock::computeNumericalFluxesHorizontal()
 {
 	float maxWaveSpeed = (float) 0.;
-	#pragma omp parallel for reduction(max: maxWaveSpeed), schedule(dynamic) 
-	for (int i = 1; i < nx + 2; i++) 
+	#pragma omp parallel for reduction(max: maxWaveSpeed)
+	for(int t = 0; t < numThreads; t++)
 	{
-		for (int j = 1; j < ny + 1; ++j) 
+		for (int j = (t*workPerThread_horizontal) + 1; j < ((t+1)*workPerThread_horizontal) + 1 && j < ny + 1; j++) 
 		{
-			float maxEdgeSpeed;
-			wavePropagationSolver.computeNetUpdates(
-				h[i - 1][j], h[i][j], hu[i - 1][j], hu[i][j], b[i - 1][j], b[i][j],
-				hNetUpdatesLeft[i - 1][j - 1], hNetUpdatesRight[i - 1][j - 1],
-				huNetUpdatesLeft[i - 1][j - 1], huNetUpdatesRight[i - 1][j - 1],
-				maxEdgeSpeed
-			);
-			maxWaveSpeed = std::max(maxWaveSpeed, maxEdgeSpeed);
+			for (int i = 1; i < nx + 2; i++) 
+			{
+				float maxEdgeSpeed;
+				wavePropagationSolver.computeNetUpdates(
+					h[i - 1][j], h[i][j], hu[i - 1][j], hu[i][j], b[i - 1][j], b[i][j],
+					hNetUpdatesLeft[i - 1][j - 1], hNetUpdatesRight[i - 1][j - 1],
+					huNetUpdatesLeft[i - 1][j - 1], huNetUpdatesRight[i - 1][j - 1],
+					maxEdgeSpeed
+				);
+				maxWaveSpeed = std::max(maxWaveSpeed, maxEdgeSpeed);
+			}
 		}
 	}
 	return maxWaveSpeed;
