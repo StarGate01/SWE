@@ -137,4 +137,7 @@ for i in sourceFiles:
 if env['parseCDL'] == True:
   env.CxxTest('SWECDLTests', ['unit_tests/SWECDLTests.t.h', 'parser/CDLStreamTokenizer.cpp', 'parser/CDLStreamParser.cpp'])
 
+if env['writeNetCDF'] == True:
+  env.CxxTest('SWECoarseTests', ['unit_tests/SWECoarseTests.t.h', 'writer/CoarseComputation.cpp'])
+
 Export('env')

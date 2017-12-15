@@ -1,17 +1,31 @@
 #include <cxxtest/TestSuite.h>
+#include "tools/help.hh"                            //Float1D, Float2D
+#include "../writer/CoarseComputation.hh"          //BoundarySize
+//#include "../../submodule/solver/src/solver/FConst.hpp"    //ZERO_PRECISION
 
-#include "tools/help.hh"                    //Float1D, Float2D
-#include "../CoarseComputation.hh"          //BoundarySize
-include "../submodule/solver/FConst.hpp"    //ZERO_PRECISION
+#define ZERO_PRECISION 0.0000001
+
+using namespace std;
+using namespace io;
 
 namespace swe_tests
 {
     class SWECoarseTests;
 }
 
-class swe_tests::SWECoarseTests : public Cxxtest::TestSuite
+class swe_tests::SWECoarseTests : public CxxTest::TestSuite
 {
+    private:
+        float createChessPattern(int x, int y)
+        {
+            return (x % 2 == 0 && y % 2 == 0) ? 2 : (x % 2 == 1 && y % 2 == 1 ? 2 : 0);
+        }
+
     public:
+
+        /**
+         * @test Test coarse computation
+         */
         void testAverageCalculation()
         {
             // ### Test 1 (Scale by 2) ###
@@ -22,74 +36,72 @@ class swe_tests::SWECoarseTests : public Cxxtest::TestSuite
             {
                 for(int x = 0; x < field.getCols(); x++)
                 {
-                    field[x][y] = (x % 2 == 0 && y % 2 == 0) ? 2 : 0;
+                    field[x][y] = createChessPattern(x, y);
                 }
             }
 
             //Initialize CoarseComputation
             int scale = 2;
-            io::BoundarySize bs();
-            for(i = 0; i < 4; i++)
+            io::BoundarySize bs;
+            for(int i = 0; i < 4; i++)
                 bs[i] = 0;
-            CoarseComputation cc(scale, bs, field.getCols(), field.getRows());
+            CoarseComputation* cc = new CoarseComputation(scale, bs, field.getCols(), field.getRows());
 
             //Execute average calculation
-            cc::updateAverages(field);
-            
+            cc->updateAverages(field);
+
             //Assert dimensions
-            TS_ASSERT(field.getCols() == 10);
-            TS_ASSERT(field.getRows() == 10);
+            TS_ASSERT(cc->averages->getCols() == 10);
+            TS_ASSERT(cc->averages->getRows() == 10);
 
             //Assert averages
-            for(int y = 0; y < field.getRows(); y++)
+            for(int y = 0; y < cc->averages->getRows(); y++)
             {
-                for(int x = 0; x < field.getCols(); x++)
+                for(int x = 0; x < cc->averages->getCols(); x++)
                 {
-                    TS_ASSERT_DELTA(field[x][y], 1, ZERO_PRECISION);
+                    TS_ASSERT_DELTA((*(cc->averages))[x][y], 1, ZERO_PRECISION);
                 }
             }
 
             // ### Test 2 (Scale 1) ###
             //Init test
             scale = 1;
-            Float2D comp = field;
-            cc(scale, bs, field.getCols(), field.getRows());
+            cc = new CoarseComputation(scale, bs, field.getCols(), field.getRows());
             
             //Execute average calculation
-            cc::updateAverages(field);
+            cc->updateAverages(field);
 
             //Assert dimensions
-            TS_ASSERT_EQUALS(field.getCols(), comp.getCols());
-            TS_ASSERT_EQUALS(field.getRows(), comp.getRows());
+            TS_ASSERT_EQUALS(field.getCols(), 20);
+            TS_ASSERT_EQUALS(field.getRows(), 20);
 
             //Assert values did not change
             for(int y = 0; y < field.getRows(); y++)
             {
                 for(int x = 0; x < field.getCols(); x++)
                 {
-                    TS_ASSERT_EQUALS(field[x][y], comp[x][y]);
+                    TS_ASSERT_EQUALS(field[x][y], createChessPattern(x, y));
                 }
             }
 
             // ### Test 3 (Invalid case) ###
-            comp = field;
-            scale = -3
-            cc(scale, bs, field.getCols(), field.getRows);
+            scale = -3;
+            cc = new CoarseComputation(scale, bs, field.getCols(), field.getRows());
 
             //Execute average calculation
-            cc.updateAverages(field);
+            cc->updateAverages(field);
 
             //Assert dimensions
-            TS_ASSERT_EQUALS(field.getCols(), comp.getCols());
-            TS_ASSERT_EQUALS(field.getRows(), comp.getRows());
+            TS_ASSERT_EQUALS(field.getCols(), 20);
+            TS_ASSERT_EQUALS(field.getRows(), 20);
 
             //Assert values did not change
             for(int y = 0; y < field.getRows(); y++)
             {
                 for(int x = 0; x < field.getCols(); x++)
                 {
-                    TS_ASSERT_EQUALS(field[x][y], comp[x][y]);
+                    TS_ASSERT_EQUALS(field[x][y], createChessPattern(x, y));
                 }
             }
         }
-}
+};
