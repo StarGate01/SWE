@@ -26,7 +26,7 @@ run_swe () {
 	RCMD="$INPUTDIR/SWE_$1_$MODE"
 	RCMD+="_none_fwave"
 	RCMD+=" --grid-size-x=$SIZE --grid-size-y=$SIZE --input-bathymetry=$BATHY --input-displacement=$DISPL --time-duration=$TIME --checkpoint-amount=$CHECKP"
-	RCMD+=" --boundary-condition-left=0 --boundary-condition-right=0 --boundary-condition-top=0 --boundary-condition-bottom=0 --output-basepath=$MYDATADIR/swe --output-scale=1"
+	RCMD+=" --boundary-condition-left=0 --boundary-condition-right=0 --boundary-condition-top=0 --boundary-condition-bottom=0 --output-basepath=$MYDATADIR/swe --output-scale=1 --limit-threads=56"
 	echo Executing: $RCMD
 	srun $RCMD > $MYDATADIR/stdout.log 2>$MYDATADIR/stderr.log
 }

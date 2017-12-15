@@ -93,7 +93,7 @@ if env['asagi'] == True:
 # netCDF writer
 if env['writeNetCDF'] == True:
   sourceFiles.append( ['writer/NetCdfWriter.cpp'] )
-  sourceFiles.append( ['SWE_CoarseComputation.cpp'] )
+  sourceFiles.append( ['writer/CoarseComputation.cpp'] )
 else:
   sourceFiles.append( ['writer/VtkWriter.cpp'] )
 

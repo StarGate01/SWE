@@ -101,7 +101,7 @@ int main(int argc, char** argv)
   addArgument(args, "simulate-failure", 'f', "Simulate failure after n timesteps");
   addArgument(args, "output-scale", 's', "Scale for the output file cell sizes");
 #ifdef USE_OMP
-  addArgument(args, "limit-cores", 'z', "Maximum number of CPU cores used");
+  addArgument(args, "limit-threads", 'z', "Maximum number of threads used");
 #endif
 #endif
   tools::Args::Result ret = args.parse(argc, argv);
@@ -188,9 +188,9 @@ int main(int argc, char** argv)
 
 #ifdef USE_OMP
   int l_limit_cpu = thread::hardware_concurrency();
-  if(args.isSet("limit-cores")) l_limit_cpu = min(args.getArgument<int>("limit-cores"), l_limit_cpu);
+  if(args.isSet("limit-threads")) l_limit_cpu = args.getArgument<int>("limit-threads");
   omp_set_num_threads(l_limit_cpu);
-  sstm << "Number of CPU cores used:\t" << l_limit_cpu << "\n";
+  sstm << "Number of threads used:\t" << l_limit_cpu << "\n";
 #endif
 
   tools::Logger::logger.printString(sstm.str());
@@ -308,14 +308,9 @@ if((l_timestep + 1) >= l_checkpoints)
   //construct a NetCdfWriter
   io::NetCdfWriter l_writer(l_fileName, l_baseName, l_dimensionalSplittingBlock.getBathymetry(),
     l_boundarySize, l_nX, l_nY, l_dX, l_dY, (int*)l_bound_types, l_time_dur, l_checkpoints, l_originX, l_originY, l_timestep, isCheckpoint, 1, false, l_output_scale);
-  //construct a checkpoint writer
-  io::NetCdfWriter l_cp_writer(l_fileName + "_cp", l_baseName, l_dimensionalSplittingBlock.getBathymetry(),
-    l_boundarySize, l_nX, l_nY, l_dX, l_dY, (int*)l_bound_types, l_time_dur, l_checkpoints, l_originX, l_originY, l_timestep, isCheckpoint, 1, true, l_output_scale);
 #else
   // consturct a VtkWriter
   io::VtkWriter l_writer(l_fileName, l_dimensionalSplittingBlock.getBathymetry(),
-    l_boundarySize, l_nX, l_nY, l_dX, l_dY );
-  io::VtkWriter l_cp_writer(l_fileName, l_dimensionalSplittingBlock.getBathymetry(),
     l_boundarySize, l_nX, l_nY, l_dX, l_dY );
 #endif
   if(!isCheckpoint)
@@ -409,12 +404,6 @@ if((l_timestep + 1) >= l_checkpoints)
     // write output
     l_writer.writeTimeStep( l_dimensionalSplittingBlock.getWaterHeight(),
       l_dimensionalSplittingBlock.getDischarge_hu(), l_dimensionalSplittingBlock.getDischarge_hv(), l_t);
-    // if we are in a step that requires a chekpoint we write this too
-    if ( l_t >= l_checkPoints[c])
-    {
-      l_cp_writer.writeTimeStep( l_dimensionalSplittingBlock.getWaterHeight(),
-      l_dimensionalSplittingBlock.getDischarge_hu(), l_dimensionalSplittingBlock.getDischarge_hv(), l_t);
-    }
   }
 
   // write the statistics message
