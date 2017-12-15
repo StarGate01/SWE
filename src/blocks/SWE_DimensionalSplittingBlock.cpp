@@ -31,9 +31,13 @@ float SWE_DimensionalSplittingBlock::computeNumericalFluxesVertical()
 {
 	float maxWaveSpeed = (float) 0.;
 	#pragma omp parallel for reduction(max: maxWaveSpeed)
+#ifdef CUSTOM_OPT
 	for(int t = 0; t < numThreads; t++)
 	{
 		for (int i = (t*workPerThread_vertical) + 1; i < ((t+1)*workPerThread_vertical) + 1 && i < nx + 1; i++) 
+#else
+	for (int i = 1; i < nx + 1; i++) 
+#endif
 		{
 			for (int j = 1; j < ny + 2; j++) 
 			{
@@ -47,7 +51,9 @@ float SWE_DimensionalSplittingBlock::computeNumericalFluxesVertical()
 				maxWaveSpeed = std::max (maxWaveSpeed, maxEdgeSpeed);
 			}
 		}
+#ifdef CUSTOM_OPT
 	}
+#endif
 	return maxWaveSpeed;
 }
 
@@ -55,9 +61,13 @@ float SWE_DimensionalSplittingBlock::computeNumericalFluxesHorizontal()
 {
 	float maxWaveSpeed = (float) 0.;
 	#pragma omp parallel for reduction(max: maxWaveSpeed)
+#ifdef CUSTOM_OPT
 	for(int t = 0; t < numThreads; t++)
 	{
 		for (int j = (t*workPerThread_horizontal) + 1; j < ((t+1)*workPerThread_horizontal) + 1 && j < ny + 1; j++) 
+#else
+	for (int j = 1; j < ny + 1; ++j) 
+#endif
 		{
 			for (int i = 1; i < nx + 2; i++) 
 			{
@@ -71,7 +81,9 @@ float SWE_DimensionalSplittingBlock::computeNumericalFluxesHorizontal()
 				maxWaveSpeed = std::max(maxWaveSpeed, maxEdgeSpeed);
 			}
 		}
+#ifdef CUSTOM_OPT
 	}
+#endif
 	return maxWaveSpeed;
 }
 
