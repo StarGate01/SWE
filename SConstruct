@@ -392,6 +392,10 @@ program_name += '_'+env['compiler']
 # compile mode
 program_name += '_'+env['compileMode']
 
+# custom optimisation
+if env['customOpt'] == False:
+  program_name += '_noopt'
+
 # parallelization
 program_name += '_'+env['parallelization']
 

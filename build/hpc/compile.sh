@@ -6,4 +6,5 @@ cd ../..
 scons buildVariablesFile=build/options/SWE_gnu.py compileMode=release netCDFDir=$NCDFDIR
 scons buildVariablesFile=build/options/SWE_intel.py compileMode=release netCDFDir=$NCDFDIR
 scons buildVariablesFile=build/options/SWE_intel.py compileMode=debug netCDFDir=$NCDFDIR
+scons buildVariablesFile=build/options/SWE_intel_noopt.py compileMode=debug netCDFDir=$NCDFDIR
 
