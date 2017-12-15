@@ -6,6 +6,6 @@ echo Running with srun on $(srun hostname)
 export NTHREADS=28
 
 source profile_light.sh
-srun ./launch.sh
+srun ./launch_core.sh
 source profile_heavy.sh
-srun ./launch.sh
+srun ./launch_core.sh
