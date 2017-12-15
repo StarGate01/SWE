@@ -48,6 +48,11 @@ private:
     //! Net-updates for the y-momentums of the cells above the horizontal edges.
     Float2D hvNetUpdatesAbove;
 
+    //! Amount of threads used
+    int numThreads;
+    //! Amount ofrows/cols per thread
+    int workPerThread_horizontal, workPerThread_vertical;
+
     /**
      * @brief Converts small values to zero
      * 
@@ -65,8 +70,9 @@ private:
      * @param l_ny Amount of cells in y dimension
      * @param l_dx Width of a cell
      * @param l_dy Height of a cell
+     * @param numthreads The amount of parallel threads to use
      */
-    SWE_DimensionalSplittingBlock(int l_nx, int l_ny, float l_dx, float l_dy);
+    SWE_DimensionalSplittingBlock(int l_nx, int l_ny, float l_dx, float l_dy, int numthreads);
 
     /**
      * @brief Computes the horizontal fluxes

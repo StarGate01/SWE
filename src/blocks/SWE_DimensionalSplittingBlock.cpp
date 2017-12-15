@@ -8,32 +8,29 @@
 #include <cassert>
 #include <string>
 #include <limits>
-
-#ifdef USE_OMP
 #include <omp.h>
-#endif
 
 
-SWE_DimensionalSplittingBlock::SWE_DimensionalSplittingBlock (int l_nx, int l_ny, float l_dx, float l_dy) :
+SWE_DimensionalSplittingBlock::SWE_DimensionalSplittingBlock (int l_nx, int l_ny, float l_dx, float l_dy, int numthreads) :
 	SWE_Block (l_nx, l_ny, l_dx, l_dy),
 	hNetUpdatesLeft (nx + 1, ny),
 	hNetUpdatesRight (nx + 1, ny),
 	huNetUpdatesLeft (nx + 1, ny),
 	huNetUpdatesRight (nx + 1, ny),
-
 	hNetUpdatesBelow (nx, ny + 1),
 	hNetUpdatesAbove (nx, ny + 1),
 	hvNetUpdatesBelow (nx, ny + 1),
-	hvNetUpdatesAbove (nx, ny + 1)
+	hvNetUpdatesAbove (nx, ny + 1),
+	numThreads(numthreads)
 {
+	workPerThread_horizontal = (int)ceil((float)nx / (float)numThreads);
+	workPerThread_vertical = (int)ceil((float)ny / (float)numThreads);
 }
 
 float SWE_DimensionalSplittingBlock::computeNumericalFluxesVertical()
 {
 	float maxWaveSpeed = (float) 0.;
-#ifdef USE_OMP
-	#pragma omp parallel for reduction(max: maxWaveSpeed)
-#endif
+	#pragma omp parallel for reduction(max: maxWaveSpeed), schedule(dynamic) 
 	for (int i = 1; i < nx + 1; i++) 
 	{
 		for (int j = 1; j < ny + 2; j++) 
@@ -54,9 +51,7 @@ float SWE_DimensionalSplittingBlock::computeNumericalFluxesVertical()
 float SWE_DimensionalSplittingBlock::computeNumericalFluxesHorizontal()
 {
 	float maxWaveSpeed = (float) 0.;
-#ifdef USE_OMP
-	#pragma omp parallel for reduction(max: maxWaveSpeed)
-#endif
+	#pragma omp parallel for reduction(max: maxWaveSpeed), schedule(dynamic) 
 	for (int i = 1; i < nx + 2; i++) 
 	{
 		for (int j = 1; j < ny + 1; ++j) 
