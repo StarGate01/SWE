@@ -12,7 +12,7 @@ TSNOW=$(date +%s)
 echo Current timestamp: $TSNOW
 
 echo You are on $(hostname)
-echo Running with srun on $(srun hostname)
+echo Running with srun on $(echo hostname)
 
 run_swe () {
 	MODE=release
@@ -29,7 +29,7 @@ run_swe () {
 	RCMD+=" --grid-size-x=$SIZE --grid-size-y=$SIZE --input-bathymetry=$BATHY --input-displacement=$DISPL --time-duration=$TIME --checkpoint-amount=$CHECKP"
 	RCMD+=" --boundary-condition-left=0 --boundary-condition-right=0 --boundary-condition-top=0 --boundary-condition-bottom=0 --output-basepath=$MYDATADIR/swe --output-scale=1 --limit-threads=$NTHREADS"
 	echo Executing: $RCMD
-	$RCMD > $MYDATADIR/stdout.log 2>$MYDATADIR/stderr.log
+	echo $RCMD > $MYDATADIR/stdout.log 2>$MYDATADIR/stderr.log
 	LOGDIR="$HOME/swe_logs/$TSNOW"
 	MYLOGDIR="$LOGDIR/$1$2/$OUTPNAME"
 	echo Saving logs to $MYLOGDIR
