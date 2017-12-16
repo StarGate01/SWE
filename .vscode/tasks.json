@@ -272,10 +272,10 @@
             "type": "shell",
             "command": "xelatex",
             "args": [
-                "assignment3.tex"
+                "assignment4.tex"
             ],
             "options": {
-                "cwd": "${workspaceRoot}/submodules/solvers/documentation/presentation3"
+                "cwd": "${workspaceRoot}/submodules/solvers/documentation/presentation4"
             },
             "problemMatcher": []
         },
@@ -288,7 +288,7 @@
                 "*.aux", "*.log", "*.nav", "*.out", "*.pdf", "*.snm", "*.toc"
             ],
             "options": {
-                "cwd": "${workspaceRoot}/submodules/solvers/documentation/presentation3"
+                "cwd": "${workspaceRoot}/submodules/solvers/documentation/presentation4"
             },
             "problemMatcher": []
         },
