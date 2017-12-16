@@ -11,9 +11,6 @@ AMPPREFIX="$AMP -collect hotspots -knob enable-user-tasks=true -knob analyze-ope
 TSNOW=$(date +%s)
 echo Current timestamp: $TSNOW
 
-echo You are on $(hostname)
-echo Running with srun on $(echo hostname)
-
 run_swe () {
 	MODE=release
 	MYDATADIR="$DATADIR/$TSNOW/$1$2/$OUTPNAME"
@@ -26,10 +23,10 @@ run_swe () {
 	fi
 	RCMD+="$INPUTDIR/SWE_$1_$MODE"
 	RCMD+="_none_fwave"
-	RCMD+=" --grid-size-x=$SIZE --grid-size-y=$SIZE --input-bathymetry=$BATHY --input-displacement=$DISPL --time-duration=$TIME --checkpoint-amount=$CHECKP"
+	RCMD+=" --grid-size-x=$SIZE --grid-size-y=$SIZE --input-bathymetry=$INPUTDIR/$BATHY --input-displacement=$INPUTDIR/$DISPL --time-duration=$TIME --checkpoint-amount=$CHECKP"
 	RCMD+=" --boundary-condition-left=0 --boundary-condition-right=0 --boundary-condition-top=0 --boundary-condition-bottom=0 --output-basepath=$MYDATADIR/swe --output-scale=1 --limit-threads=$NTHREADS"
 	echo Executing: $RCMD
-	echo $RCMD > $MYDATADIR/stdout.log 2>$MYDATADIR/stderr.log
+	$RCMD > $MYDATADIR/stdout.log 2>$MYDATADIR/stderr.log
 	LOGDIR="$HOME/swe_logs/$TSNOW"
 	MYLOGDIR="$LOGDIR/$1$2/$OUTPNAME"
 	echo Saving logs to $MYLOGDIR
