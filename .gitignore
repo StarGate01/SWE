@@ -2,6 +2,7 @@ build/build_SWE_*
 build/SWE_*
 build/data
 build/input
+build/hpc/logs
 
 documentation/build
 
