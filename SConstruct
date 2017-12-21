@@ -98,6 +98,10 @@ vars.AddVariables(
 
   BoolVariable( 'customOpt', 'use optimisations', True ),
 
+  EnumVariable( 'intelOptParam', 'icc command line param for release', 'O2',
+                allowed_values=('O0', 'O1', 'O2', 'O3', 'fast') 
+              ),
+
   BoolVariable( 'asagi', 'use ASAGI', False ),
 
   PathVariable( 'asagiInputDir', 'location of netcdf input files', '', PathVariable.PathAccept ),
@@ -226,7 +230,7 @@ elif env['compileMode'] == 'release':
     env.Append(CCFLAGS=['-O3','-mtune=native'])
 
   elif env['compiler'] == 'intel':
-    env.Append(CCFLAGS=['-O2'])
+    env.Append(CCFLAGS=['-' + env['intelOptParam']])
 
   else: # especially for env['compiler'] == 'cray'
     env.Append(CCFLAGS=['-O3'])
@@ -393,6 +397,10 @@ program_name = 'SWE'
 
 # compiler
 program_name += '_'+env['compiler']
+
+# optimisation
+if env['compiler'] == 'intel':
+  program_name += '_'+env['intelOptParam']
 
 # custom optimisation
 if env['customOpt'] == False:

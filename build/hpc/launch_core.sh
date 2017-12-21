@@ -40,23 +40,3 @@ run_swe () {
 	echo -e "\n$1$2\n" >> "$LOGDIR/stdout.all.short.log"
 	cat "$MYLOGDIR/stdout.short.log" >> "$LOGDIR/stdout.all.short.log"
 }
-
-echo Running optimized gcc release build
-run_swe gnu
-
-echo Running not optimized gcc release build
-run_swe gnu_noopt
-
-echo Running optimized intel release build
-run_swe intel
-
-echo Running not optimized intel release build
-run_swe intel_noopt
-
-echo Profiling optimized intel debug build
-run_swe intel amp
-
-echo Profiling not optimized intel debug build
-run_swe intel_noopt amp
-
-echo Done.
