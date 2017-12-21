@@ -98,7 +98,9 @@ vars.AddVariables(
 
   BoolVariable( 'customOpt', 'use optimisations', True ),
 
-  BoolVariable( 'intelOptParam', 'icc command line param for release', '-O2' ),
+  EnumVariable( 'intelOptParam', 'icc command line param for release', 'O2',
+                allowed_values=('O0', 'O1', 'O2', 'O3', 'fast') 
+              ),
 
   BoolVariable( 'asagi', 'use ASAGI', False ),
 
