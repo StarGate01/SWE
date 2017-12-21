@@ -20,7 +20,7 @@ run_suite() {
     echo Running O0 intel release build
     run_swe intel_O3
     echo Running Fast intel release build
-    run_swe intel_Fast
+    run_swe intel_fast
 }
 
 echo Running heavy profile

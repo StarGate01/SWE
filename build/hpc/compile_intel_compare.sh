@@ -7,4 +7,4 @@ scons buildVariablesFile=build/options/SWE_intel_O0.py compileMode=release netCD
 scons buildVariablesFile=build/options/SWE_intel_O1.py compileMode=release netCDFDir=$NCDFDIR
 scons buildVariablesFile=build/options/SWE_intel_O2.py compileMode=release netCDFDir=$NCDFDIR
 scons buildVariablesFile=build/options/SWE_intel_O3.py compileMode=release netCDFDir=$NCDFDIR
-scons buildVariablesFile=build/options/SWE_intel_Fast.py compileMode=release netCDFDir=$NCDFDIR
+scons buildVariablesFile=build/options/SWE_intel_fast.py compileMode=release netCDFDir=$NCDFDIR
