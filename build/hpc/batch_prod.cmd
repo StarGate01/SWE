@@ -6,7 +6,7 @@
 #SBATCH --clusters=mpp2
 #SBATCH --nodes=1-1 
 #SBATCH --cpus-per-task=28 
-#SBATCH --mail-type=end 
+#SBATCH --mail-type=ALL 
 #SBATCH --mail-user=christoph.honal@tum.de 
 #SBATCH --export=NONE 
 #SBATCH --time=06:00:00 
