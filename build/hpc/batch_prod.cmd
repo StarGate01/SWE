@@ -9,6 +9,6 @@
 #SBATCH --mail-type=ALL 
 #SBATCH --mail-user=christoph.honal@tum.de 
 #SBATCH --export=NONE 
-#SBATCH --time=06:00:00 
+#SBATCH --time=03:00:00 
 source /etc/profile.d/modules.sh
 ./launch_prod.sh
