@@ -85,7 +85,7 @@
             "problemMatcher": []
         },
         {
-            "label": "Clean And Regenerate Data (release light load)",
+            "label": "Clean And Regenerate Data (release)",
             "type": "shell",
             "command": "bash",
             "options": {
@@ -93,20 +93,7 @@
             },
             "args": [
                "-c",
-               "\"rm -rf data && mkdir data && cd data && ../SWE_gnu_release_none_fwave --grid-size-x=500 --grid-size-y=500 --input-bathymetry=../input/tohoku_2011/tohoku_gebco_ucsb3_2000m_hawaii_bath.nc --input-displacement=../input/tohoku_2011/tohoku_gebco_ucsb3_2000m_hawaii_displ.nc --time-duration=1000 --checkpoint-amount=300 --boundary-condition-left=0 --boundary-condition-right=0 --boundary-condition-top=0 --boundary-condition-bottom=0 --output-basepath=swe_tohoku_light --output-scale=1 --limit-threads=8\""
-            ],
-            "problemMatcher": []
-        },
-        {
-            "label": "Clean And Regenerate Data (release heavy load)",
-            "type": "shell",
-            "command": "bash",
-            "options": {
-                "cwd": "${workspaceRoot}/build"
-            },
-            "args": [
-               "-c",
-               "\"rm -rf data && mkdir data && cd data && ../SWE_gnu_release_none_fwave --grid-size-x=1000 --grid-size-y=1000 --input-bathymetry=../input/tohoku_2011/tohoku_gebco_ucsb3_2000m_hawaii_bath.nc --input-displacement=../input/tohoku_2011/tohoku_gebco_ucsb3_2000m_hawaii_displ.nc --time-duration=30000 --checkpoint-amount=1000 --boundary-condition-left=0 --boundary-condition-right=0 --boundary-condition-top=0 --boundary-condition-bottom=0 --output-basepath=swe_tohoku_light --output-scale=1 --limit-threads=8\""
+               "\"rm -rf data && mkdir data && cd data && ../SWE_gnu_release_none_fwave --grid-size-x=2000 --grid-size-y=1000 --input-bathymetry=../input/chile_2010/chile_gebco_usgs_2000m_bath.nc --input-displacement=../input/chile_2010/chile_gebco_usgs_2000m_displ.nc --time-duration=10000 --checkpoint-amount=100 --boundary-condition-left=0 --boundary-condition-right=0 --boundary-condition-top=0 --boundary-condition-bottom=0 --output-basepath=swe_prod --output-scale=1 --limit-threads=8\""
             ],
             "problemMatcher": []
         },

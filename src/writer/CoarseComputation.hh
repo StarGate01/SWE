@@ -27,11 +27,11 @@ namespace io
 
             /**
             * @brief Returns the number of cells in one dimension of the downscaled Float2D object
-            * @param ny Number of cells of original field
+            * @param n Number of cells of original field
             *
             * @return Number of cells of downscaled field
             */
-            int numCells(int ny);
+            int numCells(int n);
 
             /**
             * @brief Calculates the average of a subfield within the \param data object from ( \param xmin, \param ymin ) to (\param xmin + scale, \param ymin + scale)

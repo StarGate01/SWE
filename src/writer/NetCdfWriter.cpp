@@ -109,6 +109,12 @@ io::NetCdfWriter::NetCdfWriter(const std::string &i_baseName,
 		nc_def_var(dataFile, "hu", NC_FLOAT, 3, dims, &huVar);
 		nc_def_var(dataFile, "hv", NC_FLOAT, 3, dims, &hvVar);
 		nc_def_var(dataFile, "b",  NC_FLOAT, 2, &dims[1], &bVar);
+#ifdef NETCDF_COMPRESSION
+		nc_def_var_deflate(dataFile, hVar, 1, 1, 9);
+		nc_def_var_deflate(dataFile, huVar, 1, 1, 9);
+		nc_def_var_deflate(dataFile, hvVar, 1, 1, 9);
+		nc_def_var_deflate(dataFile, bVar, 1, 1, 9);
+#endif
 	}
 	
 	if(!append)

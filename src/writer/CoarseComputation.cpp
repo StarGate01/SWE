@@ -7,9 +7,9 @@
 
 using namespace io;
 
-int CoarseComputation::numCells(int ny)
+int CoarseComputation::numCells(int n)
 {
-    return (int)ceil(((float)ny)/((float)scale));
+    return (int)ceil(((float)n)/((float)scale));
 }
 
 float CoarseComputation::average(const Float2D& data, int xmin, int ymin)
