@@ -9,6 +9,6 @@
 #SBATCH --mail-type=ALL 
 #SBATCH --mail-user=christoph.honal@tum.de 
 #SBATCH --export=NONE 
-#SBATCH --time=02:00:00 
+#SBATCH --time=01:00:00 
 source /etc/profile.d/modules.sh
 ./launch_intel_amp.sh

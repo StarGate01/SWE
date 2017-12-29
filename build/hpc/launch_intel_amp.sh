@@ -14,7 +14,7 @@ run_suite() {
     echo Profiling optimized intel debug build
     run_swe intel_O2 amp
     echo Profiling not optimized intel debug build
-    run_swe intel_02_noopt amp
+    run_swe intel_O2_noopt amp
 }
 
 echo Running heavy profile
