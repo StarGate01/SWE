@@ -11,23 +11,11 @@ export NTHREADS=28
 source launch_core.sh
 
 run_suite() {
-    echo Running optimized gcc release build
-    run_swe gnu
-    echo Running not optimized gcc release build
-    run_swe gnu_noopt
-    echo Running optimized intel release build
-    run_swe intel_O2
-    echo Running not optimized intel release build
-    run_swe intel_O2_noopt
     echo Profiling optimized intel debug build
     run_swe intel_O2 amp
     echo Profiling not optimized intel debug build
-    run_swe intel_O2_noopt amp
+    run_swe intel_02_noopt amp
 }
-
-echo Running light profile
-source profile_light.sh
-run_suite
 
 echo Running heavy profile
 source profile_heavy.sh
