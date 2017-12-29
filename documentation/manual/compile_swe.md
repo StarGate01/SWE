@@ -14,6 +14,9 @@ The original documentation is available where our fork originates: https://githu
 However, we added several extensions:
 
 - The boolean `dimsplit` compiler configuration option, which enables the dimensional splitting approach. This is enabled by default.
-- The boolean `readNetCDF` and `parseCDL` compiler configuration ops, which enable reading NetCDF and CDL files respectively.
+- The boolean `readNetCDF` and `parseCDL` compiler configuration options, which enable reading NetCDF and CDL files respectively.
+- The boolean `compressNetCDF` which enables HDF5 compression of NetCDF files. This is disabled by default, because it takes a lot of computing power to compress and decompress.
+- The boolean `customOpt` which enables some custom optimizations. This is enabled by default.
+- The switch `intelOptParam` which specifies the level of optimization for the intel compiler.
 - A scenario which tests this functionality.
 - A system to save and load checkpoints

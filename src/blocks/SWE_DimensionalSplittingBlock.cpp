@@ -34,12 +34,12 @@ float SWE_DimensionalSplittingBlock::computeNumericalFluxesVertical()
 #ifdef CUSTOM_OPT
 	for(int t = 0; t < numThreads; t++)
 	{
-		for (int i = (t*workPerThread_vertical) + 1; i < ((t+1)*workPerThread_vertical) + 1 && i < nx + 1; i++) 
+		for (int j = (t*workPerThread_vertical) + 1; j < ((t+1)*workPerThread_vertical) + 1 && j < ny + 1; j++) 
 #else
-	for (int i = 1; i < nx + 1; i++) 
+	for (int j = 1; j < ny + 2; j++) 
 #endif
 		{
-			for (int j = 1; j < ny + 2; j++) 
+			for (int i = 1; i < nx + 1; i++) 
 			{
 				float maxEdgeSpeed;
 				wavePropagationSolver.computeNetUpdates(
@@ -64,12 +64,12 @@ float SWE_DimensionalSplittingBlock::computeNumericalFluxesHorizontal()
 #ifdef CUSTOM_OPT
 	for(int t = 0; t < numThreads; t++)
 	{
-		for (int j = (t*workPerThread_horizontal) + 1; j < ((t+1)*workPerThread_horizontal) + 1 && j < ny + 1; j++) 
+		for (int i = (t*workPerThread_horizontal) + 1; i < ((t+1)*workPerThread_horizontal) + 1 && i < nx + 1; i++) 
 #else
-	for (int j = 1; j < ny + 1; ++j) 
+	for (int i = 1; i < nx + 2; i++) 
 #endif
 		{
-			for (int i = 1; i < nx + 2; i++) 
+			for (int j = 1; j < ny + 1; j++) 
 			{
 				float maxEdgeSpeed;
 				wavePropagationSolver.computeNetUpdates(

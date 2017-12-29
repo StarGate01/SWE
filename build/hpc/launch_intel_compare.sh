@@ -15,9 +15,9 @@ run_suite() {
     run_swe intel_O0
     echo Running O1 intel release build
     run_swe intel_O1
-    echo Running O0 intel release build
+    echo Running O2 intel release build
     run_swe intel_O2
-    echo Running O0 intel release build
+    echo Running O3 intel release build
     run_swe intel_O3
     echo Running Fast intel release build
     run_swe intel_fast

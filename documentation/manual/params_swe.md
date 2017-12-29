@@ -14,7 +14,8 @@ The following command line parameters are available for SWE (when used with `swe
 - `-b, --boundary-condition-bottom [BOUNDARY_CONDITION_BOTTOM]` Boundary condition bottom
 - `-o, --output-basepath [OUTPUT_BASEPATH]` Output base file name
 - `-m, --input-checkpoint [INPUT_CHECKPOINT]` Input checkpoint file name
-- `-f, --simulate-failure [SIMULATE_FAILURE]` Simulate failure after n timesteps
+- `-f, --simulate-failure [SIMULATE_FAILURE]` Simulate failure after n timesteps. Used for debugging
+- `-s, --output-scale [OUTPUT_SCALE]` Scale for the output file cell sizes
 - `-z, --limit-threads [LIMIT_THREADS]` Maximum number of threads used (Only useful when compiled with support for openMP)
 - `-h, --help` Show help
 

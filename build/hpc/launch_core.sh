@@ -23,8 +23,8 @@ run_swe () {
 	fi
 	RCMD+="$INPUTDIR/SWE_$1_$MODE"
 	RCMD+="_none_fwave"
-	RCMD+=" --grid-size-x=$SIZE --grid-size-y=$SIZE --input-bathymetry=$INPUTDIR/$BATHY --input-displacement=$INPUTDIR/$DISPL --time-duration=$TIME --checkpoint-amount=$CHECKP"
-	RCMD+=" --boundary-condition-left=0 --boundary-condition-right=0 --boundary-condition-top=0 --boundary-condition-bottom=0 --output-basepath=$MYDATADIR/swe --output-scale=1 --limit-threads=$NTHREADS"
+	RCMD+=" --grid-size-x=$SIZEX --grid-size-y=$SIZEY --input-bathymetry=$INPUTDIR/$BATHY --input-displacement=$INPUTDIR/$DISPL --time-duration=$TIME --checkpoint-amount=$CHECKP"
+	RCMD+=" --boundary-condition-left=0 --boundary-condition-right=0 --boundary-condition-top=0 --boundary-condition-bottom=0 --output-basepath=$MYDATADIR/swe --output-scale=$OUTSCALE --limit-threads=$NTHREADS"
 	echo Executing: $RCMD
 	$RCMD > $MYDATADIR/stdout.log 2>$MYDATADIR/stderr.log
 	LOGDIR="$HOME/swe_logs/$TSNOW"

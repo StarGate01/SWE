@@ -94,6 +94,8 @@ vars.AddVariables(
 
   BoolVariable( 'readNetCDF', 'read from file in the netCDF-format', True ),
 
+  BoolVariable( 'compressNetCDF', 'compress netCDF files', False ),
+
   BoolVariable( 'parseCDL', 'support reading of CDL files', False ),
 
   BoolVariable( 'customOpt', 'use optimisations', True ),
@@ -356,6 +358,8 @@ if env['writeNetCDF'] == True:
     env.Append(CPPPATH=[env['netCDFDir']+'/include'])
     env.Append(LIBPATH=[os.path.join(env['netCDFDir'], 'lib')])
     env.Append(RPATH=[os.path.join(env['netCDFDir'], 'lib')])
+  if env['compressNetCDF'] == True:
+    env.Append(CPPDEFINES=['NETCDF_COMPRESSION'])
 
 # set the precompiler flags, includes and libraries for ASAGI
 if env['asagi'] == True:
