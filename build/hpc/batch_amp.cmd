@@ -11,4 +11,4 @@
 #SBATCH --export=NONE 
 #SBATCH --time=02:00:00 
 source /etc/profile.d/modules.sh
-./launch_amp.sh
+./launch_intel_amp.sh
