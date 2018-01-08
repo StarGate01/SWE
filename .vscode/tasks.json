@@ -329,6 +329,31 @@
                 "cwd": "${workspaceRoot}/submodules/solvers/documentation/project/suggestion"
             },
             "problemMatcher": []
+        },
+        {
+            "label": "Build Project Specification",
+            "type": "shell",
+            "command": "xelatex",
+            "args": [
+                "specification.tex"
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}/submodules/solvers/documentation/project/specification"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Clean Project Specification",
+            "type": "shell",
+            "command": "rm",
+            "args": [
+                "-f",
+                "*.aux", "*.log", "*.nav", "*.out", "*.pdf", "*.snm", "*.toc"
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}/submodules/solvers/documentation/project/specification"
+            },
+            "problemMatcher": []
         }
     ]
 }
