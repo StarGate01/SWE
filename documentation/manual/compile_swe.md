@@ -18,5 +18,7 @@ However, we added several extensions:
 - The boolean `compressNetCDF` which enables HDF5 compression of NetCDF files. This is disabled by default, because it takes a lot of computing power to compress and decompress.
 - The boolean `customOpt` which enables some custom optimizations. This is enabled by default.
 - The switch `intelOptParam` which specifies the level of optimization for the intel compiler.
+- The boolean `compressNetCDF` which enabled HDF5 data compression on the output files.
 - A scenario which tests this functionality.
-- A system to save and load checkpoints
+- A system to save and load checkpoints.
+- A system to compress data via rough scaling.

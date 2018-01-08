@@ -1,6 +1,6 @@
 /**
  * @file CoarseComputation.hh
- * @brief Provides Methods for coarse cell computation
+ * @brief Provides methods for coarse cell computation
  */
 
 #ifndef COARSE_COMPUTATION_HH
@@ -14,15 +14,20 @@
 namespace io
 {
 
+    /**
+     * @brief This singleton class provides functions for coarse scaling
+     */
     class CoarseComputation
     {
 
         public:
             
+            //! The scaling factor, how many cells are merged in each dimension
             int scale;
 
         private:
 
+            //! The size of the boundary
             BoundarySize bsize;
 
             /**
@@ -34,18 +39,30 @@ namespace io
             int numCells(int n);
 
             /**
-            * @brief Calculates the average of a subfield within the \param data object from ( \param xmin, \param ymin ) to (\param xmin + scale, \param ymin + scale)
+            * @brief Calculates the average of a subfield within the data object from (xmin, ymin) to (xmin + scale, ymin + scale)
             * @param data Float2D object that is to be downscaled
             * @param xmin Start x index
             * @param ymin Start y index
             *
-            * @return Average value of 
+            * @return Average value of the subfield
             */
             float average(const Float2D& data, int xmin, int ymin);
 
         public: 
 
-            int oldWidth, oldHeight, newWidth, newHeight;
+            //! The original width
+            int oldWidth;
+
+            //! The original height
+            int oldHeight;
+
+            //! The new width
+            int newWidth;
+
+            //!The new height
+            int newHeight;
+
+            //! The computed (scaled) data
             Float2D* averages;
 
             /**
@@ -60,7 +77,7 @@ namespace io
             /**
             * @brief Calculates the average values for the entire field
             *
-            * @param[in] data Field to be downscaled
+            * @param data Field to be downscaled
             */
             void updateAverages(const Float2D& data);
 

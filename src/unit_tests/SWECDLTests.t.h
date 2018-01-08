@@ -33,7 +33,7 @@ class swe_tests::SWECDLTestsSuite : public CxxTest::TestSuite
          */
         void testStringParse()
         {
-            // ## Test 1 (valid string) ##
+           /** @brief Scenario 1: Valid string */
            string cdltext = R"(
                 netcdf foo { // example netCDF specification in CDL
                 dimensions:
@@ -93,7 +93,7 @@ class swe_tests::SWECDLTestsSuite : public CxxTest::TestSuite
 
             TS_ASSERT(newdata == cdldata);
 
-            // ## Test 2 (invalid string) ##
+            /** @brief Scenario 1: Invalid string */
             cdltext = R"(
                 netcdf foo { // example netCDF specification in CDL
                 dimensions:
@@ -117,7 +117,7 @@ class swe_tests::SWECDLTestsSuite : public CxxTest::TestSuite
             catch(runtime_error& e) { exceptionCought = true; }
             TS_ASSERT(exceptionCought);
 
-            // ## Test 3 (missing dimensions) ##
+            /** @brief Scenario 3: Missing dimensions */
             cdltext = R"(
                 netcdf foo { // example netCDF specification in CDL
                 //dimensions:
@@ -141,7 +141,7 @@ class swe_tests::SWECDLTestsSuite : public CxxTest::TestSuite
             catch(runtime_error& e) { exceptionCought = true; }
             TS_ASSERT(exceptionCought);
 
-            // ## Test 4 (missing variables) ##
+            /** @brief Scenario 4: Missing variables */
             cdltext = R"(
                 netcdf foo { // example netCDF specification in CDL
                 dimensions:
@@ -165,7 +165,7 @@ class swe_tests::SWECDLTestsSuite : public CxxTest::TestSuite
             catch(runtime_error& e) { exceptionCought = true; }
             TS_ASSERT(exceptionCought);
 
-            // ## Test 4 (missing variables II) ##
+             /** @brief Scenario 4: Missing variables II */
             cdltext = R"(
                 netcdf foo { // example netCDF specification in CDL
                 dimensions:

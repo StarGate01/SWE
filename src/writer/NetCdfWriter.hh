@@ -110,8 +110,8 @@ private:
      * @param timestep Current timestep
      * @param append Wether to append to an existing file
      * @param i_flush If > 0, flush data to disk every i_flush write operation
-     * @param output_scale the output is averaged to comply with this cell amount multiplyer
-     * @param is_checkpoint if true output is not scaled, if false scale is aplied
+     * @param ischeckpoint if true output is not scaled, if false scale is applied
+     * @param outscale the output is averaged to comply with this cell amount multiplyer
      */
     NetCdfWriter(const std::string &i_fileName,
       const std::string &i_filebaseName,
@@ -132,17 +132,11 @@ private:
     virtual ~NetCdfWriter();
 
     /**
-     * @brief Writes the unknwons to a netCDF-file (-> constructor) with respect to the boundary sizes.
-     *
-     * boundarySize[0] == left
-     * boundarySize[1] == right
-     * boundarySize[2] == bottom
-     * boundarySize[3] == top
-     *
+     * @brief Writes the unknwons to a netCDF-file (-> constructor) 
+     * 
      * @param i_h Water heights at a given time step.
      * @param i_hu Momentums in x-direction at a given time step.
      * @param i_hv Momentums in y-direction at a given time step.
-     * @param i_boundarySize Size of the boundaries.
      * @param i_time simulation Time of the time step.
      */
     void writeTimeStep(const Float2D &i_h,const Float2D &i_hu,

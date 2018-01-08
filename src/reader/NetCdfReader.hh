@@ -34,7 +34,7 @@ namespace io
 }
 
 /**
- * @brief Functionality to read from acheckpoint file
+ * @brief Functionality to read from a checkpoint file
  */
 class io::NetCdfReader  
 {

@@ -1,3 +1,8 @@
+/**
+ * @file SWECoarseTests.t.h
+ * @brief Unit tests for the coarse computation
+ */
+
 #include <cxxtest/TestSuite.h>
 #include "tools/help.hh"                                        //Float1D, Float2D
 #include "../writer/CoarseComputation.hh"                       //BoundarySize
@@ -8,12 +13,18 @@ using namespace io;
 
 namespace swe_tests
 {
-    class SWECoarseTests;
+    class SWECoarseTestsSuite;
 }
 
-class swe_tests::SWECoarseTests : public CxxTest::TestSuite
+
+/**
+ * @brief Implements several tests for the coarse computation
+ */
+class swe_tests::SWECoarseTestsSuite : public CxxTest::TestSuite
 {
+
     private:
+
         float createChessPattern(int x, int y)
         {
             return (x % 2 == 0 && y % 2 == 0) ? 2 : (x % 2 == 1 && y % 2 == 1 ? 2 : 0);
@@ -26,7 +37,7 @@ class swe_tests::SWECoarseTests : public CxxTest::TestSuite
          */
         void testAverageCalculation()
         {
-            // ### Test 1 (Scale by 2) ###
+            /** @brief Scenario 1: Scale by 2 */
             Float2D field(20, 20);
 
             //Initialize field with chess pattern of zeros and twos
@@ -61,7 +72,7 @@ class swe_tests::SWECoarseTests : public CxxTest::TestSuite
                 }
             }
 
-            // ### Test 2 (Scale 1) ###
+            /** @brief Scenario 2: Scale by 1 */
             //Init test
             scale = 1;
             cc = new CoarseComputation(scale, bs, field.getCols(), field.getRows());
@@ -82,7 +93,7 @@ class swe_tests::SWECoarseTests : public CxxTest::TestSuite
                 }
             }
 
-            // ### Test 3 (Invalid case) ###
+            /** @brief Scenario 3: Invalid case */
             scale = -3;
             cc = new CoarseComputation(scale, bs, field.getCols(), field.getRows());
 
@@ -102,4 +113,5 @@ class swe_tests::SWECoarseTests : public CxxTest::TestSuite
                 }
             }
         }
+        
 };
