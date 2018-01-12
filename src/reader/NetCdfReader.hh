@@ -92,8 +92,9 @@ private:
      * 
      * @param i_fileName The file path of the data file to read
      * @param noassert Do not thow assert on file error
+     * @param preloadLast Preload the last checkpoint
      */
-    NetCdfReader(const string &i_fileName, bool noassert = false);
+    NetCdfReader(const string &i_fileName, bool noassert = false, bool preloadLast = true);
 
     /**
      * @brief Loads a specific timestep from the file

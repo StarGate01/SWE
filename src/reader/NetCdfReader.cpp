@@ -11,7 +11,7 @@
 
 using namespace std;
 
-io::NetCdfReader::NetCdfReader(const string &i_fileName, bool noassert)
+io::NetCdfReader::NetCdfReader(const string &i_fileName, bool noassert, bool preloadLast)
 {
 	int status;
 
@@ -59,8 +59,11 @@ io::NetCdfReader::NetCdfReader(const string &i_fileName, bool noassert)
 	huData = new float[xLength * yLength];
 	nc_inq_varid(dataFile, "hv", &hvVar);
 	hvData = new float[xLength * yLength];
-	bool res = selectTimestep(0);
-	if(!res && !noassert) assert(false);
+	if(preloadLast)
+	{
+		bool res = selectTimestep(timeLength - 1);
+		if(!res && !noassert) assert(false);
+	}
 }
 
 io::NetCdfReader::~NetCdfReader() 
@@ -75,7 +78,7 @@ io::NetCdfReader::~NetCdfReader()
 bool io::NetCdfReader::selectTimestep(uint32_t index)
 {
 	if(index >= timeLength) return false;
-	size_t hs_indices[3] = {(index - 1), 0, 0};
+	size_t hs_indices[3] = {index, 0, 0};
 	size_t hs_counts[3] = {1, yLength, xLength};
 	nc_get_vara_float(dataFile, hVar, hs_indices, hs_counts, hData);
 	nc_get_vara_float(dataFile, huVar, hs_indices, hs_counts, huData);
