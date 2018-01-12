@@ -22,7 +22,7 @@
 #undef MPI_INCLUDED_NETCDF
 #endif
 
-#include "writer/Writer.hh"
+// #include "writer/Writer.hh"
 
 using namespace std;
 
