@@ -48,6 +48,9 @@ private:
 
   public:
 
+    //! Sucess opening file
+    bool success = false;
+
     //! Length of the time values buffer
     size_t timeLength;
 
@@ -88,8 +91,9 @@ private:
      * @brief Constructor
      * 
      * @param i_fileName The file path of the data file to read
+     * @param noassert Do not thow assert on file error
      */
-    NetCdfReader(const string &i_fileName);
+    NetCdfReader(const string &i_fileName, bool noassert = false);
 
     /**
      * @brief Get a text attribute

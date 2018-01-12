@@ -11,7 +11,7 @@
 
 using namespace std;
 
-io::NetCdfReader::NetCdfReader(const string &i_fileName)
+io::NetCdfReader::NetCdfReader(const string &i_fileName, bool noassert)
 {
 	int status;
 
@@ -21,9 +21,10 @@ io::NetCdfReader::NetCdfReader(const string &i_fileName)
     //check if the netCDF-file open constructor succeeded.
 	if (status != NC_NOERR) 
 	{
-		assert(false);
+		if(!noassert) assert(false);
 		return;
 	}
+	success = true;
 
 	nc_inq_varid(dataFile, "time", &timeVar);
 	nc_inq_dimid(dataFile, "time", &timeDim);
