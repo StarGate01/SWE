@@ -77,7 +77,7 @@ io::NetCdfReader::~NetCdfReader()
 
 bool io::NetCdfReader::selectTimestep(uint32_t index)
 {
-	if(index >= timeLength) return false;
+	if(index >= timeLength || index < 0) return false;
 	size_t hs_indices[3] = {index, 0, 0};
 	size_t hs_counts[3] = {1, yLength, xLength};
 	nc_get_vara_float(dataFile, hVar, hs_indices, hs_counts, hData);
