@@ -53,20 +53,14 @@ io::NetCdfReader::NetCdfReader(const string &i_fileName, bool noassert)
 	bData = new float[xLength * yLength];
 	nc_get_var_float(dataFile, bVar, bData);
 
-	size_t hs_indices[3] = {(timeLength - 1), 0, 0};
-	size_t hs_counts[3] = {1, yLength, xLength};
-
 	nc_inq_varid(dataFile, "h", &hVar);
 	hData = new float[xLength * yLength];
-	nc_get_vara_float(dataFile, hVar, hs_indices, hs_counts, hData);
-
 	nc_inq_varid(dataFile, "hu", &huVar);
 	huData = new float[xLength * yLength];
-	nc_get_vara_float(dataFile, huVar, hs_indices, hs_counts, huData);
-
 	nc_inq_varid(dataFile, "hv", &hvVar);
 	hvData = new float[xLength * yLength];
-	nc_get_vara_float(dataFile, hvVar, hs_indices, hs_counts, hvData);
+	bool res = selectTimestep(0);
+	if(!res && !noassert) assert(false);
 }
 
 io::NetCdfReader::~NetCdfReader() 
@@ -76,6 +70,17 @@ io::NetCdfReader::~NetCdfReader()
 	delete[] huData;
 	delete[] hvData;
 	nc_close(dataFile);
+}
+
+bool io::NetCdfReader::selectTimestep(uint32_t index)
+{
+	if(index >= timeLength) return false;
+	size_t hs_indices[3] = {(index - 1), 0, 0};
+	size_t hs_counts[3] = {1, yLength, xLength};
+	nc_get_vara_float(dataFile, hVar, hs_indices, hs_counts, hData);
+	nc_get_vara_float(dataFile, huVar, hs_indices, hs_counts, huData);
+	nc_get_vara_float(dataFile, hvVar, hs_indices, hs_counts, hvData);
+	return true;
 }
 
 string io::NetCdfReader::getGlobalTextAttribute(const string& name)

@@ -96,6 +96,15 @@ private:
     NetCdfReader(const string &i_fileName, bool noassert = false);
 
     /**
+     * @brief Loads a specific timestep from the file
+     * 
+     * @param index the number of the timestep
+     * 
+     * @return Wether the call was successful
+     */
+    bool selectTimestep(uint32_t index);
+
+    /**
      * @brief Get a text attribute
      * 
      * @param name The name
