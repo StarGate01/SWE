@@ -60,6 +60,9 @@ private:
     //! Length of the y values buffer
     size_t yLength;
 
+    //! Pointer to the time data buffer
+    float* timeData; 
+
     //! Pointer to the bathymetry data buffer
     float* bData; 
 
