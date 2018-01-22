@@ -117,6 +117,15 @@ float io::NetCdfReader::getGlobalFloatAttribute(const string& name)
 	return val;
 }
 
+float io::NetCdfReader::getCellValue(int pdata, int x, int y, int timestamp)
+{
+	size_t hs_indices[3] = {(size_t)timestamp, (size_t)y, (size_t)x};
+	size_t hs_counts[3] = {1, 1, 1};
+	float ret = 0.f;
+	nc_get_vara_float(dataFile, pdata, hs_indices, hs_counts, &ret);
+	return ret;
+}
+
 // void io::NetCdfReader::getLatestTimeStep(const Float2D &i_h,
 // 	const Float2D &i_hu, const Float2D &i_hv) 
 // {

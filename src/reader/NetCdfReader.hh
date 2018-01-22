@@ -44,9 +44,9 @@ private:
     //! NetCDF file handle
     int dataFile;
 
-    int timeVar, xVar, yVar, bVar, hVar, huVar, hvVar, timeDim, xDim, yDim;
-
   public:
+
+    int timeVar, xVar, yVar, bVar, hVar, huVar, hvVar, timeDim, xDim, yDim;
 
     //! Sucess opening file
     bool success = false;
@@ -140,6 +140,18 @@ private:
      * @return The attribute value
      */
     float getGlobalFloatAttribute(const string& name);
+
+    /**
+     * @brief Gets the value of a singe cell
+     * 
+     * @param pdata The layer variable id
+     * @param x The x coordinate of the cell
+     * @param y The y coordinate of the cell
+     * @param timestamp The selected timestamp
+     *
+     * @return The cell value
+     */
+    float getCellValue(int pdata, int x, int y, int timestamp);
 
     ~NetCdfReader();
 
