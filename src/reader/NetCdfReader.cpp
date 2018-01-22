@@ -29,6 +29,7 @@ io::NetCdfReader::NetCdfReader(const string &i_fileName, bool noassert, bool pre
 	nc_inq_varid(dataFile, "time", &timeVar);
 	nc_inq_dimid(dataFile, "time", &timeDim);
 	nc_inq_dimlen(dataFile, timeDim, &timeLength);
+	timeData = new float[timeLength];
 	nc_get_var_float(dataFile, timeVar, timeData);
 	timeMax = timeData[timeLength - 1];
 
