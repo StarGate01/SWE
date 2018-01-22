@@ -119,10 +119,17 @@ float io::NetCdfReader::getGlobalFloatAttribute(const string& name)
 
 float io::NetCdfReader::getCellValue(int pdata, int x, int y, int timestamp)
 {
-	size_t hs_indices[3] = {(size_t)timestamp, (size_t)y, (size_t)x};
-	size_t hs_counts[3] = {1, 1, 1};
 	float ret = 0.f;
-	nc_get_vara_float(dataFile, pdata, hs_indices, hs_counts, &ret);
+	if(pdata != bVar)
+	{
+		size_t hs_indices[3] = {(size_t)timestamp, (size_t)y, (size_t)x};
+		nc_get_var1_float(dataFile, pdata, hs_indices, &ret);
+	}
+	else
+	{
+		size_t hs_indices[2] = {(size_t)y, (size_t)x};
+		nc_get_var1_float(dataFile, pdata, hs_indices, &ret);
+	}
 	return ret;
 }
 
